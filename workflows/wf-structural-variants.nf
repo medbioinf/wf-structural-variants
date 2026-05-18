@@ -10,6 +10,7 @@ include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pi
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_wf-structural-variants_pipeline'
 
+include { PANGENOME_GRAPH } from '../subworkflows/local/pangenome_graph/main'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -34,6 +35,14 @@ workflow WF_STRUCTURAL_VARIANTS {
     //
     FASTQC(ch_samplesheet)
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map{ _meta, file -> file })
+
+    //
+    // SUBWORKFLOW: Run Minigraph Pangenome Graph Construction
+    //
+    ch_reference = Channel.fromPath(params.reference, checkIfExists: true).map { fasta -> [ [ id:'reference' ], fasta ] }
+    ch_assemblies = Channel.fromPath(params.assemblies, checkIfExists: true).collect()
+
+    PANGENOME_GRAPH(ch_reference, ch_assemblies)
 
     //
     // Collate and save software versions
