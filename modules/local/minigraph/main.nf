@@ -13,7 +13,7 @@ process MINIGRAPH {
     path assemblies
 
     output:
-    tuple val(meta), path("${meta.id}_pangenome.gfa"), emit: 'gfa'
+    tuple val(meta), path("${meta.id}_pangenome.gfa"), emit: gfa
     tuple val("${task.process}"), val('minigraph'), eval('minigraph --version 2>&1'), emit: versions, topic: versions
 
     script:
