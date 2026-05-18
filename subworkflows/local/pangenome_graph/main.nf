@@ -1,4 +1,4 @@
-include { MINIGRAPH } from '../../../modules/local/minigraph/main.nf'
+include { MINIGRAPH } from '../../../modules/local/minigraph/main'
 
 workflow PANGENOME_GRAPH {
 
@@ -13,7 +13,7 @@ workflow PANGENOME_GRAPH {
 
     ch_versions = ch_versions.mix(MINIGRAPH.out.versions)
 
-    emit
+    emit:
     gfa = MINIGRAPH.out.gfa
     versions = ch_versions
 
