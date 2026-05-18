@@ -13,7 +13,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { WF-STRUCTURAL-VARIANTS  } from './workflows/wf-structural-variants'
+include { WF_STRUCTURAL_VARIANTS  } from './workflows/wf-structural-variants'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_wf-structural-variants_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_wf-structural-variants_pipeline'
 include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_wf-structural-variants_pipeline'
@@ -38,7 +38,7 @@ params.fasta = getGenomeAttribute('fasta')
 //
 // WORKFLOW: Run main analysis pipeline depending on type of input
 //
-workflow MEDBIOINF_WF-STRUCTURAL-VARIANTS {
+workflow MEDBIOINF_WF_STRUCTURAL_VARIANTS {
 
     take:
     samplesheet // channel: samplesheet read in from --input
@@ -48,7 +48,7 @@ workflow MEDBIOINF_WF-STRUCTURAL-VARIANTS {
     //
     // WORKFLOW: Run pipeline
     //
-    WF-STRUCTURAL-VARIANTS (
+    WF_STRUCTURAL_VARIANTS (
         samplesheet,
         params.multiqc_config,
         params.multiqc_logo,
@@ -56,7 +56,7 @@ workflow MEDBIOINF_WF-STRUCTURAL-VARIANTS {
         params.outdir,
     )
     emit:
-    multiqc_report = WF-STRUCTURAL-VARIANTS.out.multiqc_report // channel: /path/to/multiqc_report.html
+    multiqc_report = WF_STRUCTURAL_VARIANTS.out.multiqc_report // channel: /path/to/multiqc_report.html
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -85,7 +85,7 @@ workflow {
     //
     // WORKFLOW: Run main workflow
     //
-    MEDBIOINF_WF-STRUCTURAL-VARIANTS (
+    MEDBIOINF_WF_STRUCTURAL_VARIANTS (
         PIPELINE_INITIALISATION.out.samplesheet
     )
     //
@@ -97,7 +97,7 @@ workflow {
         params.plaintext_email,
         params.outdir,
         params.monochrome_logs,
-        MEDBIOINF_WF-STRUCTURAL-VARIANTS.out.multiqc_report
+        MEDBIOINF_WF_STRUCTURAL_VARIANTS.out.multiqc_report
     )
 }
 

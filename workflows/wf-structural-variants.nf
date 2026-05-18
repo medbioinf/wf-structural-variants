@@ -16,7 +16,7 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_wf-s
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow WF-STRUCTURAL-VARIANTS {
+workflow WF_STRUCTURAL_VARIANTS {
 
     take:
     ch_samplesheet // channel: samplesheet read in from --input
