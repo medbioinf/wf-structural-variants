@@ -20,7 +20,7 @@ include { PANGENOME_GRAPH } from '../subworkflows/local/pangenome_graph/main'
 workflow WF_STRUCTURAL_VARIANTS {
 
     take:
-    ch_samplesheet // channel: samplesheet read in from --input
+    _ch_samplesheet // channel: samplesheet read in from --input
     multiqc_config
     multiqc_logo
     multiqc_methods_description
@@ -33,14 +33,18 @@ workflow WF_STRUCTURAL_VARIANTS {
     //
     // MODULE: Run FastQC
     //
-    FASTQC(ch_samplesheet)
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map{ _meta, file -> file })
+    // FASTQC(ch_samplesheet)
+    // ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map{ _meta, file -> file })
 
     //
     // SUBWORKFLOW: Run Minigraph Pangenome Graph Construction
     //
-    ch_reference = Channel.fromPath(params.reference, checkIfExists: true).map { fasta -> [ [ id:'reference' ], fasta ] }
-    ch_assemblies = Channel.fromPath(params.assemblies, checkIfExists: true).collect()
+    ch_reference = channel.fromPath(params.fasta, checkIfExists: true).map { fasta -> [ [ id:'reference' ], fasta ] }
+
+    ch_assemblies = channel.fromPath(params.input)
+        .splitCsv(header: true)
+        .map { row -> file(row.fasta, checkIfExists: true) }
+        .collect()
 
     PANGENOME_GRAPH(ch_reference, ch_assemblies)
 
