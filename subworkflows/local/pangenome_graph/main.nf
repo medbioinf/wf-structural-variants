@@ -7,7 +7,7 @@ workflow PANGENOME_GRAPH {
     ch_assemblies
 
     main:
-    ch_versions = Channel.empty()
+    ch_versions = channel.empty()
 
     MINIGRAPH(ch_reference, ch_assemblies)
 

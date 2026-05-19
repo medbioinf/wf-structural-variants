@@ -1,6 +1,6 @@
 process MINIGRAPH {
     tag "${meta.id}"
-    label 'process_high'
+    label 'process_high_single_task'
 
     conda "${moduleDir}/environment.yml"
 
