@@ -37,16 +37,21 @@ workflow WF_STRUCTURAL_VARIANTS {
     // ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map{ _meta, file -> file })
 
     //
-    // SUBWORKFLOW: Run Minigraph Pangenome Graph Construction
+    // SUBWORKFLOW: Run Minigraph Pangenome Graph Construction & Snarl Calling
     //
     ch_reference = channel.fromPath(params.fasta, checkIfExists: true).map { fasta -> [ [ id:'reference' ], fasta ] }
 
     ch_assemblies = channel.fromPath(params.input)
         .splitCsv(header: true)
-        .map { row -> file(row.fasta, checkIfExists: true) }
-        .collect()
+        .map { row -> 
+            def meta = [ id: "${row.sample}_hap${row.haplotype}" ] 
+            def fasta_file = file(row.fasta, checkIfExists: true)
+            return [ meta, fasta_file ]
+        }
 
     PANGENOME_GRAPH(ch_reference, ch_assemblies)
+
+    // ch_bed_files = PANGENOME_GRAPH.out.bed
 
     //
     // Collate and save software versions

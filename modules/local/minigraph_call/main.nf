@@ -1,6 +1,6 @@
-process MINIGRAPH {
+process MINIGRAPH_CALL {
     tag "${meta.id}"
-    label 'process_high_single_task'
+    label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
 
@@ -9,22 +9,23 @@ process MINIGRAPH {
         : 'quay.io/biocontainers/minigraph:0.20--he4a0461_2'}"
 
     input:
-    tuple val(meta), path(reference)
-    path assemblies
+    path(gfa)
+    tuple val(meta), path(assembly)
 
     output:
-    tuple val(meta), path("${meta.id}_pangenome.gfa"), emit: gfa
+    tuple val(meta), path("${assembly}.bed"), emit: bed
     tuple val("${task.process}"), val('minigraph'), eval('minigraph --version 2>&1'), emit: versions, topic: versions
 
     script:
     def args = task.ext.args ?: ''
     """
     minigraph \\
-        -cxggs \\
         -t $task.cpus \\
+        -xasm \\
+        --call \\
         $args \\
-        $reference \\
-        $assemblies \\
-        > ${meta.id}_pangenome.gfa
+        $gfa \\
+        $assembly \\
+        > ${assembly}.bed
     """
 }
