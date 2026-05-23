@@ -82,7 +82,7 @@ workflow WF_STRUCTURAL_VARIANTS {
     def ch_collated_versions = softwareVersionsToYAML(ch_versions.mix(topic_versions.versions_file))
         .mix(topic_versions_string)
         .collectFile(
-            storeDir: "${outdir}/${workflow.runName}/pipeline_info",
+            storeDir: "${outdir}/pipeline_info",
             name:  'wf-structural-variants_software_'  + 'mqc_'  + 'versions.yml',
             sort: true,
             newLine: true
