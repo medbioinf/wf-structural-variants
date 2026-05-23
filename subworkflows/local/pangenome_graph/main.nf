@@ -31,7 +31,7 @@ workflow PANGENOME_GRAPH {
         ch_gfa = channel.fromPath(params.gfa)
     }
 
-    MINIGRAPH_CALL(ch_gfa, ch_assemblies)
+    MINIGRAPH_CALL(ch_gfa.toList(), ch_assemblies)
     ch_versions = ch_versions.mix(MINIGRAPH_CALL.out.versions)
 
     emit:
