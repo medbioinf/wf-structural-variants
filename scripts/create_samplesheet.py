@@ -75,8 +75,10 @@ def generate_samplesheet(assemblies_dir="data/assemblies", output_csv="data/samp
             if hap_indicator.isdigit() and hap_indicator in ("1", "2"):
                 haplotype = hap_indicator
             else:
-                logging.warning(f"Warning: Haplotye for {filename} ambiguous ('{parts[1]}'). Setting default '1'.")
-                haplotype = "1"
+                logging.warning(f"Warning: Haplotye for {filename} ambiguous ('{parts[1]}').")
+                logging.error(f" -> Expected indicators like: paternal, maternal, hap1, h2, 1, etc.")
+                logging.error(f" -> Skipping file to prevent downstream errors.")
+                continue
                 
         # Add to samplesheet
         lines.append(f"{sample},{haplotype},{filepath}")

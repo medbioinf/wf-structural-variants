@@ -20,7 +20,7 @@ include { PANGENOME_GRAPH } from '../subworkflows/local/pangenome_graph/main'
 workflow WF_STRUCTURAL_VARIANTS {
 
     take:
-    _ch_samplesheet // channel: samplesheet read in from --input
+    ch_samplesheet // channel: samplesheet read in from --input
     multiqc_config
     multiqc_logo
     multiqc_methods_description
@@ -36,22 +36,28 @@ workflow WF_STRUCTURAL_VARIANTS {
     // FASTQC(ch_samplesheet)
     // ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map{ _meta, file -> file })
 
+
+
+
+
     //
     // SUBWORKFLOW: Run Minigraph Pangenome Graph Construction & Snarl Calling
     //
     ch_reference = channel.fromPath(params.fasta, checkIfExists: true).map { fasta -> [ [ id:'reference' ], fasta ] }
 
-    ch_assemblies = channel.fromPath(params.input)
-        .splitCsv(header: true)
-        .map { row -> 
-            def meta = [ id: "${row.sample}_hap${row.haplotype}" ] 
-            def fasta_file = file(row.fasta, checkIfExists: true)
-            return [ meta, fasta_file ]
+    ch_assemblies = ch_samplesheet
+        .map { _sample_id, meta, fasta ->
+            def new_meta = meta + [ id: "${meta.sample}_hap${meta.haplotype}" ]
+            return [ new_meta, file(fasta) ]
         }
 
     PANGENOME_GRAPH(ch_reference, ch_assemblies)
 
     // ch_bed_files = PANGENOME_GRAPH.out.bed
+
+
+
+
 
     //
     // Collate and save software versions
@@ -76,7 +82,7 @@ workflow WF_STRUCTURAL_VARIANTS {
     def ch_collated_versions = softwareVersionsToYAML(ch_versions.mix(topic_versions.versions_file))
         .mix(topic_versions_string)
         .collectFile(
-            storeDir: "${outdir}/pipeline_info",
+            storeDir: "${outdir}/${workflow.runName}/pipeline_info",
             name:  'wf-structural-variants_software_'  + 'mqc_'  + 'versions.yml',
             sort: true,
             newLine: true

@@ -93,20 +93,19 @@ workflow PIPELINE_INITIALISATION {
     channel
         .fromList(samplesheetToList(input, "${projectDir}/assets/schema_input.json"))
         .map {
-            meta, fastq_1, fastq_2 ->
-                if (!fastq_2) {
-                    return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
-                } else {
-                    return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
-                }
+            sample, haplotype, fasta ->
+                def meta_map = [ sample: sample, haplotype: haplotype ]
+                return [ sample, meta_map, fasta ]
         }
         .groupTuple()
         .map { samplesheet ->
             validateInputSamplesheet(samplesheet)
         }
-        .map {
-            meta, fastqs ->
-                return [ meta, fastqs.flatten() ]
+        .flatMap { _sample_id, metas, fastas ->
+            return [ metas, fastas ].transpose()
+        }
+        .map { meta, fasta ->
+            return [ meta.sample, meta, fasta ]
         }
         .set { ch_samplesheet }
 
@@ -176,15 +175,17 @@ def validateInputParameters() {
 // Validate channels from input samplesheet
 //
 def validateInputSamplesheet(input) {
-    def (metas, fastqs) = input[1..2]
+    def sample_id = input[0]
+    def (metas, fastas) = input[1..2]
 
-    // Check that multiple runs of the same sample are of the same datatype i.e. single-end / paired-end
-    def endedness_ok = metas.collect{ meta -> meta.single_end }.unique().size == 1
-    if (!endedness_ok) {
-        error("Please check input samplesheet -> Multiple runs of a sample must be of the same datatype i.e. single-end or paired-end: ${metas[0].id}")
+    def haplotypes = metas.collect{ meta -> meta.haplotype }
+
+    // Check that the same haplotype has not been assigned multiple times for the same sample
+    if (haplotypes.size() != haplotypes.unique().size()) {
+        error("Sample '${sample_id}' has multiple entries with the same haplotype. Ensure that each haplotype is only assigned once per sample.")
     }
 
-    return [ metas[0], fastqs ]
+    return [ sample_id, metas, fastas ]
 }
 //
 // Get attribute from genome config file e.g. fasta
