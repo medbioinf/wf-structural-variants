@@ -10,6 +10,7 @@ workflow PANGENOME_GRAPH {
     main:
     ch_versions = channel.empty()
     ch_gfa = channel.empty()
+    ch_info = channel.empty()
 
     // TODO: Potentially add alternative graph construction/calling methods here (e.g. Cactus, PGGB, etc.) and allow user to select via params
 
@@ -26,6 +27,7 @@ workflow PANGENOME_GRAPH {
         MINIGRAPH_CONSTRUCT(ch_reference, ch_minigraph_assemblies)
 
         ch_gfa = MINIGRAPH_CONSTRUCT.out.gfa.map { _meta, gfa -> gfa }
+        ch_info     = MINIGRAPH_CONSTRUCT.out.info
         ch_versions = ch_versions.mix(MINIGRAPH_CONSTRUCT.out.versions)
     } else {
         ch_gfa = channel.fromPath(params.gfa)
@@ -36,6 +38,7 @@ workflow PANGENOME_GRAPH {
 
     emit:
     gfa = ch_gfa
+    info = ch_info
     bed = MINIGRAPH_CALL.out.bed
     versions = ch_versions
 
