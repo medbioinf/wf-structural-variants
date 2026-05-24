@@ -29,7 +29,6 @@ process MINIGRAPH_CONSTRUCT {
         $assemblies \\
         > ${prefix}_pangenome.gfa
     
-    echo "=== PANGENOME GRAPH INFO ===" > ${prefix}_pangenome_info.txt
     echo "Creation Date: \$(date)" >> ${prefix}_pangenome_info.txt
     echo "Reference Genome: $reference" >> ${prefix}_pangenome_info.txt
     echo "" >> ${prefix}_pangenome_info.txt
