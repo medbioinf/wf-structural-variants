@@ -25,7 +25,7 @@ logging.basicConfig(
 )
 
 
-def generate_samplesheet(assemblies_dir="data/assemblies", output_csv="data/samplesheet.csv"):
+def generate_samplesheet(assemblies_dir="data/assemblies", output_csv="data/samplesheet.csv", allow_unphased=False):
     """
     Scans the directory containing the assemblies and automatically generates
     an nf-core-compatible samplesheet based on HPRC naming conventions.
@@ -43,8 +43,8 @@ def generate_samplesheet(assemblies_dir="data/assemblies", output_csv="data/samp
     filepaths = []
     for ext in SUPPORTED_EXTENSIONS:
         filepaths.extend(assemblies_path.glob(ext))
-        
-    # Sort and remove potential duplicates
+    
+    # Sort lines and remove potential duplicates
     filepaths = sorted(list(set(filepaths)))
     
     if not filepaths:
@@ -61,22 +61,24 @@ def generate_samplesheet(assemblies_dir="data/assemblies", output_csv="data/samp
             
         name_without_ext = current_path.name
         parts = name_without_ext.split(".")
-        
-        if len(parts) < 2:
-            logging.warning(f"Skipping file with incorrect format: {filename}")
-            continue
             
         sample = parts[0]
-        hap_indicator = parts[1].lower()
         
-        haplotype = HAPLOTYPE_TRANSLATION.get(hap_indicator)
+        if len(parts) > 1:
+            hap_indicator = parts[1].lower()
+            haplotype = HAPLOTYPE_TRANSLATION.get(hap_indicator)
+        else:
+            hap_indicator = "none"
+            haplotype = None
         
         if not haplotype:
-            if hap_indicator.isdigit() and hap_indicator in ("1", "2"):
-                haplotype = hap_indicator
+            if allow_unphased:
+                haplotype = "0"
+                logging.info(f"No haplotype recognized for {filename}. Treating as unphased ('0').")
             else:
-                logging.warning(f"Warning: Haplotye for {filename} ambiguous ('{parts[1]}').")
+                logging.warning(f"Warning: No haplotype recognized for {filename}.")
                 logging.error(f" -> Expected indicators like: paternal, maternal, hap1, h2, 1, etc.")
+                logging.error(f" -> To allow unphased assemblies (fallback to '0'), run with --allow-unphased")
                 logging.error(f" -> Skipping file to prevent downstream errors.")
                 continue
                 
@@ -88,13 +90,15 @@ def generate_samplesheet(assemblies_dir="data/assemblies", output_csv="data/samp
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text("\n".join(lines) + "\n")
     logging.info(f"Samplesheet successfully created at: {output_path}")
-    logging.info(f"Total {count} phased Assemblies indexed.")
+    logging.info(f"Total {count} assemblies indexed.")
 
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Automated samplesheet generation for HPRC Pangenome.")
     parser.add_argument("--dir", default="data/assemblies", help="Folder with the assemblies.")
     parser.add_argument("--out", default="data/samplesheet.csv", help="Output path of the CSV.")
+    parser.add_argument("--allow-unphased", action="store_true", 
+                        help="Treat files with unrecognized haplotypes as unphased (assigned to '0') instead of skipping them.")
     args = parser.parse_args()
     
-    generate_samplesheet(assemblies_dir=args.dir, output_csv=args.out)
+    generate_samplesheet(assemblies_dir=args.dir, output_csv=args.out, allow_unphased=args.allow_unphased)

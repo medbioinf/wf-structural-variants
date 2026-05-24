@@ -14,8 +14,8 @@
             },
             "haplotype": {
                 "type": "integer",
-                "enum": [1, 2],
-                "errorMessage": "Haplotype must be either 1 (paternal) or 2 (maternal)"
+                "enum": [0, 1, 2],
+                "errorMessage": "Haplotype must be either 0 (unphased), 1 (paternal) or 2 (maternal)"
             },
             "fasta": {
                 "type": "string",
