@@ -14,7 +14,9 @@ Copyright (c) 2026 Jonah Kapski <Jonah.Kapski@edu.ruhr-uni-bochum.de>
 
 import sys
 import os
+import re
 import logging
+import argparse
 
 
 # Configure logging
@@ -50,35 +52,362 @@ class Snarl:
         self.path_asm_dict = {}
 
 
-def parse_gfa_nodes(gfa_path):
+def load_nodes_from_gfa_fasta(gfa_fasta_path):
     """
-    Reads a GFA file and extracts the ID and length for each node (S).
-    Returns a dictionary { node_id: Node object }.
+    Reads the fasta file of a pangenome graph and extracts the ID, length, and their sequences for each node (S).
+    Returns a dictionary { node_id: Node object } and a dictionary { node_id: sequence_string }.
+    """
+    logging.info(f"Loading node GFA for node metadata: {gfa_fasta_path}")
     
-    Minigraph formats the GFA in a way that the node lines (S) contain the following fields (example):
-    S	s1  ACGT    LN:i:4  SN:Z:chr1   S0:i:0  SR:i:0
-    """
-    logging.info(f"Scanning GFA for node metadata: {gfa_path}")
     nodes_dict = {}
+    fasta_index = {}
     
-    with open(gfa_path, 'r') as gfa_file:
-        for line in gfa_file:
-            if line.startswith('S'):
-                parts = line.strip().split('\t')
-                node_id = parts[1]
-                sequence = parts[2]
+    current_node_id = None
+    current_seq_parts = []
+    
+    with open(gfa_fasta_path, 'r') as fasta_file:
+        for line in fasta_file:
+            line = line.strip()
+            if not line:
+                continue
+            
+            if line.startswith('>'):
+                if current_node_id is not None:
+                    full_sequence = "".join(current_seq_parts)
+                    fasta_index[current_node_id] = full_sequence
+                    nodes_dict[current_node_id] = Node(current_node_id, len(full_sequence))
                 
-                # use length from sequence if available, otherwise parse from LN tag
-                if sequence != "*":
-                    length = len(sequence)
-                else:
-                    length = 0
-                    for tag in parts[3:]:
-                        if tag.startswith("LN:i:"):
-                            length = int(tag.split(':')[-1])
-                            break
-
-                nodes_dict[node_id] = Node(node_id, length)
+                current_node_id = line[1:]  # Get node ID from header
+                current_seq_parts = []
+            else:
+                current_seq_parts.append(line)
+        
+        # Handle the last node after the loop
+        if current_node_id is not None:
+            full_sequence = "".join(current_seq_parts)
+            fasta_index[current_node_id] = full_sequence
+            nodes_dict[current_node_id] = Node(current_node_id, len(full_sequence))
     
-    logging.info(f"Found {len(nodes_dict)} nodes in GFA.")
-    return nodes_dict
+    logging.info(f"Successfully loaded {len(nodes_dict)} nodes from Fasta.")
+    return nodes_dict, fasta_index
+
+
+def retrieve_reverse_mapping_snarl(contig_mapping_dict, contig_mapping_stats):
+    """
+    Retrieves reverse mapping snarls based on the contig mapping info and stats.
+    """
+    
+    def get_reverse_path_from_node_list(node_list):
+        """
+        Given a list of nodes with orientations (e.g. ['>s1', '<s2', '>s3']), returns the reversed path with flipped orientations (e.g. ['<s3', '>s2', '<s1']).
+        """
+        reversed_path = ""
+        
+        for i in range(len(node_list) - 1, -1, -1):
+            node_with_orient = node_list[i]
+
+            if ">" in node_with_orient:
+                reversed_path += node_with_orient.replace(">", "<")
+            else:
+                reversed_path += node_with_orient.replace("<", ">")
+
+        return reversed_path
+
+    reverse_mapping_snarl_dict = {}
+
+    for cur_contig in contig_mapping_stats:
+
+        cur_contig_stats = contig_mapping_stats[cur_contig]
+        cur_contig_list = contig_mapping_dict[cur_contig]
+
+        total_mapped_bps = cur_contig_stats['+'] + cur_contig_stats['-']
+        if total_mapped_bps == 0:
+            continue
+
+        cur_contig_strand = None
+        if (cur_contig_stats['+'] - cur_contig_stats['-']) > 0.8 * total_mapped_bps:
+            cur_contig_strand = "+"
+
+        if (cur_contig_stats['-'] - cur_contig_stats['+']) > 0.8 * total_mapped_bps:
+            cur_contig_strand = "-"
+
+        if cur_contig_strand is None:
+            continue
+
+        previous_reverse_index = None
+        previous_reverse_nodes = []
+        previous_reverse_cords = []
+        previous_reverse_chrom = None
+
+        for sub_index in range(len(cur_contig_list)):
+            sub_mapping = cur_contig_list[sub_index]
+            sub_mapping_strand = sub_mapping[0]
+            sub_start_node_with_orient = sub_mapping[1]
+            sub_end_node_orient = sub_mapping[2]
+            sub_alt_path = sub_mapping[3]
+            ref_chrom = sub_mapping[4]
+            ref_start = int(sub_mapping[5])
+            ref_end = int(sub_mapping[6])
+
+            if sub_mapping_strand == cur_contig_strand or sub_mapping_strand == ".":
+                if previous_reverse_index is not None:
+                    reverse_ref_start, reverse_ref_end = min(previous_reverse_cords), max(previous_reverse_cords)
+                    reverse_start_node, reverse_end_node = previous_reverse_nodes[0], previous_reverse_nodes[-1]
+                    if reverse_ref_end - reverse_ref_start > 5000:
+                        reverse_mapping_snarl_dict["{}{}".format(reverse_start_node, reverse_end_node)] = [
+                            cur_contig, get_reverse_path_from_node_list(previous_reverse_nodes),
+                            previous_reverse_chrom, reverse_ref_start, reverse_ref_end
+                        ]
+
+                previous_reverse_index = None
+                previous_reverse_nodes = []
+                previous_reverse_cords = []
+                previous_reverse_chrom = None
+
+            else:
+
+                if previous_reverse_index is None:
+                    previous_reverse_index = sub_index
+
+                previous_reverse_chrom = ref_chrom
+
+                previous_reverse_cords.append(ref_start)
+                previous_reverse_cords.append(ref_end)
+
+                # append nodes from snarl and alt path
+                if sub_start_node_with_orient not in previous_reverse_nodes:
+                    previous_reverse_nodes.append(sub_start_node_with_orient)
+
+                alt_path_include_nodes = re.findall(r'[><]([a-zA-Z0-9]+)', sub_alt_path)
+                alt_path_include_nodes_orients = re.findall(r'[><]', sub_alt_path)
+                for i in range(len(alt_path_include_nodes)):
+                    previous_reverse_nodes.append(f"{alt_path_include_nodes_orients[i]}{alt_path_include_nodes[i]}")
+
+                if sub_end_node_orient not in previous_reverse_nodes:
+                    previous_reverse_nodes.append(sub_end_node_orient)
+        
+        # Check for remaining reverse mapping at the end of the contig
+        if previous_reverse_index is not None:
+            reverse_ref_start, reverse_ref_end = min(previous_reverse_cords), max(previous_reverse_cords)
+            reverse_start_node, reverse_end_node = previous_reverse_nodes[0], previous_reverse_nodes[-1]
+            if reverse_ref_end - reverse_ref_start > 5000:
+                reverse_mapping_snarl_dict["{}{}".format(reverse_start_node, reverse_end_node)] = [
+                    cur_contig, get_reverse_path_from_node_list(previous_reverse_nodes),
+                    previous_reverse_chrom, reverse_ref_start, reverse_ref_end
+                ]
+
+    return reverse_mapping_snarl_dict
+
+
+def parse_minigraph_bed_to_snarls(bed_path, sample_id, snarls_dict, nodes_dict, options):
+    """
+    Parses the Minigraph --call BED file to extract snarl information and populate the snarls_dict.
+    
+    The BED file contains the following fields (example):
+    chr1    1000    2000    >s1 >s3   <path/node>:\<offset>:\<strand>:\<contig_name>:\<contig_start>:\<contig_end>
+    """
+    logging.info(f"Parsing Minigraph BED file for {sample_id}: {bed_path}")
+    
+    with open(bed_path, 'r') as bed_file:
+        
+        if not os.path.exists(bed_path):
+            logging.error(f"BED file not found: {bed_path}")
+            sys.exit(-1)
+        
+        logging.info(f"Preprocessing: Loading allele info from {bed_path} for sample {sample_id}")
+        
+        # Initialize contig mapping structures for inversion detection
+        contig_mapping_dict = {}
+        contig_mapping_stats = {}
+        prev_seq_source_contig = None
+
+        for line in bed_file:
+            parts = line.strip().split('\t')
+            
+            snarl_ref_chrom, snarl_ref_start, snarl_ref_end = parts[0], int(parts[1]), int(parts[2])
+            
+            snarl_start_node_with_orient = parts[3]
+            snarl_start_node_id = snarl_start_node_with_orient[1:]
+            snarl_start_node_orient = snarl_start_node_with_orient[0]
+            
+            snarl_end_node_with_orient = parts[4]
+            snarl_end_node_id = snarl_end_node_with_orient[1:]
+            snarl_end_node_orient = snarl_end_node_with_orient[0]
+            
+            snarl_id = f"{snarl_start_node_orient}{snarl_start_node_id}{snarl_end_node_orient}{snarl_end_node_id}"
+            
+            if options.spec_snarl and snarl_id != options.spec_snarl:
+                continue
+            
+            alt_path_split = parts[5].split(':')
+            alt_path = alt_path_split[0]
+
+            if options.force_reverse:
+                # For saving inverted mapping
+                if alt_path == ".":
+                    seq_source_contig, seq_source_start, seq_source_end, seq_source_strand = prev_seq_source_contig, 0, 0, "."
+                else:
+                    seq_source_contig, seq_source_start, seq_source_end, seq_source_strand = alt_path_split[3], int(alt_path_split[4]), int(alt_path_split[5]), alt_path_split[2]
+
+                if seq_source_contig not in contig_mapping_dict:
+                    contig_mapping_dict[seq_source_contig] = []
+                    contig_mapping_stats[seq_source_contig] = {"+": 0, "-": 0, ".": 0}
+
+                contig_mapping_dict[seq_source_contig].append([seq_source_strand, snarl_start_node_with_orient, snarl_end_node_with_orient, alt_path, snarl_ref_chrom, snarl_ref_start, snarl_ref_end])
+                contig_mapping_stats[seq_source_contig][seq_source_strand] += (seq_source_end - seq_source_start)
+
+                prev_seq_source_contig = seq_source_contig
+
+            # If assembly has no contig covering the snarl, treat as missing allele
+            if alt_path == ".":
+                continue
+            
+            # Option to filter out small snarls/variants below the minimum SV size threshold
+            if options.remove_small:
+                path_length = 0
+                if alt_path != "." and alt_path != "":
+                    nodes_in_line = re.findall(r'[><]([a-zA-Z0-9]+)', alt_path)
+                    for node_id in nodes_in_line:
+                        if node_id in nodes_dict:
+                            path_length += nodes_dict[node_id].length
+                
+                # Skipping small snarls/variants that do not meet the minimum SV size threshold
+                if path_length < options.min_sv_size:
+                    continue
+            
+            if not options.force_reverse:
+                if alt_path == "":
+                    alt_path = "*"
+
+                if snarl_id not in snarls_dict:
+                    snarls_dict[snarl_id] = Snarl(
+                        snarl_start_node_id, snarl_start_node_orient, snarl_end_node_id, snarl_end_node_orient,
+                        snarl_ref_chrom, snarl_ref_start, snarl_ref_end
+                    )
+
+                # Add the alt path to the snarls
+                if alt_path not in snarls_dict[snarl_id].path_asm_dict:
+                    snarls_dict[snarl_id].path_asm_dict[alt_path] = []
+                snarls_dict[snarl_id].path_asm_dict[alt_path].append(sample_id)
+        
+        # Handle reversed mappings and add them to the snarls_dict
+        if options.force_reverse:
+            reverse_mapping_snarl_dict = retrieve_reverse_mapping_snarl(contig_mapping_dict, contig_mapping_stats)
+
+            for snarl_id in reverse_mapping_snarl_dict:
+                snarl_info = reverse_mapping_snarl_dict[snarl_id]
+
+                alt_path, ref_chrom, ref_start, ref_end = snarl_info[1], snarl_info[2], int(snarl_info[3]), int(snarl_info[4])
+
+                if alt_path == "":
+                    alt_path = "*"
+
+                snarl_id_include_nodes = re.findall(r'[><]([a-zA-Z0-9]+)', snarl_id)
+                snarl_id_include_nodes_orients = re.findall(r'[><]', snarl_id)
+
+                snarl_start_node_id, snarl_start_node_orient = snarl_id_include_nodes[0], snarl_id_include_nodes_orients[0]
+                snarl_end_node_id, snarl_end_node_orient = snarl_id_include_nodes[1], snarl_id_include_nodes_orients[1]
+
+                if snarl_id not in snarls_dict:
+                    snarls_dict[snarl_id] = Snarl(
+                        snarl_start_node_id, snarl_start_node_orient, snarl_end_node_id, snarl_end_node_orient,
+                        ref_chrom, ref_start, ref_end
+                    )
+                
+                # Add the alt path to the snarls
+                if alt_path not in snarls_dict[snarl_id].path_asm_dict:
+                    snarls_dict[snarl_id].path_asm_dict[alt_path] = []
+                snarls_dict[snarl_id].path_asm_dict[alt_path].append(sample_id)
+
+
+def get_reverse_complement(seq):
+    """
+    Returns the reverse complement of a DNA sequence string.
+    """
+    complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A', 
+                  'a': 't', 'c': 'g', 'g': 'c', 't': 'a', 
+                  'N': 'N', 'n': 'n'}
+    return "".join(complement.get(base, base) for base in reversed(seq))
+
+
+def extract_and_write_snarls(snarls_dict, fasta_index, output_path="output.fasta"):
+    """
+    Extracts the allele sequences for each snarl and writes them to a FASTA file.
+    """
+    with open(output_path, 'w') as output_file:
+        for snarl_id, snarl_obj in snarls_dict.items():
+            for alt_path, samples in snarl_obj.path_asm_dict.items():
+                
+                if alt_path == "*":
+                    allele_seq = ""
+                else:
+                    allele_parts = []
+                
+                    nodes_in_path = re.findall(r'([><][a-zA-Z0-9]+)', alt_path)
+                    
+                    for node in nodes_in_path:
+                        orient = node[0]
+                        node_id = node[1:]
+                        
+                        if node_id not in fasta_index:
+                            logging.warning(f"Node {node_id} not found in FASTA index. Skipping.")
+                            continue
+                        
+                        seq = fasta_index[node_id]
+                        node_seq = seq
+                        
+                        if orient == '<':
+                            node_seq = get_reverse_complement(seq)
+                        
+                        allele_parts.append(node_seq)
+                    
+                    allele_seq = "".join(allele_parts)
+            
+                display_seq = allele_seq if allele_seq != "" else "-"
+                
+                for sample in samples:
+                    fasta_header = f">{sample}|{snarl_id}|{snarl_obj.ref_chrom}:{snarl_obj.ref_start}-{snarl_obj.ref_end}"
+                    output_file.write(f"{fasta_header}\n")
+                    output_file.write(f"{display_seq}\n")
+                
+    logging.info(f"Successfully extracted snarl alleles.")         
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Extracts structural variant alleles from a Pangenome Graph and sample BED files.")
+    
+    parser.add_argument("--gfa_fasta", required=True, help="Path to the GFA FASTA file containing node sequences.")
+    parser.add_argument("--bed", required=True, help="Path to the sample minigraph --call BED file.")
+    parser.add_argument("--sample_id", required=True, help="Name/ID of the sample being processed.")
+    
+    # Optional parameters
+    parser.add_argument(
+        "--spec_snarl",
+        default=None,
+        help="Specific snarl ID to process (e.g. '>s1>s3') for debugging/analysis. If not provided, all snarls will be extracted."
+    )
+    parser.add_argument(
+        "--force_reverse",
+        action="store_true",
+        help="Enable original Swave inversion detection and rescue logic for reversed contigs."
+    )
+    parser.add_argument(
+        "--remove_small", 
+        action="store_true", 
+        help="Filter out small snarls/variants below the minimum SV size threshold."
+    )
+    parser.add_argument(
+        "--min_sv_size", 
+        type=int, 
+        default=50, 
+        help="Minimum size (in base pairs) for a variant to be considered a structural variant (default: 50)."
+    )
+    
+    options = parser.parse_args()
+    
+    nodes_dict, fasta_index = load_nodes_from_gfa_fasta(options.gfa_fasta)
+    
+    snarls_dict = {}
+    parse_minigraph_bed_to_snarls(options.bed, options.sample_id, snarls_dict, nodes_dict, options)
+    
+    extract_and_write_snarls(snarls_dict, fasta_index)

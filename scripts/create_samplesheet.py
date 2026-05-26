@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import logging
+import argparse
 from pathlib import Path
 
 
@@ -94,8 +95,7 @@ def generate_samplesheet(assemblies_dir="data/assemblies", output_csv="data/samp
     logging.info(f"Total {count} assemblies indexed.")
 
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description="Automated samplesheet generation for HPRC Pangenome.")
+    parser = argparse.ArgumentParser(description="Automated samplesheet generation for Assembly files.")
     parser.add_argument("--dir", default="data/assemblies", help="Folder with the assemblies.")
     parser.add_argument("--out", default="data/samplesheet.csv", help="Output path of the CSV.")
     parser.add_argument("--allow-unphased", action="store_true", 
