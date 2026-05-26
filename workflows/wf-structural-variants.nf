@@ -54,6 +54,7 @@ workflow WF_STRUCTURAL_VARIANTS {
     PANGENOME_GRAPH(ch_reference, ch_assemblies)
 
     _ch_pangenome_info = PANGENOME_GRAPH.out.info 
+    _ch_pangenome_fa = PANGENOME_GRAPH.out.fa
     _ch_bed_files = PANGENOME_GRAPH.out.bed
 
 

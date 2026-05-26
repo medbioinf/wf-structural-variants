@@ -3,4 +3,4 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - bioconda::minigraph=0.20=he4a0461_2
+  - bioconda::gfatools=0.5=h577a1d6_5
