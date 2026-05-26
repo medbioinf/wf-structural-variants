@@ -34,7 +34,7 @@ class Node:
 
 
 class Snarl:
-    def __init__(self, start_node_id, start_node_orient, end_node_id, end_node_orient, ref_chrom, ref_start, ref_end, reversed_mapping=False):
+    def __init__(self, start_node_id, start_node_orient, end_node_id, end_node_orient, ref_chrom, ref_start, ref_end):
         self.snarl_id = f"{start_node_orient}{start_node_id}{end_node_orient}{end_node_id}"     # e.g. ">s1>s3"
         
         self.start_node_id = start_node_id
@@ -46,7 +46,6 @@ class Snarl:
         self.ref_start = ref_start
         self.ref_end = ref_end
         
-        self.reversed_mapping = reversed_mapping
         self.ref_asm_path = None
         
         self.path_asm_dict = {}
@@ -319,16 +318,6 @@ def parse_minigraph_bed_to_snarls(bed_path, sample_id, snarls_dict, nodes_dict, 
                 snarls_dict[snarl_id].path_asm_dict[alt_path].append(sample_id)
 
 
-def get_reverse_complement(seq):
-    """
-    Returns the reverse complement of a DNA sequence string.
-    """
-    complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A', 
-                  'a': 't', 'c': 'g', 'g': 'c', 't': 'a', 
-                  'N': 'N', 'n': 'n'}
-    return "".join(complement.get(base, base) for base in reversed(seq))
-
-
 def extract_and_write_snarls(snarls_dict, fasta_index, output_path="output.fasta"):
     """
     Extracts the allele sequences for each snarl and writes them to a FASTA file.
@@ -352,11 +341,7 @@ def extract_and_write_snarls(snarls_dict, fasta_index, output_path="output.fasta
                             logging.warning(f"Node {node_id} not found in FASTA index. Skipping.")
                             continue
                         
-                        seq = fasta_index[node_id]
-                        node_seq = seq
-                        
-                        if orient == '<':
-                            node_seq = get_reverse_complement(seq)
+                        node_seq = fasta_index[node_id]
                         
                         allele_parts.append(node_seq)
                     
