@@ -50,3 +50,35 @@ class Snarl:
         self.path_asm_dict = {}
 
 
+def parse_gfa_nodes(gfa_path):
+    """
+    Reads a GFA file and extracts the ID and length for each node (S).
+    Returns a dictionary { node_id: Node object }.
+    
+    Minigraph formats the GFA in a way that the node lines (S) contain the following fields (example):
+    S	s1  ACGT    LN:i:4  SN:Z:chr1   S0:i:0  SR:i:0
+    """
+    logging.info(f"Scanning GFA for node metadata: {gfa_path}")
+    nodes_dict = {}
+    
+    with open(gfa_path, 'r') as gfa_file:
+        for line in gfa_file:
+            if line.startswith('S'):
+                parts = line.strip().split('\t')
+                node_id = parts[1]
+                sequence = parts[2]
+                
+                # use length from sequence if available, otherwise parse from LN tag
+                if sequence != "*":
+                    length = len(sequence)
+                else:
+                    length = 0
+                    for tag in parts[3:]:
+                        if tag.startswith("LN:i:"):
+                            length = int(tag.split(':')[-1])
+                            break
+
+                nodes_dict[node_id] = Node(node_id, length)
+    
+    logging.info(f"Found {len(nodes_dict)} nodes in GFA.")
+    return nodes_dict
