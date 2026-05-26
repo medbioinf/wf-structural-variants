@@ -200,7 +200,7 @@ def retrieve_reverse_mapping_snarl(contig_mapping_dict, contig_mapping_stats):
 
 
 def parse_minigraph_bed_to_snarls(bed_path, sample_id, snarls_dict, nodes_dict, options):
-    """
+    r"""
     Parses the Minigraph --call BED file to extract snarl information and populate the snarls_dict.
     
     The BED file contains the following fields (example):
@@ -275,20 +275,19 @@ def parse_minigraph_bed_to_snarls(bed_path, sample_id, snarls_dict, nodes_dict, 
                 if path_length < options.min_sv_size:
                     continue
             
-            if not options.force_reverse:
-                if alt_path == "":
-                    alt_path = "*"
+            if alt_path == "":
+                alt_path = "*"
 
-                if snarl_id not in snarls_dict:
-                    snarls_dict[snarl_id] = Snarl(
-                        snarl_start_node_id, snarl_start_node_orient, snarl_end_node_id, snarl_end_node_orient,
-                        snarl_ref_chrom, snarl_ref_start, snarl_ref_end
-                    )
+            if snarl_id not in snarls_dict:
+                snarls_dict[snarl_id] = Snarl(
+                    snarl_start_node_id, snarl_start_node_orient, snarl_end_node_id, snarl_end_node_orient,
+                    snarl_ref_chrom, snarl_ref_start, snarl_ref_end
+                )
 
-                # Add the alt path to the snarls
-                if alt_path not in snarls_dict[snarl_id].path_asm_dict:
-                    snarls_dict[snarl_id].path_asm_dict[alt_path] = []
-                snarls_dict[snarl_id].path_asm_dict[alt_path].append(sample_id)
+            # Add the alt path to the snarls
+            if alt_path not in snarls_dict[snarl_id].path_asm_dict:
+                snarls_dict[snarl_id].path_asm_dict[alt_path] = []
+            snarls_dict[snarl_id].path_asm_dict[alt_path].append(sample_id)
         
         # Handle reversed mappings and add them to the snarls_dict
         if options.force_reverse:
@@ -370,7 +369,7 @@ def extract_and_write_snarls(snarls_dict, fasta_index, output_path="output.fasta
                     output_file.write(f"{fasta_header}\n")
                     output_file.write(f"{display_seq}\n")
                 
-    logging.info(f"Successfully extracted snarl alleles.")         
+    logging.info(f"Successfully extracted snarl alleles.")
 
 
 if __name__ == "__main__":
