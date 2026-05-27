@@ -9,7 +9,7 @@ workflow SWAVE_PREPROCESSING {
     main:
     ch_versions = channel.empty()
 
-    SWAVE_EXTRACT_ALLELES(ch_bed, ch_gfa_fasta)
+    SWAVE_EXTRACT_ALLELES(ch_bed, ch_gfa_fasta.toList())
     ch_versions = ch_versions.mix(SWAVE_EXTRACT_ALLELES.out.versions)
 
     emit:
