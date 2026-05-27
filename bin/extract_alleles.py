@@ -318,11 +318,11 @@ def parse_minigraph_bed_to_snarls(bed_path, sample_id, snarls_dict, nodes_dict, 
                 snarls_dict[snarl_id].path_asm_dict[alt_path].append(sample_id)
 
 
-def extract_and_write_snarls(snarls_dict, fasta_index, output_path="output.fasta"):
+def extract_and_write_snarls(snarls_dict, fasta_index, output):
     """
     Extracts the allele sequences for each snarl and writes them to a FASTA file.
     """
-    with open(output_path, 'w') as output_file:
+    with open(output, 'w') as output_file:
         for snarl_id, snarl_obj in snarls_dict.items():
             for alt_path, samples in snarl_obj.path_asm_dict.items():
                 
@@ -363,6 +363,7 @@ if __name__ == "__main__":
     parser.add_argument("--gfa_fasta", required=True, help="Path to the GFA FASTA file containing node sequences.")
     parser.add_argument("--bed", required=True, help="Path to the sample minigraph --call BED file.")
     parser.add_argument("--sample_id", required=True, help="Name/ID of the sample being processed.")
+    parser.add_argument("--output", default="output.fa", help="Output FASTA file for extracted alleles (default: output.fa).")
     
     # Optional parameters
     parser.add_argument(
@@ -394,4 +395,4 @@ if __name__ == "__main__":
     snarls_dict = {}
     parse_minigraph_bed_to_snarls(options.bed, options.sample_id, snarls_dict, nodes_dict, options)
     
-    extract_and_write_snarls(snarls_dict, fasta_index)
+    extract_and_write_snarls(snarls_dict, fasta_index, options.output)

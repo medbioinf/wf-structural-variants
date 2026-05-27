@@ -11,6 +11,7 @@ include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pi
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_wf-structural-variants_pipeline'
 
 include { PANGENOME_GRAPH } from '../subworkflows/local/pangenome_graph/main'
+include { SWAVE_PREPROCESSING } from '../subworkflows/local/swave_preprocessing/main'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -56,6 +57,10 @@ workflow WF_STRUCTURAL_VARIANTS {
     _ch_pangenome_info = PANGENOME_GRAPH.out.info 
     _ch_pangenome_fa = PANGENOME_GRAPH.out.fa
     _ch_bed_files = PANGENOME_GRAPH.out.bed
+
+    //
+    // SUBWORKFLOW: Run SWAVE Preprocessing (Extract Alleles)
+    SWAVE_PREPROCESSING(_ch_bed_files, _ch_pangenome_fa)
 
 
 

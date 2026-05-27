@@ -72,6 +72,13 @@
                     "help_text": "If provided, the pipeline will completely skip the pangenome graph construction step and directly use this GFA file to run variant calling for the input samples.",
                     "fa_icon": "fas fa-project-diagram"
                 },
+                "gfa2fa_fa": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Path to an existing GFA-to-FASTA conversion file.",
+                    "help_text": "If an existing GFA is provided via --gfa, its pre-extracted FASTA sequence file can be provided here.",
+                    "fa_icon": "fas fa-file-alt"
+                },
                 "igenomes_ignore": {
                     "type": "boolean",
                     "description": "Do not load the iGenomes reference config.",
@@ -85,6 +92,39 @@
                     "fa_icon": "fas fa-ban",
                     "hidden": true,
                     "default": "s3://ngi-igenomes/igenomes/"
+                }
+            }
+        },
+        "swave_extraction_options": {
+            "title": "Swave Allele Extraction Options",
+            "type": "object",
+            "fa_icon": "fas fa-scissors",
+            "description": "Parameters used during the allele preprocessing and snarl extraction phase.",
+            "properties": {
+                "force_reverse": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable original Swave inversion detection and rescue logic for reversed contigs.",
+                    "fa_icon": "fas fa-undo-alt"
+                },
+                "remove_small": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Filter out small snarls/variants below the minimum SV size threshold.",
+                    "fa_icon": "fas fa-filter"
+                },
+                "min_sv_size": {
+                    "type": "integer",
+                    "default": 50,
+                    "description": "Minimum size (in base pairs) for a variant to be considered a structural variant. Variants smaller than this threshold will be filtered out if `remove_small` is set to true.",
+                    "fa_icon": "fas fa-compress-arrows-alt"
+                },
+                "spec_snarl": {
+                    "type": ["string", "null"],
+                    "default": null,
+                    "description": "Specific snarl ID to process (e.g. '>s1>s3') for debugging/analysis.",
+                    "help_text": "If provided, the workflow will only extract alleles for this specific snarl. Leave blank/null to process all snarls.",
+                    "fa_icon": "fas fa-bug"
                 }
             }
         },
