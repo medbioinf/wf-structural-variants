@@ -287,6 +287,9 @@
             "$ref": "#/$defs/reference_genome_options"
         },
         {
+            "$ref": "#/$defs/swave_extraction_options"
+        },
+        {
             "$ref": "#/$defs/institutional_config_options"
         },
         {
