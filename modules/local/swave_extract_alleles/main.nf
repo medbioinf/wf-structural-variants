@@ -14,7 +14,7 @@ process SWAVE_EXTRACT_ALLELES {
 
     output:
     tuple val(meta), path("${meta.id}_alleles.fa"), emit: fa
-    tuple val("${task.process}"), val('swave'), val('1.5'), emit: versions, topic: versions
+    tuple val("${task.process}"), val('python'), eval('python --version 2>&1'), emit: versions, topic: versions
 
     script:
     def args = task.ext.args ?: ''

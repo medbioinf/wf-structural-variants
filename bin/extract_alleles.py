@@ -396,3 +396,5 @@ if __name__ == "__main__":
     parse_minigraph_bed_to_snarls(options.bed, options.sample_id, snarls_dict, nodes_dict, options)
     
     extract_and_write_snarls(snarls_dict, fasta_index, options.output)
+    
+    sys.exit(0)

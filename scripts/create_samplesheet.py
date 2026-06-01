@@ -103,3 +103,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     generate_samplesheet(assemblies_dir=args.dir, output_csv=args.out, allow_unphased=args.allow_unphased)
+    
+    sys.exit(0)
