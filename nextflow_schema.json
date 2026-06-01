@@ -128,6 +128,35 @@
                 }
             }
         },
+        "swave_dotplot_options": {
+            "title": "Swave dotplot options",
+            "type": "object",
+            "fa_icon": "fas fa-th",
+            "description": "Parameters used during the Swave dotplot generation phase.",
+            "properties": {
+                "kmer_size": {
+                    "type": "integer",
+                    "default": 30,
+                    "description": "K-mer size for dotplot generation.",
+                    "help_text": "The size of the k-mers used to generate the dotplots. Larger k-mers will result in sparser dotplots that may miss smaller matches, while smaller k-mers will result in denser dotplots that may be more difficult to interpret. The default value is 30.",
+                    "fa_icon": "fas fa-cubes"
+                },
+                "max_dotplot_dim": {
+                    "type": "integer",
+                    "default": 1500,
+                    "description": "Maximum dimension for dotplot matrices. If the sequences are too long, they will be downsampled to fit within this dimension.",
+                    "help_text": "The maximum pixel dimension for the 2D matrices. Default value is 1500. Recommended range is between 1500 and 3000. Note: Higher dimensions capture more details but will exponentially increase RAM consumption and computing time (O(N^2)).",
+                    "fa_icon": "fas fa-arrows-alt"
+                },
+                "save_dotplot_images": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether to save the generated dotplot images as PNG files.",
+                    "help_text": "If enabled, the generated dotplot images will be saved as PNG files.",
+                    "fa_icon": "fas fa-image"
+                }
+            }
+        },
         "institutional_config_options": {
             "title": "Institutional config options",
             "type": "object",
@@ -288,6 +317,9 @@
         },
         {
             "$ref": "#/$defs/swave_extraction_options"
+        },
+        {
+            "$ref": "#/$defs/swave_dotplot_options"
         },
         {
             "$ref": "#/$defs/institutional_config_options"

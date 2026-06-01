@@ -20,8 +20,6 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import logging
 import argparse
 import numpy as np
-import cv2 as cv
-import math
 from matplotlib import pyplot as plt
 from seq_utils import reverse_complement_seq, calculate_stride_size
 
@@ -162,7 +160,7 @@ class Dotplot:
             matrix_resize_norm = 255 * abs(target_matrix - np.max(target_matrix)) / (np.max(target_matrix) - np.min(target_matrix))
 
         if out_img:
-            cv.imwrite(self.dotplot_file, matrix_resize_norm)
+            plt.imsave(self.dotplot_file, matrix_resize_norm, cmap='gray')
 
         return matrix_resize_norm
 
