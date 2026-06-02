@@ -17,6 +17,7 @@ import os
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
+import re
 import logging
 import argparse
 import numpy as np
@@ -200,49 +201,128 @@ class KmerIndex:
         return self.index_table.get(seq_str)
 
 
-def generate_dotplots(ref_seq, alt_seq, dotplot_output_prefix, options):
+def read_fasta(fasta_path):
+    """Reads a fasta file and returns a dictionary mapping sequence IDs to sequences."""
+    fasta_dict = {}
+    current_id = None
+    current_seq = []
+    
+    with open(fasta_path, 'r') as fasta_file:
+        for line in fasta_file:
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith('>'):
+                if current_id:
+                    fasta_dict[current_id] = "".join(current_seq)
+                current_id = line[1:].split()[0]
+                current_seq = []
+            else:
+                current_seq.append(line)
+        if current_id:
+            fasta_dict[current_id] = "".join(current_seq)
+            
+    return fasta_dict
+
+
+def build_ref_sequence(snarl_header, gfa_fasta_dict):
     """
-    for the ref seq and alt seq, generate dotplots and projections, which are further segmented into matrixes
+    Builds the reference sequence for a snarl based on its header and the GFA FASTA dictionary.
+    Example: '>s7>s8' -> extracts segments s7 and s8 from the GFA FASTA dictionary and concatenates their sequences.
     """
-    dotplot_stride_size = calculate_stride_size(len(ref_seq), len(alt_seq), max_matrix_dim=options.max_dotplot_dim)
+    segments = re.findall(r'[><]([a-zA-Z0-9_\-]+)', snarl_header)
     
-    ref2ref_dp = Dotplot(ref_seq, ref_seq, options.kmer_size, f"{dotplot_output_prefix}_ref2ref", against="x", stride_size=dotplot_stride_size)
-    ref2alt_dp = Dotplot(ref_seq, alt_seq, options.kmer_size, f"{dotplot_output_prefix}_ref2alt", against="x",
-                         stride_size=dotplot_stride_size, given_x_index_table=ref2ref_dp.get_seq_x_index_table())
+    ref_seq_parts = []
+    for seg in segments:
+        if seg in gfa_fasta_dict:
+            ref_seq_parts.append(gfa_fasta_dict[seg])
+        else:
+            logging.warning(f"Segment {seg} not found in GFA FASTA dictionary. Skipping this segment in the reference sequence.")
+            
+    return "".join(ref_seq_parts)
+
+
+def generate_dotplots(alleles_fasta_path, gfa_fasta_path, dotplot_output_prefix, options):
+    """
+    Generates dotplots and their matrices for a reference and alternative sequence based on the provided FASTA files and options.
+    """
+    logging.info(f"Reading reference sequence from FASTA file: {gfa_fasta_path}")
+    gfa_fasta_dict = read_fasta(gfa_fasta_path)
     
-    alt2alt_dp = Dotplot(alt_seq, alt_seq, options.kmer_size, f"{dotplot_output_prefix}_alt2alt", against="x", stride_size=dotplot_stride_size)
-    alt2ref_dp = Dotplot(alt_seq, ref_seq, options.kmer_size, f"{dotplot_output_prefix}_alt2ref", against="x",
-                         stride_size=dotplot_stride_size, given_x_index_table=alt2alt_dp.get_seq_x_index_table())
+    logging.info(f"Reading allele sequences from FASTA file: {alleles_fasta_path}")
+    alleles = read_fasta(alleles_fasta_path)
     
+    compressed_archive_data = {}
+    
+    for full_id, alt_seq in alleles.items():
+        # Split header of the form HG002_hap1|>s7>s8|chr1:18093-18093 into its components
+        parts = full_id.split('|')
+        
+        if len(parts) < 2:
+            logging.warning(f"Header {full_id} does not conform to expected format ID|SNARL_HEADER|CHR:START-END. Skipping this entry.")
+            continue
+        
+        snarl_header = parts[1]
+        clean_snarl = snarl_header.replace(">", "+").replace("<", "-").replace("*", "none")
+        
+        ref_seq = build_ref_sequence(snarl_header, gfa_fasta_dict)
+        
+        if not ref_seq or not alt_seq:
+            logging.warning(f"Empty sequence for snarl {full_id}. Skipping this entry.")
+            continue
+        
+        dotplot_stride_size = calculate_stride_size(len(ref_seq), len(alt_seq), max_matrix_dim=options.max_dotplot_dim)
+    
+        ref2ref_dp = Dotplot(ref_seq, ref_seq, options.kmer_size, f"{dotplot_output_prefix}_ref2ref", against="x", stride_size=dotplot_stride_size)
+        ref2alt_dp = Dotplot(ref_seq, alt_seq, options.kmer_size, f"{dotplot_output_prefix}_ref2alt", against="x",
+                            stride_size=dotplot_stride_size, given_x_index_table=ref2ref_dp.get_seq_x_index_table())
+        
+        alt2alt_dp = Dotplot(alt_seq, alt_seq, options.kmer_size, f"{dotplot_output_prefix}_alt2alt", against="x", stride_size=dotplot_stride_size)
+        alt2ref_dp = Dotplot(alt_seq, ref_seq, options.kmer_size, f"{dotplot_output_prefix}_alt2ref", against="x",
+                            stride_size=dotplot_stride_size, given_x_index_table=alt2alt_dp.get_seq_x_index_table())
+        
+        compressed_archive_data[f"{clean_snarl}_stride"] = np.array([dotplot_stride_size])
+        compressed_archive_data[f"{clean_snarl}_r2r_fwd"] = ref2ref_dp.matrix
+        compressed_archive_data[f"{clean_snarl}_r2r_rev"] = ref2ref_dp.matrix_rev
+        compressed_archive_data[f"{clean_snarl}_r2a_fwd"] = ref2alt_dp.matrix
+        compressed_archive_data[f"{clean_snarl}_r2a_rev"] = ref2alt_dp.matrix_rev
+        compressed_archive_data[f"{clean_snarl}_a2a_fwd"] = alt2alt_dp.matrix
+        compressed_archive_data[f"{clean_snarl}_a2a_rev"] = alt2alt_dp.matrix_rev
+        compressed_archive_data[f"{clean_snarl}_a2r_fwd"] = alt2ref_dp.matrix
+        compressed_archive_data[f"{clean_snarl}_a2r_rev"] = alt2ref_dp.matrix_rev
+
+        if options.save_dotplot_images:
+            prefix = f"{dotplot_output_prefix}_{clean_snarl}"
+            ref2ref_dp.out_prefix = f"{prefix}_ref2ref"
+            ref2ref_dp.to_png(reverse=False, out_img=True)
+            ref2ref_dp.to_png(reverse=True, out_img=True)
+            
+            ref2alt_dp.out_prefix = f"{prefix}_ref2alt"
+            ref2alt_dp.to_png(reverse=False, out_img=True)
+            ref2alt_dp.to_png(reverse=True, out_img=True)
+            
+            alt2alt_dp.out_prefix = f"{prefix}_alt2alt"
+            alt2alt_dp.to_png(reverse=False, out_img=True)
+            alt2alt_dp.to_png(reverse=True, out_img=True)
+            
+            alt2ref_dp.out_prefix = f"{prefix}_alt2ref"
+            alt2ref_dp.to_png(reverse=False, out_img=True)
+            alt2ref_dp.to_png(reverse=True, out_img=True)
+        
     np.savez_compressed(
         f"{dotplot_output_prefix}_matrices.npz",
-        stride=dotplot_stride_size,
-        r2r_fwd=ref2ref_dp.matrix, r2r_rev=ref2ref_dp.matrix_rev,
-        r2a_fwd=ref2alt_dp.matrix, r2a_rev=ref2alt_dp.matrix_rev,
-        a2a_fwd=alt2alt_dp.matrix, a2a_rev=alt2alt_dp.matrix_rev,
-        a2r_fwd=alt2ref_dp.matrix, a2r_rev=alt2ref_dp.matrix_rev
+        **compressed_archive_data
     )
     
     logging.info(f"Saved dotplot matrices to {dotplot_output_prefix}_matrices.npz")
     
-    if options.save_dotplot_images:
-        ref2ref_dp.to_png(reverse=False, out_img=True)
-        ref2ref_dp.to_png(reverse=True, out_img=True)
-        
-        ref2alt_dp.to_png(reverse=False, out_img=True)
-        ref2alt_dp.to_png(reverse=True, out_img=True)
-        
-        alt2alt_dp.to_png(reverse=False, out_img=True)
-        alt2alt_dp.to_png(reverse=True, out_img=True)
-        
-        alt2ref_dp.to_png(reverse=False, out_img=True)
-        alt2ref_dp.to_png(reverse=True, out_img=True)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate dotplots and their matrices for a reference and alternative sequence.")
 
-    parser.add_argument('--ref_seq', required=True, help='Reference sequence in FASTA format')
-    parser.add_argument('--alt_seq', required=True, help='Alternative sequence in FASTA format')
+    parser.add_argument('--alleles_fasta', required=True, help='FASTA file containing allele sequences with headers in the format ID|SNARL_HEADER|CHR:START-END')
+    parser.add_argument('--gfa_fasta', required=True, help='Alternative sequence in FASTA format')
     parser.add_argument('--out_prefix', required=True, help='Output prefix for generated files')
     
     parser.add_argument('--kmer_size', type=int, default=30, help='K-mer size for dotplot generation (default: 30)')
@@ -252,8 +332,8 @@ if __name__ == "__main__":
     options = parser.parse_args()
     
     generate_dotplots(
-        ref_seq=options.ref_seq,
-        alt_seq=options.alt_seq,
+        alleles_fasta_path=options.alleles_fasta,
+        gfa_fasta_path=options.gfa_fasta,
         dotplot_output_prefix=options.out_prefix,
         options=options
     )
