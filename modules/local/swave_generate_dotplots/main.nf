@@ -9,10 +9,11 @@ process SWAVE_GENERATE_DOTPLOTS {
         : 'quay.io/biocontainers/matplotlib:3.5.1'}"
     
     input:
-    tuple val(meta), val(ref_seq), val(alt_seq)
+    tuple val(meta), path(alleles_fasta)
+    path(gfa_fasta)
 
     output:
-    tuple val(meta), path("${meta.id}_${meta.snarl}_matrices.npz"), emit: matrices
+    tuple val(meta), path("${meta.id}_matrices.npz"), emit: matrices
     tuple val(meta), path("*.png"), emit: pngs, optional: true
     tuple val("${task.process}"), val('python'), eval('python --version 2>&1'), emit: versions, topic: versions
 
@@ -21,12 +22,11 @@ process SWAVE_GENERATE_DOTPLOTS {
     def save_images_flag = params.save_dotplot_images ? "--save_dotplot_images" : ""
     def kmer_size_param = params.kmer_size ? "--kmer_size ${params.kmer_size}" : ""
     def max_dim_param = params.max_dotplot_dim ? "--max_dotplot_dim ${params.max_dotplot_dim}" : ""
-    def output_prefix = "${meta.id}_${meta.snarl}"
     """
     generate_dotplots.py \\
-        --ref_seq "${ref_seq}" \\
-        --alt_seq "${alt_seq}" \\
-        --out_prefix "${output_prefix}" \\
+        --alleles_fasta $alleles_fasta \\
+        --gfa_fasta $gfa_fasta \\
+        --out_prefix "${meta.id}" \\
         $save_images_flag \\
         $kmer_size_param \\
         $max_dim_param \\
