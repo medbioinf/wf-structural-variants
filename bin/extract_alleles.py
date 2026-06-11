@@ -8,7 +8,7 @@ Wang, S., Xu, T., Zhang, P. & Ye, K. Population-level structural variant
 characterization using pangenome graphs. Nat Genet (2026). 
 https://doi.org/10.1038/s41588-026-02538-6
 
-Modified, refactored and optimized for Nextflow integration.
+Modified and refactored for Nextflow integration.
 Copyright (c) 2026 Jonah Kapski <Jonah.Kapski@edu.ruhr-uni-bochum.de>
 """
 
@@ -18,8 +18,10 @@ import re
 import logging
 import argparse
 
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+from seq_utils import reverse_complement_seq
 
-# Configure logging
+
 logging.basicConfig(
     level=logging.INFO,
     format='[%(levelname)s] %(message)s',
@@ -119,15 +121,11 @@ def retrieve_reverse_mapping_snarl(contig_mapping_dict, contig_mapping_stats):
         cur_contig_stats = contig_mapping_stats[cur_contig]
         cur_contig_list = contig_mapping_dict[cur_contig]
 
-        total_mapped_bps = cur_contig_stats['+'] + cur_contig_stats['-']
-        if total_mapped_bps == 0:
-            continue
-
         cur_contig_strand = None
-        if (cur_contig_stats['+'] - cur_contig_stats['-']) > 0.8 * total_mapped_bps:
+        if (cur_contig_stats['+'] - cur_contig_stats['-']) > 0.8 * cur_contig_stats['+']:
             cur_contig_strand = "+"
 
-        if (cur_contig_stats['-'] - cur_contig_stats['+']) > 0.8 * total_mapped_bps:
+        if (cur_contig_stats['-'] - cur_contig_stats['+']) > 0.8 * cur_contig_stats['+']:
             cur_contig_strand = "-"
 
         if cur_contig_strand is None:
@@ -153,7 +151,7 @@ def retrieve_reverse_mapping_snarl(contig_mapping_dict, contig_mapping_stats):
                     reverse_ref_start, reverse_ref_end = min(previous_reverse_cords), max(previous_reverse_cords)
                     reverse_start_node, reverse_end_node = previous_reverse_nodes[0], previous_reverse_nodes[-1]
                     if reverse_ref_end - reverse_ref_start > 5000:
-                        reverse_mapping_snarl_dict["{}{}".format(reverse_start_node, reverse_end_node)] = [
+                        reverse_mapping_snarl_dict[f"{reverse_start_node}{reverse_end_node}"] = [
                             cur_contig, get_reverse_path_from_node_list(previous_reverse_nodes),
                             previous_reverse_chrom, reverse_ref_start, reverse_ref_end
                         ]
@@ -184,16 +182,6 @@ def retrieve_reverse_mapping_snarl(contig_mapping_dict, contig_mapping_stats):
 
                 if sub_end_node_orient not in previous_reverse_nodes:
                     previous_reverse_nodes.append(sub_end_node_orient)
-        
-        # Check for remaining reverse mapping at the end of the contig
-        if previous_reverse_index is not None:
-            reverse_ref_start, reverse_ref_end = min(previous_reverse_cords), max(previous_reverse_cords)
-            reverse_start_node, reverse_end_node = previous_reverse_nodes[0], previous_reverse_nodes[-1]
-            if reverse_ref_end - reverse_ref_start > 5000:
-                reverse_mapping_snarl_dict["{}{}".format(reverse_start_node, reverse_end_node)] = [
-                    cur_contig, get_reverse_path_from_node_list(previous_reverse_nodes),
-                    previous_reverse_chrom, reverse_ref_start, reverse_ref_end
-                ]
 
     return reverse_mapping_snarl_dict
 
@@ -263,16 +251,21 @@ def parse_minigraph_bed_to_snarls(bed_path, sample_id, snarls_dict, nodes_dict, 
             
             # Option to filter out small snarls/variants below the minimum SV size threshold
             if options.remove_small:
-                path_length = 0
-                if alt_path != "." and alt_path != "":
-                    nodes_in_line = re.findall(r'[><]([a-zA-Z0-9]+)', alt_path)
-                    for node_id in nodes_in_line:
-                        if node_id in nodes_dict:
-                            path_length += nodes_dict[node_id].length
+                alt_path_include_nodes = re.findall(r'([a-zA-Z0-9]+)', alt_path)
+                alt_path_include_nodes_orients = re.findall(r'([><])', alt_path)
+
+                small_node_indices = []
+                for index in range(len(alt_path_include_nodes) - 1, -1, -1):
+                    node_id = alt_path_include_nodes[index]
+                    
+                    if node_id in nodes_dict and nodes_dict[node_id].length < options.min_sv_size:
+                        small_node_indices.append(index)
                 
-                # Skipping small snarls/variants that do not meet the minimum SV size threshold
-                if path_length < options.min_sv_size:
-                    continue
+                for index in small_node_indices:
+                    alt_path_include_nodes.pop(index)
+                    alt_path_include_nodes_orients.pop(index)
+
+                alt_path = "".join(f"{alt_path_include_nodes_orients[i]}{alt_path_include_nodes[i]}" for i in range(len(alt_path_include_nodes)))
             
             if alt_path == "":
                 alt_path = "*"
@@ -318,7 +311,7 @@ def parse_minigraph_bed_to_snarls(bed_path, sample_id, snarls_dict, nodes_dict, 
                 snarls_dict[snarl_id].path_asm_dict[alt_path].append(sample_id)
 
 
-def extract_and_write_snarls(snarls_dict, fasta_index, output):
+def extract_and_write_alleles_to_fasta(snarls_dict, fasta_index, output):
     """
     Extracts the allele sequences for each snarl and writes them to a FASTA file.
     """
@@ -331,17 +324,21 @@ def extract_and_write_snarls(snarls_dict, fasta_index, output):
                 else:
                     allele_parts = []
                 
-                    nodes_in_path = re.findall(r'([><][a-zA-Z0-9]+)', alt_path)
+                    nodes_in_path = re.findall(r'[><]([a-zA-Z0-9]+)', alt_path)
+                    orients_in_path = re.findall(r'([><])', alt_path)
                     
-                    for node in nodes_in_path:
-                        orient = node[0]
-                        node_id = node[1:]
+                    for i in range(len(nodes_in_path)):
+                        node_id = nodes_in_path[i]
+                        orient = orients_in_path[i]
                         
                         if node_id not in fasta_index:
                             logging.warning(f"Node {node_id} not found in FASTA index. Skipping.")
                             continue
                         
                         node_seq = fasta_index[node_id]
+                        
+                        if orient == "<":
+                            node_seq = reverse_complement_seq(node_seq)
                         
                         allele_parts.append(node_seq)
                     
@@ -395,6 +392,6 @@ if __name__ == "__main__":
     snarls_dict = {}
     parse_minigraph_bed_to_snarls(options.bed, options.sample_id, snarls_dict, nodes_dict, options)
     
-    extract_and_write_snarls(snarls_dict, fasta_index, options.output)
+    extract_and_write_alleles_to_fasta(snarls_dict, fasta_index, options.output)
     
     sys.exit(0)
