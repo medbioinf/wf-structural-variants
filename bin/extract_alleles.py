@@ -36,7 +36,7 @@ class Node:
 
 
 class Snarl:
-    def __init__(self, start_node_id, start_node_orient, end_node_id, end_node_orient, ref_chrom, ref_start, ref_end):
+    def __init__(self, start_node_id, start_node_orient, end_node_id, end_node_orient, ref_chrom, ref_start, ref_end, reversed_mapping=False):
         self.snarl_id = f"{start_node_orient}{start_node_id}{end_node_orient}{end_node_id}"     # e.g. ">s1>s3"
         
         self.start_node_id = start_node_id
@@ -47,7 +47,8 @@ class Snarl:
         self.ref_chrom = ref_chrom
         self.ref_start = ref_start
         self.ref_end = ref_end
-        
+        self.reversed_mapping = reversed_mapping
+
         self.ref_asm_path = None
         
         self.path_asm_dict = {}
@@ -302,7 +303,7 @@ def parse_minigraph_bed_to_snarls(bed_path, sample_id, snarls_dict, nodes_dict, 
                 if snarl_id not in snarls_dict:
                     snarls_dict[snarl_id] = Snarl(
                         snarl_start_node_id, snarl_start_node_orient, snarl_end_node_id, snarl_end_node_orient,
-                        ref_chrom, ref_start, ref_end
+                        ref_chrom, ref_start, ref_end, reversed_mapping=True
                     )
                 
                 # Add the alt path to the snarls
@@ -346,8 +347,10 @@ def extract_and_write_alleles_to_fasta(snarls_dict, fasta_index, output):
             
                 display_seq = allele_seq if allele_seq != "" else "-"
                 
+                is_reversed_mapping = "true" if snarl_obj.reversed_mapping else "false"
+                
                 for sample in samples:
-                    fasta_header = f">{sample}|{snarl_id}|{snarl_obj.ref_chrom}:{snarl_obj.ref_start}-{snarl_obj.ref_end}"
+                    fasta_header = f">{sample}|{snarl_id}|{snarl_obj.ref_chrom}:{snarl_obj.ref_start}-{snarl_obj.ref_end}|reversed:{is_reversed_mapping}"
                     output_file.write(f"{fasta_header}\n")
                     output_file.write(f"{display_seq}\n")
                 
