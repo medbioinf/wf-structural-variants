@@ -58,9 +58,11 @@ workflow WF_STRUCTURAL_VARIANTS {
     _ch_pangenome_fa = PANGENOME_GRAPH.out.fa
     _ch_bed_files = PANGENOME_GRAPH.out.bed
 
+
     //
     // SUBWORKFLOW: Run SWAVE Preprocessing (Extract Alleles)
-    SWAVE_PREPROCESSING(_ch_bed_files, _ch_pangenome_fa)
+    //
+    SWAVE_PREPROCESSING(_ch_bed_files, _ch_pangenome_fa, ch_reference.map{ _meta, fa -> fa })
 
 
 

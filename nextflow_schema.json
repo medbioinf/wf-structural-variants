@@ -141,12 +141,19 @@
                     "help_text": "The size of the k-mers used to generate the dotplots. Larger k-mers will result in sparser dotplots that may miss smaller matches, while smaller k-mers will result in denser dotplots that may be more difficult to interpret. The default value is 30.",
                     "fa_icon": "fas fa-cubes"
                 },
-                "max_dotplot_dim": {
+                "max_sv_size": {
                     "type": "integer",
-                    "default": 1500,
-                    "description": "Maximum dimension for dotplot matrices. If the sequences are too long, they will be downsampled to fit within this dimension.",
-                    "help_text": "The maximum pixel dimension for the 2D matrices. Default value is 1500. Recommended range is between 1500 and 3000. Note: Higher dimensions capture more details but will exponentially increase RAM consumption and computing time (O(N^2)).",
-                    "fa_icon": "fas fa-arrows-alt"
+                    "default": 1000000,
+                    "description": "Maximum size (in base pairs) of variants to include in the dotplots.",
+                    "help_text": "Variants larger than this threshold will be excluded from the dotplots to improve readability. The default value is 1,000,000 bp (1 Mbp). Adjust this value based on the expected size range of structural variants in your data and the level of detail you want in the dotplots.",
+                    "fa_icon": "fas fa-expand-arrows-alt"
+                },
+                "spec_path": {
+                    "type": ["string", "null"],
+                    "default": null,
+                    "description": "Specific path ID to generate a dotplot for (e.g. 's1>>s3') for debugging/analysis.",
+                    "help_text": "If provided, the workflow will only generate a dotplot for this specific path. Leave blank/null to generate dotplots for all paths.",
+                    "fa_icon": "fas fa-bug"
                 },
                 "save_dotplot_images": {
                     "type": "boolean",

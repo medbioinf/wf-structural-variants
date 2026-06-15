@@ -3,4 +3,8 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - bioconda::matplotlib=3.5.1
+  - conda-forge::python=3.10
+  - conda-forge::numpy=1.23.5
+  - conda-forge::matplotlib=3.5.1
+  - bioconda::pysam=0.19.1
+  - bioconda::cyvcf2=0.30.18
