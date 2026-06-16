@@ -30,7 +30,7 @@ process SWAVE_GENERATE_DOTPLOTS {
         --ref_fasta $ref_fasta \\
         --gfa_fasta $gfa_fasta \\
         --npz_out_prefix "${meta.id}" \\
-        --img_out_prefix "${meta.id}" \\
+        --img_out_prefix "${meta.sample}" \\
         $max_sv_size_param \\
         $kmer_size_param \\
         $spec_path_param \\
