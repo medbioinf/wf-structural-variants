@@ -4,9 +4,10 @@ process SWAVE_EXTRACT_ALLELES {
 
     conda "${moduleDir}/environment.yml"
 
-    container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
-        ? 'https://depot.galaxyproject.org/singularity/python:3.12'
-        : 'quay.io/biocontainers/python:3.12'}"
+    // container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
+    //     ? 'https://depot.galaxyproject.org/singularity/python:3.12'
+    //     : 'quay.io/biocontainers/python:3.12'}"
+    container "quay.io/swave:latest"
 
     input:
     tuple val(meta), path(bed)
@@ -23,7 +24,7 @@ process SWAVE_EXTRACT_ALLELES {
     def min_sv_size_param = params.min_sv_size ? "--min_sv_size ${params.min_sv_size}" : ""
     def spec_snarl_param = params.spec_snarl ? "--spec_snarl ${params.spec_snarl}" : ""
     """
-    extract_alleles.py \\
+    python3 /app/swave/src/extract_alleles.py \\
         --gfa_fasta $gfa_fasta \\
         --bed $bed \\
         --sample_id ${meta.id} \\

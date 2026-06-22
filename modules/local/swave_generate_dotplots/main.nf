@@ -4,9 +4,10 @@ process SWAVE_GENERATE_DOTPLOTS {
 
     conda "${moduleDir}/environment.yml"
 
-    container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
-        ? 'https://depot.galaxyproject.org/singularity/mulled-v2-ddb8b80b33a09f54efd9219c18e1d38acfa18bc8:ae02896ffb35dfc564385b2276a1fbf7862567c2-0'
-        : 'quay.io/biocontainers/mulled-v2-ddb8b80b33a09f54efd9219c18e1d38acfa18bc8:ae02896ffb35dfc564385b2276a1fbf7862567c2-2'}"
+    // container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
+    //     ? 'https://depot.galaxyproject.org/singularity/mulled-v2-ddb8b80b33a09f54efd9219c18e1d38acfa18bc8:ae02896ffb35dfc564385b2276a1fbf7862567c2-0'
+    //     : 'quay.io/biocontainers/mulled-v2-ddb8b80b33a09f54efd9219c18e1d38acfa18bc8:ae02896ffb35dfc564385b2276a1fbf7862567c2-2'}"
+    container "quay.io/swave:latest"
     
     input:
     tuple val(meta), path(alt_fasta)
@@ -25,7 +26,7 @@ process SWAVE_GENERATE_DOTPLOTS {
     def spec_path_param = params.spec_path ? "--spec_path ${params.spec_path}" : ""
     def save_images_flag = params.save_dotplot_images ? "--save_dotplot_images" : ""
     """
-    generate_dotplots.py \\
+    python3 /app/swave/src/generate_dotplots.py \\
         --alt_fasta $alt_fasta \\
         --ref_fasta $ref_fasta \\
         --gfa_fasta $gfa_fasta \\
