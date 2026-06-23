@@ -45,7 +45,7 @@ workflow SWAVE_PREPROCESSING {
 
     emit:
     alleles_fasta = SWAVE_EXTRACT_ALLELES.out.fa
-    dotplot_matrices = SWAVE_GENERATE_DOTPLOTS.out.dotplot_matrices
+    dotplots = SWAVE_GENERATE_DOTPLOTS.out.dotplots
     dotplot_pngs = SWAVE_GENERATE_DOTPLOTS.out.pngs
     versions = ch_versions
 }

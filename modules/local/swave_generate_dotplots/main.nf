@@ -15,8 +15,8 @@ process SWAVE_GENERATE_DOTPLOTS {
     path(gfa_fasta)
 
     output:
-    tuple val(meta), path("*_dotplot_matrices.npz"), emit: dotplot_matrices
-    tuple val(meta), path("**.png")                          , emit: pngs, optional: true
+    tuple val(meta), path("*_dotplots.pkl.gz"), emit: dotplots
+    tuple val(meta), path("**.png"), emit: pngs, optional: true
     tuple val("${task.process}"), val('python'), eval('python --version 2>&1'), emit: versions, topic: versions
 
     script:
@@ -30,7 +30,7 @@ process SWAVE_GENERATE_DOTPLOTS {
         --alt_fasta $alt_fasta \\
         --ref_fasta $ref_fasta \\
         --gfa_fasta $gfa_fasta \\
-        --npz_out_prefix "${meta.id}" \\
+        --pkl_out_prefix "${meta.id}" \\
         --img_out_prefix "${meta.sample}" \\
         $max_sv_size_param \\
         $kmer_size_param \\
