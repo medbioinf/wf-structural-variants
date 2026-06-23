@@ -344,6 +344,9 @@
             "$ref": "#/$defs/swave_dotplot_options"
         },
         {
+            "$ref": "#/$defs/swave_projection_options"
+        },
+        {
             "$ref": "#/$defs/institutional_config_options"
         },
         {

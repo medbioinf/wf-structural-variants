@@ -140,12 +140,12 @@ class Dotplot:
     def get_seq_y_kmer_index(self):
         return self.seq_y_kmer_index
     
-    def rotate_dotplot_to_alt2ref(self):
+    def rotate_to_alt2ref(self):
         """
         Rotates the dotplot matrices and meta data to switch from ref2alt to alt2ref or vice versa.
         """
-        matrix = np.fliplr(np.rot90(self.matrix, k=-1))
-        matrix_rev = np.fliplr(np.rot90(self.matrix_rev, k=-1))
+        self.matrix = np.fliplr(np.rot90(self.matrix, k=-1))
+        self.matrix_rev = np.fliplr(np.rot90(self.matrix_rev, k=-1))
 
         tmp_seq_x = self.seq_x
         self.seq_x = self.seq_y
@@ -155,7 +155,7 @@ class Dotplot:
         self.seq_x_len = self.seq_y_len
         self.seq_y_len = tmp_seq_x_len
 
-    def get_dotplot_project_x(self, augment=False):
+    def get_project_x(self, augment=False):
         """
         Projects the matrix ont the x-axis (sum of columns).
         """
@@ -167,14 +167,14 @@ class Dotplot:
 
         return project_x, augment_coeff
 
-    def get_dotplot_project_x_rev(self, baseline=0):
+    def get_project_x_rev(self, baseline=0):
         """
         Projects the reverse matrix onto the x-axis with a baseline.
         """
         project_x_rev = baseline + np.sum(self.matrix_rev, axis=0)
         return project_x_rev
 
-    def get_dotplot_project_y(self, augment=False):
+    def get_project_y(self, augment=False):
         """
         Projects the matrix onto the y-axis (sum of rows).
         """
@@ -186,7 +186,7 @@ class Dotplot:
 
         return project_y, augment_coeff
 
-    def get_dotplot_project_y_rev(self, baseline=0):
+    def get_project_y_rev(self, baseline=0):
         """
         Projects the reverse matrix onto the y-axis with a baseline.
         """

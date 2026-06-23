@@ -46,8 +46,8 @@ if __name__ == "__main__":
     logging.info(f"Starting projection generation for {options.dotplot_bundles_pkl}...")
     
     process_dotplot_bundles_to_projections(
-        dotplot_bundles_pkl=options.dotplot_bundles_pkl,
-        projections_out_prefix=options.projections_out_prefix,
+        dotplot_bundles_pickle_path=options.dotplot_bundles_pkl,
+        projections_output_prefix=options.projections_out_prefix,
         options=options
     )
     

@@ -87,9 +87,9 @@ def calculate_seq_similarity(seq1, seq2):
 
     # use the shorter seq as x_seq, and projection to the shorter seq
     if len(seq1) < len(seq2):
-        dotplot = Dotplot(seq1, seq2, 10, "tmp", stride_size=1, given_x_hash_table=None)
+        dotplot = Dotplot(seq1, seq2, 10, "tmp", stride_size=1, given_x_kmer_index=None)
     else:
-        dotplot = Dotplot(seq2, seq1, 10, "tmp", stride_size=1, given_x_hash_table=None)
+        dotplot = Dotplot(seq2, seq1, 10, "tmp", stride_size=1, given_x_kmer_index=None)
 
     projection_x, _ = dotplot.get_project_x()
     projection_x_rev = dotplot.get_project_x_rev()
@@ -101,9 +101,9 @@ def calculate_seq_similarity_larger_than(thresh, seq_orient, seq1, seq2, extend_
     from src.generate_dotplots_projections_mod.structures import Dotplot
 
     if seq_orient == "forward":
-        dotplot = Dotplot(seq1, seq2, 10, str(len(seq1)) + str(len(seq2)) + extend_orient, stride_size=None, given_x_hash_table=None, skip_reverse=True)
+        dotplot = Dotplot(seq1, seq2, 10, str(len(seq1)) + str(len(seq2)) + extend_orient, stride_size=None, given_x_kmer_index=None, skip_reverse=True)
     else:
-        dotplot = Dotplot(seq1, seq2, 10, str(len(seq1)) + str(len(seq2)) + extend_orient, stride_size=None, given_x_hash_table=None, skip_forward=True)
+        dotplot = Dotplot(seq1, seq2, 10, str(len(seq1)) + str(len(seq2)) + extend_orient, stride_size=None, given_x_kmer_index=None, skip_forward=True)
 
     detail_stride_size = dotplot.stride_size
 
@@ -158,7 +158,7 @@ def calculate_seq_repeat_ratio(seq1):
     if len(seq1) == 0:
         return np.inf
 
-    dotplot = Dotplot(seq1, seq1, 10, "tmp", stride_size=None, given_x_hash_table=None)
+    dotplot = Dotplot(seq1, seq1, 10, "tmp", stride_size=None, given_x_kmer_index=None)
     project_y, _ = dotplot.get_project_y()
     
     return np.average(project_y)

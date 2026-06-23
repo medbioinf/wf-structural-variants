@@ -19,7 +19,7 @@ script:
     def kmer_size_param = params.kmer_size ? "--kmer_size ${params.kmer_size}" : ""
     def save_images_flag = params.save_projections_images ? "--save_projections_images" : ""
     """
-    python3 /app/swave/src/project_alleles.py \\
+    python3 /app/swave/src/generate_projections.py \\
         --dotplot_bundles_pkl $dotplot_bundles_pkl \\
         --projections_out_prefix "${meta.id}" \\
         $kmer_size_param \\

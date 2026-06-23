@@ -12,6 +12,7 @@ Copyright (c) 2026 Jonah Kapski <Jonah.Kapski@edu.ruhr-uni-bochum.de>
 """
 
 import sys
+import os
 import gzip
 import pickle
 import logging
@@ -34,14 +35,14 @@ logging.basicConfig(
 )
 
 
-def process_dotplot_bundles_to_projections(dotplot_bundles_pickle_path, projection_output_prefix, options=None):
+def process_dotplot_bundles_to_projections(dotplot_bundles_pickle_path, projections_output_prefix, options=None):
     """
     Loads the precomputed dotplot bundles from a pickle file, processes each bundle to generate projections,
     and saves the resulting projections into a new pickle file.
     
     Args:
         dotplot_bundles_pickle_path (str): Path to the pickle file containing dotplot bundles
-        projection_output_prefix (str): Prefix for the output pickle file containing projections
+        projections_output_prefix (str): Prefix for the output pickle file containing projections
         options: Additional options for processing.
     """
     logging.info(f"Loading dotplot bundles from {dotplot_bundles_pickle_path}...")
@@ -67,7 +68,7 @@ def process_dotplot_bundles_to_projections(dotplot_bundles_pickle_path, projecti
         
         projections_dict[dotplot_id] = projection_matrices
     
-    with gzip.open(projection_output_prefix + "_projections.pkl.gz", 'wb') as output_file:
+    with gzip.open(projections_output_prefix + "_projections.pkl.gz", 'wb') as output_file:
         pickle.dump(projections_dict, output_file, protocol=pickle.HIGHEST_PROTOCOL)
     
     logging.info(f"Successfully processed and saved {len(projections_dict)} projections for {len(snarl_dotplot_dict)} snarls.")    
@@ -115,7 +116,7 @@ def generate_projections(dotplot_bundle, options):
     
     if options.save_projections_images:
         output_synthesized_dotplot_project(
-            dotplot_bundle["x2y_ref2alt"].dotplot_output_prefix, 
+            dotplot_bundle["x2y_ref2alt"].out_prefix, 
             x2x_dotplot_project_x, 
             x2y_dotplot_project_x, 
             x2x_dotplot_project_x_rev, 
@@ -187,6 +188,10 @@ def segment_projections_into_matrix(x2x_dotplot_project_x, x2y_dotplot_project_x
 
 # TODO: adjust
 def output_synthesized_dotplot_project(dotplot_output_prefix, x2x_dotplot_project_x, x2y_dotplot_project_x, x2x_dotplot_project_x_rev, x2y_dotplot_project_x_rev):
+    dirname = os.path.dirname(dotplot_output_prefix)
+    if dirname:
+        os.makedirs(dirname, exist_ok=True)
+    
     plt.figure(figsize=(10, 10))
     ax1 = plt.subplot(611)
     ax1.plot(x2x_dotplot_project_x)
