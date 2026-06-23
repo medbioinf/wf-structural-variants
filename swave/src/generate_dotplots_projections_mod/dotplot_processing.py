@@ -31,7 +31,7 @@ logging.basicConfig(
 )
 
 
-def process_sample_alleles_to_matrices(alt_fasta_path, ref_fasta_path, pangenome_gfa_fasta_path, options=None):
+def process_sample_alleles_to_dotplots(alt_fasta_path, ref_fasta_path, pangenome_gfa_fasta_path, options=None):
     """
     Reads the extracted sample allele fasta (ALT) and the original reference genome
     fasta (REF) and extracts the alternative and reference sequences with padding.

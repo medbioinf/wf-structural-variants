@@ -16,7 +16,7 @@ import sys
 import argparse
 import logging
 
-from src.generate_dotplots_projections_mod.dotplot_processing import process_sample_alleles_to_matrices
+from src.generate_dotplots_projections_mod.dotplot_processing import process_sample_alleles_to_dotplots
 
 
 logging.basicConfig(
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     
     logging.info(f"Starting dotplot matrix generation for {options.alt_fasta}...")
     
-    process_sample_alleles_to_matrices(
+    process_sample_alleles_to_dotplots(
         alt_fasta_path=options.alt_fasta,
         ref_fasta_path=options.ref_fasta,
         pangenome_gfa_fasta_path=options.gfa_fasta,
