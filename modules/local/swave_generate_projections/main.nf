@@ -9,12 +9,12 @@ process SWAVE_GENERATE_PROJECTIONS  {
     input:
     tuple val(meta), path(dotplot_bundles_pkl)
 
-output:
+    output:
     tuple val(meta), path("*_projections.pkl.gz"), emit: projections
-    tuple val(meta), path("*.png"), emit: pngs, optional: true
+    tuple val(meta), path("**.png"), emit: pngs, optional: true
     tuple val("${task.process}"), val('python'), eval('python --version 2>&1'), emit: versions, topic: versions
 
-script:
+    script:
     def args = task.ext.args ?: ''
     def kmer_size_param = params.kmer_size ? "--kmer_size ${params.kmer_size}" : ""
     def save_images_flag = params.save_projections_images ? "--save_projections_images" : ""
