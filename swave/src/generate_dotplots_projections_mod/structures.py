@@ -139,6 +139,59 @@ class Dotplot:
 
     def get_seq_y_kmer_index(self):
         return self.seq_y_kmer_index
+    
+    def rotate_dotplot_to_alt2ref(self):
+        """
+        Rotates the dotplot matrices and meta data to switch from ref2alt to alt2ref or vice versa.
+        """
+        matrix = np.fliplr(np.rot90(self.matrix, k=-1))
+        matrix_rev = np.fliplr(np.rot90(self.matrix_rev, k=-1))
+
+        tmp_seq_x = self.seq_x
+        self.seq_x = self.seq_y
+        self.seq_y = tmp_seq_x
+
+        tmp_seq_x_len = self.seq_x_len
+        self.seq_x_len = self.seq_y_len
+        self.seq_y_len = tmp_seq_x_len
+
+    def get_dotplot_project_x(self, augment=False):
+        """
+        Projects the matrix ont the x-axis (sum of columns).
+        """
+        project_x = np.sum(self.matrix, axis=0)
+        augment_coeff = int(100 * np.average(project_x))
+        
+        if augment:
+            project_x[np.diag(self.matrix) == 1] += augment_coeff
+
+        return project_x, augment_coeff
+
+    def get_dotplot_project_x_rev(self, baseline=0):
+        """
+        Projects the reverse matrix onto the x-axis with a baseline.
+        """
+        project_x_rev = baseline + np.sum(self.matrix_rev, axis=0)
+        return project_x_rev
+
+    def get_dotplot_project_y(self, augment=False):
+        """
+        Projects the matrix onto the y-axis (sum of rows).
+        """
+        project_y = np.sum(self.matrix, axis=1)
+        augment_coeff = int(100 * np.average(project_y))
+
+        if augment:
+            project_y[np.diag(self.matrix) == 1] += augment_coeff
+
+        return project_y, augment_coeff
+
+    def get_dotplot_project_y_rev(self, baseline=0):
+        """
+        Projects the reverse matrix onto the y-axis with a baseline.
+        """
+        project_y_rev = baseline + np.sum(self.matrix_rev, axis=1)
+        return project_y_rev
 
     def to_png(self, reverse=False, out_img=False):
         self.dotplot_file = self.out_prefix + ".dotplot.png"
@@ -182,3 +235,25 @@ class KmerIndex:
         Returns all matrix indices where this k-mer exists.
         """
         return self.index_table.get(seq_str)
+
+
+class Diag:
+    def __init__(self, x_start, x_end, y_start, y_end, orient, offset):
+        self.x_start = x_start
+        self.x_end = x_end
+        self.y_start = y_start
+        self.y_end = y_end
+
+        self.orient = orient
+        self.offset = offset
+
+        self.true_reverse = False
+
+    def __eq__(self, other):
+        if not isinstance(other, Diag):
+            return False
+        
+        return self.x_start == other.x_start and self.x_end == other.x_end and self.y_start == other.y_start and self.y_end == other.y_end and self.orient == other.orient
+
+    def to_string(self):
+        return f"{self.x_start}-{self.x_end}, {self.y_start}-{self.y_end}, {self.orient}, {self.offset}"

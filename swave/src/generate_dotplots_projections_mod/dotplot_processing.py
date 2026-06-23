@@ -20,7 +20,7 @@ import numpy as np
 import pickle
 import gzip
 
-from src.generate_dotplots_mod.structures import Dotplot
+from src.generate_dotplots_projections_mod.structures import Dotplot
 from src.utils.seq_utils import calculate_stride_size
 
 

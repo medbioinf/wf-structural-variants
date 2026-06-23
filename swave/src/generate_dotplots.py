@@ -16,7 +16,7 @@ import sys
 import argparse
 import logging
 
-from src.generate_dotplots_mod.dotplot_processing import process_sample_alleles_to_matrices
+from src.generate_dotplots_projections_mod.dotplot_processing import process_sample_alleles_to_matrices
 
 
 logging.basicConfig(
