@@ -17,6 +17,8 @@ import re
 import pysam
 import logging
 import numpy as np
+import pickle
+import gzip
 
 from src.generate_dotplots_mod.structures import Dotplot
 from src.utils.seq_utils import calculate_stride_size
@@ -33,7 +35,7 @@ def process_sample_alleles_to_matrices(alt_fasta_path, ref_fasta_path, pangenome
     """
     Reads the extracted sample allele fasta (ALT) and the original reference genome
     fasta (REF) and extracts the alternative and reference sequences with padding.
-    Stores the dotplot matrices for each snarl into a dictionary and saves it as an npz file.
+    Stores the dotplots for each snarl into a dictionary and saves it as a pickle file.
 
     Args:
         alt_fasta_path (str): Path to the extracted sample allele fasta (ALT)
@@ -121,9 +123,13 @@ def process_sample_alleles_to_matrices(alt_fasta_path, ref_fasta_path, pangenome
     gfa_fasta_file.close()
     
     if snarl_dotplot_dict:
-        output_npz_path = f"{options.npz_out_prefix}_dotplot_matrices.npz"
-        np.savez(output_npz_path, **snarl_dotplot_dict)
-        logging.info(f"Successfully saved {len(snarl_dotplot_dict)} matrices.")
+        ouput_pickle_path = f"{options.pkl_out_prefix}_dotplots.pkl.gz"
+        
+        with open(ouput_pickle_path, 'wb') as f:
+            with gzip.GzipFile(fileobj=f) as gz:
+                pickle.dump(snarl_dotplot_dict, gz)
+                
+        logging.info(f"Successfully saved {len(snarl_dotplot_dict)} snarl dotplot bundles.")
 
 
 def process_and_plot_snarl(snarl_id, chrom, snarl_ref_start, snarl_ref_end, final_ref_seq,
@@ -154,7 +160,7 @@ def process_and_plot_snarl(snarl_id, chrom, snarl_ref_start, snarl_ref_end, fina
     dotplot_stride_size = calculate_stride_size(final_ref_seq, final_alt_seq)    
     dotplot_output_prefix = os.path.join(options.img_out_prefix, dotplot_id)
     
-    matrices_dict = generate_dotplot_matrices(
+    dotplot_objects_bundle = generate_dotplots(
         ref_seq=final_ref_seq,
         alt_seq=final_alt_seq,
         dotplot_stride_size=dotplot_stride_size,
@@ -162,14 +168,12 @@ def process_and_plot_snarl(snarl_id, chrom, snarl_ref_start, snarl_ref_end, fina
         options=options
     )
     
-    for matrix_type, matrix_array in matrices_dict.items():
-        matrix_key = f"{dotplot_id}+++{matrix_type}+++{dotplot_stride_size}"
-        snarl_dotplot_dict[matrix_key] = matrix_array
+    snarl_dotplot_dict[dotplot_id] = dotplot_objects_bundle
 
 
-def generate_dotplot_matrices(ref_seq, alt_seq, dotplot_stride_size, dotplot_output_prefix, options):
+def generate_dotplots(ref_seq, alt_seq, dotplot_stride_size, dotplot_output_prefix, options):
     """
-    Generates the dotplot matrices for the given reference and alternative sequences and saves PNG visualizations if specified.
+    Generates the dotplot objects for the given reference and alternative sequence and saves matrix PNG visualizations if specified.
     """
     prefix_clean = dotplot_output_prefix.replace(">", "+").replace("<", "-").replace("*", "none")
     
@@ -196,9 +200,8 @@ def generate_dotplot_matrices(ref_seq, alt_seq, dotplot_stride_size, dotplot_out
         x2x_alt2alt.to_png(out_img=True)
     
     return {
-        "x2x_ref2ref_matrix": x2x_ref2ref.matrix,
-        "x2y_ref2alt_matrix": x2y_ref2alt.matrix,
-        "x2y_ref2alt_matrix_rev": x2y_ref2alt.matrix_rev,
-        "x2x_alt2alt_matrix": x2x_alt2alt.matrix,
+        "x2x_ref2ref": x2x_ref2ref,
+        "x2y_ref2alt": x2y_ref2alt,
+        "x2x_alt2alt": x2x_alt2alt,
         "stride_size": dotplot_stride_size
     }

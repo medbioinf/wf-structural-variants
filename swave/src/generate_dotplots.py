@@ -27,13 +27,13 @@ logging.basicConfig(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generates 2D-dotplot matrices (REF2REF, REF2ALT, ALT2ALT)"
-                                     "from pangenome graph alleles and exports them into a compressed .npz archive.")
+    parser = argparse.ArgumentParser(description="Generates dotplot objects (REF2REF, REF2ALT, ALT2ALT)"
+                                     "from pangenome graph alleles and exports them into a compressed .pkl file.")
     
     parser.add_argument('--alt_fasta', required=True, help="Path to the extracted alleles fasta (ALT).")
     parser.add_argument('--ref_fasta', required=True, help="Path to the fasta file of the original reference genome (REF).")
     parser.add_argument('--gfa_fasta', required=True, help="Path to the pangenome gfa fasta file.")
-    parser.add_argument('--npz_out_prefix', required=True, help="Output prefix for the generated .npz file and dotplot images.")
+    parser.add_argument('--pkl_out_prefix', required=True, help="Output prefix for the generated .pkl file.")
     parser.add_argument('--img_out_prefix', required=True, help="Output prefix for the generated dotplot images.")
     
     # Optional parameters
@@ -55,6 +55,6 @@ if __name__ == "__main__":
         options=options
     )
     
-    logging.info(f"Dotplot matrix generation for {options.alt_fasta} completed.")
+    logging.info(f"Dotplot generation for {options.alt_fasta} completed.")
     
     sys.exit(0)
