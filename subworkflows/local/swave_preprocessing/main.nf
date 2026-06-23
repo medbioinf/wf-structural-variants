@@ -2,6 +2,7 @@ include { SWAVE_EXTRACT_ALLELES } from '../../../modules/local/swave_extract_all
 include { SEQKIT_SORT } from '../../../modules/nf-core/seqkit/sort/main'
 include { SEQKIT_SPLIT2 } from '../../../modules/nf-core/seqkit/split2/main'
 include { SWAVE_GENERATE_DOTPLOTS } from '../../../modules/local/swave_generate_dotplots/main'
+include { SWAVE_GENERATE_PROJECTIONS } from '../../../modules/local/swave_generate_projections/main'
 
 workflow SWAVE_PREPROCESSING {
 
@@ -43,9 +44,14 @@ workflow SWAVE_PREPROCESSING {
     SWAVE_GENERATE_DOTPLOTS(ch_dotplot_inputs, ch_ref_fasta.toList(), ch_gfa_fasta.toList())
     ch_versions = ch_versions.mix(SWAVE_GENERATE_DOTPLOTS.out.versions)
 
+    SWAVE_GENERATE_PROJECTIONS(SWAVE_GENERATE_DOTPLOTS.out.dotplots)
+    ch_versions = ch_versions.mix(SWAVE_GENERATE_PROJECTIONS.out.versions)
+
     emit:
     alleles_fasta = SWAVE_EXTRACT_ALLELES.out.fa
     dotplots = SWAVE_GENERATE_DOTPLOTS.out.dotplots
     dotplot_pngs = SWAVE_GENERATE_DOTPLOTS.out.pngs
+    projections = SWAVE_GENERATE_PROJECTIONS.out.projections
+    projections_pngs = SWAVE_GENERATE_PROJECTIONS.out.pngs
     versions = ch_versions
 }
