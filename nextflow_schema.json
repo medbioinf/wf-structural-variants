@@ -164,6 +164,21 @@
                 }
             }
         },
+        "swave_projection_options": {
+            "title": "Swave projection options",
+            "type": "object",
+            "fa_icon": "fas fa-project-diagram",
+            "description": "Parameters used during the Swave projection generation phase.",
+            "properties": {
+                "save_projections_images": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether to save the the synthesized 6-subplot wave projection PNGs.",
+                    "help_text": "If enabled, the synthesized 6-subplot wave projection PNGs will be saved.",
+                    "fa_icon": "fas fa-image"
+                }
+            }
+        },
         "institutional_config_options": {
             "title": "Institutional config options",
             "type": "object",
