@@ -13,10 +13,10 @@ Copyright (c) 2026 Jonah Kapski <Jonah.Kapski@edu.ruhr-uni-bochum.de>
 """
 
 import sys
-import argparse
 import logging
+import argparse
 
-from src.generate_dotplots_projections_mod.dotplot_processing import process_sample_alleles_to_dotplots
+from src.generate_dotplots_projections_mod import process_sample_alleles_to_dotplots
 
 
 logging.basicConfig(

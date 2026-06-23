@@ -16,8 +16,8 @@ import os
 import re
 import logging
 
-from src.utils.seq_utils import reverse_complement_seq
-from src.extract_alleles_mod.structures import Node, Snarl
+from src.utils import reverse_complement_seq
+from .structures import Node, Snarl
 
 
 logging.basicConfig(
