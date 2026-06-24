@@ -179,6 +179,28 @@
                 }
             }
         },
+        "swave_prediction_options": {
+            "title": "Swave prediction options",
+            "type": "object",
+            "fa_icon": "fas fa-robot",
+            "description": "Parameters used during the Swave deep learning prediction phase.",
+            "properties": {
+                "use_gpu": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Whether to use GPU for Swave deep learning predictions.",
+                    "help_text": "If enabled, the Swave deep learning predictions will be run on a GPU if available.",
+                    "fa_icon": "fas fa-microchip"
+                },
+                "model": {
+                    "type": ["string", "null"],
+                    "default": null,
+                    "description": "Path to a custom Swave deep learning model .pth file.",
+                    "help_text": "If provided, the workflow will use this custom model for predictions instead of the default model. Leave blank/null to use the default pretrained swave model.",
+                    "fa_icon": "fas fa-file-model"
+                }
+            }
+        },
         "institutional_config_options": {
             "title": "Institutional config options",
             "type": "object",
@@ -345,6 +367,9 @@
         },
         {
             "$ref": "#/$defs/swave_projection_options"
+        },
+        {
+            "$ref": "#/$defs/swave_prediction_options"
         },
         {
             "$ref": "#/$defs/institutional_config_options"
