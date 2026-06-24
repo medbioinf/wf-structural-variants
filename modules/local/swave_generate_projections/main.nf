@@ -1,4 +1,4 @@
-process SWAVE_GENERATE_PROJECTIONS  {
+process SWAVE_GENERATE_PROJECTIONS {
     tag "${meta.id}"
     label 'process_medium'
 
