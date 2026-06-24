@@ -130,6 +130,8 @@ def generate_projections(dotplot_bundle, options):
     if bad_flag:
         return {"ref2alt": "Bad", "alt2ref": "Bad"}
     
+    dotplot_projection_dict["ref2alt"].extend(projection_matrix)
+    
     
     # --- alt2ref ---
     x2x_dotplot_project_x, augment_coeff = x2x_alt2alt.get_project_x(augment=True)
