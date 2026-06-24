@@ -12,6 +12,7 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_wf-s
 
 include { PANGENOME_GRAPH } from '../subworkflows/local/pangenome_graph/main'
 include { SWAVE_PREPROCESSING } from '../subworkflows/local/swave_preprocessing/main'
+include { SWAVE_GENOTYPING } from '../subworkflows/local/swave_genotyping/main'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -54,15 +55,23 @@ workflow WF_STRUCTURAL_VARIANTS {
 
     PANGENOME_GRAPH(ch_reference, ch_assemblies)
 
-    _ch_pangenome_info = PANGENOME_GRAPH.out.info 
-    _ch_pangenome_fa = PANGENOME_GRAPH.out.fa
-    _ch_bed_files = PANGENOME_GRAPH.out.bed
+    ch_pangenome_info = PANGENOME_GRAPH.out.info 
+    ch_pangenome_fa = PANGENOME_GRAPH.out.fa
+    ch_bed_files = PANGENOME_GRAPH.out.bed
 
 
     //
-    // SUBWORKFLOW: Run SWAVE Preprocessing (Extract Alleles)
+    // SUBWORKFLOW: Run SWAVE Preprocessing
     //
-    SWAVE_PREPROCESSING(_ch_bed_files, _ch_pangenome_fa, ch_reference.map{ _meta, fa -> fa })
+    SWAVE_PREPROCESSING(ch_bed_files, ch_pangenome_fa, ch_reference.map{ _meta, fa -> fa })
+
+    ch_projections = SWAVE_PREPROCESSING.out.projections
+
+
+    //
+    // SUBWORKFLOW: Run SWAVE Genotyping
+    //
+    SWAVE_GENOTYPING(ch_projections)
 
 
 
