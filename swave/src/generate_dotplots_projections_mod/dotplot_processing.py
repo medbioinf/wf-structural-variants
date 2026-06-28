@@ -122,14 +122,14 @@ def process_sample_alleles_to_dotplots(alt_fasta_path, ref_fasta_path, pangenome
     ref_file.close()
     gfa_fasta_file.close()
     
-    if snarl_dotplot_dict:
-        ouput_pickle_path = f"{options.pkl_out_prefix}_dotplots.pkl.gz"
-        
-        with open(ouput_pickle_path, 'wb') as f:
-            with gzip.GzipFile(fileobj=f) as gz:
-                pickle.dump(snarl_dotplot_dict, gz)
-                
-        logging.info(f"Successfully saved {len(snarl_dotplot_dict)} snarl dotplot bundles.")
+    #if snarl_dotplot_dict:
+    ouput_pickle_path = f"{options.pkl_out_prefix}_dotplots.pkl.gz"
+    
+    with open(ouput_pickle_path, 'wb') as f:
+        with gzip.GzipFile(fileobj=f) as gz:
+            pickle.dump(snarl_dotplot_dict, gz)
+    
+    logging.info(f"Successfully saved {len(snarl_dotplot_dict)} snarl dotplot bundles.")       
 
 
 def process_and_plot_snarl(snarl_id, chrom, snarl_ref_start, snarl_ref_end, final_ref_seq,
@@ -141,6 +141,7 @@ def process_and_plot_snarl(snarl_id, chrom, snarl_ref_start, snarl_ref_end, fina
     
     if is_reversed_mapping:
         if (snarl_ref_end - snarl_ref_start) > options.max_sv_size:
+            logging.info(f"Skipping reversed mapping snarl {snarl_id} due to size > {options.max_sv_size} bp.")
             return
     
     if options.spec_path is not None and options.spec_path not in snarl_id:

@@ -38,7 +38,7 @@ if __name__ == "__main__":
     
     # Optional parameters
     parser.add_argument('--kmer_size', type=int, default=30, help="K-mer size (default: 30).")
-    parser.add_argument('--max_sv_size', type=int, default=100000, help="Maximum SV size to process (default: 100000).")
+    parser.add_argument('--max_sv_size', type=int, default=1000000, help="Maximum SV size to process (default: 1000000).")
     parser.add_argument('--spec_path', help="Process only a specific path or snarl ID.")
     parser.add_argument('--save_dotplot_images', action='store_true', help="Saves PNG dotplot images for each snarl.")
     parser.add_argument('--skip_forward', action='store_true', help="Skip forward k-mer matches in dotplot matrix generation.")
