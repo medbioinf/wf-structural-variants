@@ -180,6 +180,7 @@ def boost_diags(dotplot_type, unique_diags, x2y_matrix_len_x, x2y_matrix_len_y, 
     other_diags = sorted([diag for diag in unique_diags if diag not in [first_diag, last_diag]], key=lambda x: (x.y_end - x.y_start), reverse=True)
 
     y_boost_flag = np.zeros(x2y_matrix_len_y)
+    max_x_size = raw_project_x.shape[0]
 
     for diag in [first_diag, last_diag] + other_diags:  # for diag in unique_diags
         diag_x_positions = np.array(range(diag.x_start, diag.x_end))
@@ -189,9 +190,13 @@ def boost_diags(dotplot_type, unique_diags, x2y_matrix_len_x, x2y_matrix_len_y, 
         allowed_boost_y_positions = np.intersect1d(diag_y_positions,  np.where(y_boost_flag != 1))
 
         if diag.orient == "forward":
-            raw_project_x[diag_x_positions[np.where(np.in1d(diag_y_positions, allowed_boost_y_positions))]] += augment_coeff
+            idx = diag_x_positions[np.where(np.in1d(diag_y_positions, allowed_boost_y_positions))]
+            valid_idx = idx[idx < max_x_size]
+            raw_project_x[valid_idx] += augment_coeff
         else:
-            raw_project_x[diag_x_positions_rev[np.where(np.in1d(diag_y_positions, allowed_boost_y_positions))]] += augment_coeff
+            idx_rev = diag_x_positions_rev[np.where(np.in1d(diag_y_positions, allowed_boost_y_positions))]
+            valid_idx_rev = idx_rev[idx_rev < max_x_size]
+            raw_project_x[valid_idx_rev] += augment_coeff
             
             # reverse diag (if it is also in the rev matrix, we consider it)
             if diag.true_reverse:
