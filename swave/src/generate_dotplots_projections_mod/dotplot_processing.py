@@ -152,13 +152,15 @@ def process_and_plot_snarl(snarl_id, chrom, snarl_ref_start, snarl_ref_end, fina
     dotplot_ref_start = snarl_ref_start - left_padding_len
     dotplot_ref_end = snarl_ref_end + right_padding_len
     
-    dotplot_id = "{}+++{}+++{}+++{}+++{}+++{}".format(
+    dotplot_id = "{}|{}|{}|{}|{}|{}|rev_{}".format(
         snarl_id, snarl_ref_start, snarl_ref_end, chrom,
-        dotplot_ref_start, dotplot_ref_end
+        dotplot_ref_start, dotplot_ref_end, str(is_reversed_mapping).lower()
     )
     
-    dotplot_stride_size = calculate_stride_size(final_ref_seq, final_alt_seq)    
-    dotplot_output_prefix = os.path.join(options.img_out_prefix, dotplot_id)
+    dotplot_filename = dotplot_id.replace("|", "_")
+    dotplot_output_prefix = os.path.join(options.img_out_prefix, dotplot_filename)
+    
+    dotplot_stride_size = calculate_stride_size(final_ref_seq, final_alt_seq)
     
     dotplot_objects_bundle = generate_dotplots(
         ref_seq=final_ref_seq,
