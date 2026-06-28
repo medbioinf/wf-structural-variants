@@ -84,19 +84,15 @@ class Dotplot:
             if not self.skip_forward:
                 indexes_on_x = self.seq_x_kmer_index.find_all(kmer_str)
                 if indexes_on_x is not None:
-                    for index_on_x in indexes_on_x:
-                        self.matrix[index_on_y, index_on_x] = 1
+                    self.matrix[index_on_y, indexes_on_x] = 1
 
             # for reversed kmer
             if not self.skip_reverse:
                 kmer_str_reversed = reverse_complement_seq(kmer_str)
-
                 indexes_on_x = self.seq_x_kmer_index.find_all(kmer_str_reversed)
-
                 if indexes_on_x is not None:
-                    for index_on_x in indexes_on_x:
-                        self.matrix[index_on_y, index_on_x] = 1
-                        self.matrix_rev[index_on_y, index_on_x] = 1
+                    self.matrix[index_on_y, indexes_on_x] = 1
+                    self.matrix_rev[index_on_y, indexes_on_x] = 1
 
             pos_on_y += self.stride_size
 
@@ -108,29 +104,21 @@ class Dotplot:
 
         pos_on_x = 0
         while pos_on_x < self.seq_x_len:
-
             kmer_str = self.seq_x[pos_on_x: pos_on_x + self.kmer_size]
-
             index_on_x = int(pos_on_x / self.stride_size)
-
             # for original kmer
             if not self.skip_forward:
                 indexes_on_y = self.seq_y_kmer_index.find_all(kmer_str)
-
                 if indexes_on_y is not None:
-                    for index_on_y in indexes_on_y:
-                        self.matrix[index_on_y, index_on_x] = 1
+                    self.matrix[indexes_on_y, index_on_x] = 1
 
             # for reversed kmer
             if not self.skip_reverse:
                 kmer_str_reversed = reverse_complement_seq(kmer_str)
-
                 indexes_on_y = self.seq_y_kmer_index.find_all(kmer_str_reversed)
-
                 if indexes_on_y is not None:
-                    for index_on_y in indexes_on_y:
-                        self.matrix[index_on_y, index_on_x] = 1
-                        self.matrix_rev[index_on_y, index_on_x] = 1
+                    self.matrix[indexes_on_y, index_on_x] = 1
+                    self.matrix_rev[indexes_on_y, index_on_x] = 1
 
             pos_on_x += self.stride_size
 
@@ -226,7 +214,8 @@ class KmerIndex:
                 if kmer_str not in self.index_table:
                     self.index_table[kmer_str] = []
 
-                self.index_table[kmer_str].append(index_on_seq)
+                if not self.index_table[kmer_str] or self.index_table[kmer_str][-1] != index_on_seq:
+                    self.index_table[kmer_str].append(index_on_seq)
 
             pos_on_seq += stride_size
 
