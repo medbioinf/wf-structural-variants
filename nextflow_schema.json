@@ -201,6 +201,42 @@
                 }
             }
         },
+        "swave_variant_calling_options": {
+            "title": "Swave variant calling options",
+            "type": "object",
+            "fa_icon": "fas fa-dna",
+            "description": "Parameters used during the Swave variant calling phase.",
+            "properties": {
+                "min_sv_size": {
+                    "type": "integer",
+                    "default": 50,
+                    "description": "Minimum size (in base pairs) for a variant to be called.",
+                    "help_text": "Variants smaller than this threshold will not be called. Adjust this value based on the expected size range of structural variants in your data.",
+                    "fa_icon": "fas fa-compress-arrows-alt"
+                },
+                "max_sv_size": {
+                    "type": "integer",
+                    "default": 1000000,
+                    "description": "Maximum size (in base pairs) for a variant to be called.",
+                    "help_text": "Variants larger than this threshold will not be called. Adjust this value based on the expected size range of structural variants in your data.",
+                    "fa_icon": "fas fa-expand-arrows-alt"
+                },
+                "max_sv_comps": {
+                    "type": "integer",
+                    "default": 5,
+                    "description": "Maximum number of SV components for detailed output, otherwise, hyperCPX is used.",
+                    "help_text": "If a variant has more components than this threshold, it will be reported as a hypercomplex variant instead of providing detailed output for each component.",
+                    "fa_icon": "fas fa-layer-group"
+                },
+                "dup_to_ins": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Report duplications as insertions.",
+                    "help_text": "If enabled, duplications will be reported as insertions in the output.",
+                    "fa_icon": "fas fa-exchange-alt"
+                }
+            }
+        },
         "institutional_config_options": {
             "title": "Institutional config options",
             "type": "object",
@@ -370,6 +406,9 @@
         },
         {
             "$ref": "#/$defs/swave_prediction_options"
+        },
+        {
+            "$ref": "#/$defs/swave_variant_calling_options"
         },
         {
             "$ref": "#/$defs/institutional_config_options"
