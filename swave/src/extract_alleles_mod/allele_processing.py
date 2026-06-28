@@ -289,6 +289,8 @@ def extract_and_write_alleles_to_fasta(snarls_dict, fasta_index, output):
     """
     Extracts the allele sequences for each snarl and writes them to a FASTA file.
     """
+    header_counts = {}
+    
     with open(output, 'w') as output_file:
         for snarl_id, snarl_obj in snarls_dict.items():
             for alt_path, samples in snarl_obj.path_asm_dict.items():
@@ -323,7 +325,16 @@ def extract_and_write_alleles_to_fasta(snarls_dict, fasta_index, output):
                 is_reversed_mapping = "true" if snarl_obj.reversed_mapping else "false"
                 
                 for sample in samples:
-                    fasta_header = f">{sample}|{snarl_id}|{snarl_obj.ref_chrom}:{snarl_obj.ref_start}-{snarl_obj.ref_end}|reversed:{is_reversed_mapping}"
+                    base_header = f">{sample}|{snarl_id}|{snarl_obj.ref_chrom}:{snarl_obj.ref_start}-{snarl_obj.ref_end}|reversed:{is_reversed_mapping}"
+                    
+                    # handle rare case of duplicate headers
+                    if base_header not in header_counts:
+                        header_counts[base_header] = 0
+                        fasta_header = f">{base_header}"
+                    else:
+                        header_counts[base_header] += 1
+                        fasta_header = f">{base_header}_{header_counts[base_header]}"   # changes e.g. "reversed:false" to "reversed:false_1"
+
                     output_file.write(f"{fasta_header}\n")
                     output_file.write(f"{display_seq}\n")
                 
