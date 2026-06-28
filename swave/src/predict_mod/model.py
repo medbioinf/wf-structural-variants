@@ -34,14 +34,14 @@ class Signal_DataSet(data.Dataset):
         self.data_ids = []
         self.data_matrices = []
         
-        for snarl_id, projections in snarl_projections_dict.items():
+        for dotplot_id, projections in snarl_projections_dict.items():
             if projections["ref2alt"] == "Bad" or projections["alt2ref"] == "Bad":
                 continue
             
-            self.data_ids.append(f"{snarl_id}+++ref2alt")
+            self.data_ids.append(f"{dotplot_id}|ref2alt")
             self.data_matrices.append(projections["ref2alt"])
             
-            self.data_ids.append(f"{snarl_id}+++alt2ref")
+            self.data_ids.append(f"{dotplot_id}|alt2ref")
             self.data_matrices.append(projections["alt2ref"])
         
         sorted_data = sorted(zip(self.data_ids, self.data_matrices), key=lambda item: len(item[1]))
