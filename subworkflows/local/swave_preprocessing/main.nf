@@ -1,6 +1,7 @@
 include { SWAVE_EXTRACT_ALLELES } from '../../../modules/local/swave_extract_alleles/main'
 include { SEQKIT_SORT } from '../../../modules/nf-core/seqkit/sort/main'
-include { SEQKIT_SPLIT2 } from '../../../modules/nf-core/seqkit/split2/main'
+include { SEQKIT_SPLIT2 as SEQKIT_SPLIT_BY_SIZE } from '../../../modules/nf-core/seqkit/split2/main'
+include { SEQKIT_SPLIT2 as SEQKIT_SPLIT_BY_LENGTH } from '../../../modules/nf-core/seqkit/split2/main'
 include { SWAVE_GENERATE_DOTPLOTS } from '../../../modules/local/swave_generate_dotplots/main'
 include { SWAVE_GENERATE_PROJECTIONS } from '../../../modules/local/swave_generate_projections/main'
 
@@ -29,14 +30,27 @@ workflow SWAVE_PREPROCESSING {
         return [ new_meta, fa ]
     }
 
-    SEQKIT_SPLIT2(ch_fasta_for_split)
-    ch_versions = ch_versions.mix(SEQKIT_SPLIT2.out.versions_seqkit)
+    SEQKIT_SPLIT_BY_SIZE(ch_fasta_for_split)
+    ch_versions = ch_versions.mix(SEQKIT_SPLIT_BY_SIZE.out.versions_seqkit)
 
-    ch_dotplot_inputs = SEQKIT_SPLIT2.out.reads
+    ch_intermediate_splits = SEQKIT_SPLIT_BY_SIZE.out.reads
         .transpose()
         .map { meta, fa ->
             def new_meta = meta.clone()
             new_meta.sample = meta.id
+            new_meta.id = fa.baseName
+            return [ new_meta, fa ]
+        }
+    
+    SEQKIT_SPLIT_BY_LENGTH(ch_intermediate_splits)
+    ch_versions = ch_versions.mix(SEQKIT_SPLIT_BY_LENGTH.out.versions_seqkit)
+
+    ch_dotplot_inputs = SEQKIT_SPLIT_BY_LENGTH.out.reads
+        .map { meta, files -> [ meta, files ] }
+        .transpose()
+        .map { meta, fa ->
+            def new_meta = meta.clone()
+            new_meta.sample = meta.sample ?: meta.id
             new_meta.id = fa.baseName
             return [ new_meta, fa ]
         }
