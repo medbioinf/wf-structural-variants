@@ -92,9 +92,9 @@ def process_projections_to_predictions(projections_pickle_path, model_path, pred
                 for index in range(len(ids)):
                     snarl_prediction_res[ids[index]] = pred_labels[index][:X_lens[index]]
         
-        output_pickle_path = predictions_output_prefix + "_predictions.pkl.gz"
-        
-        with gzip.open(output_pickle_path, 'wb') as output_file:
-            pickle.dump(snarl_prediction_res, output_file, protocol=pickle.HIGHEST_PROTOCOL)
-        
-        logging.info(f"{len(snarl_prediction_res)} model predictions completed and saved.")
+    output_pickle_path = predictions_output_prefix + "_predictions.pkl.gz"
+    
+    with gzip.open(output_pickle_path, 'wb') as output_file:
+        pickle.dump(snarl_prediction_res, output_file, protocol=pickle.HIGHEST_PROTOCOL)
+    
+    logging.info(f"{len(snarl_prediction_res)} model predictions completed and saved.")
