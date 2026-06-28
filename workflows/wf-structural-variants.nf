@@ -55,7 +55,7 @@ workflow WF_STRUCTURAL_VARIANTS {
 
     PANGENOME_GRAPH(ch_reference, ch_assemblies)
 
-    ch_pangenome_info = PANGENOME_GRAPH.out.info 
+    _ch_pangenome_info = PANGENOME_GRAPH.out.info 
     ch_pangenome_fa = PANGENOME_GRAPH.out.fa
     ch_bed_files = PANGENOME_GRAPH.out.bed
 
@@ -65,13 +65,14 @@ workflow WF_STRUCTURAL_VARIANTS {
     //
     SWAVE_PREPROCESSING(ch_bed_files, ch_pangenome_fa, ch_reference.map{ _meta, fa -> fa })
 
+    ch_dotplots = SWAVE_PREPROCESSING.out.dotplots
     ch_projections = SWAVE_PREPROCESSING.out.projections
 
 
     //
     // SUBWORKFLOW: Run SWAVE Genotyping
     //
-    SWAVE_GENOTYPING(ch_projections)
+    SWAVE_GENOTYPING(ch_dotplots, ch_projections)
 
 
 
