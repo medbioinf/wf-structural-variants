@@ -24,7 +24,7 @@ process SWAVE_CALL_VARIANTS {
         --projections_pkl $projections_pkl \\
         --dotplots_pkl $dotplots_pkl \\
         --output_tsv "${meta.id}_variants.tsv" \\
-        --sample_id "${meta.id}" \\
+        --sample_id "${meta.sample}" \\
         $min_sv_size \\
         $max_sv_size \\
         $max_sv_comps \\
