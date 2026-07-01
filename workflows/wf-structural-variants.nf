@@ -72,7 +72,7 @@ workflow WF_STRUCTURAL_VARIANTS {
     //
     // SUBWORKFLOW: Run SWAVE Genotyping
     //
-    SWAVE_GENOTYPING(ch_dotplots, ch_projections)
+    SWAVE_GENOTYPING(ch_dotplots, ch_projections, ch_reference.map{ _meta, fa -> fa })
 
 
 
