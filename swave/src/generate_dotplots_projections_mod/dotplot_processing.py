@@ -19,6 +19,7 @@ import logging
 import numpy as np
 import pickle
 import gzip
+from matplotlib import pyplot as plt
 
 from .structures import Dotplot
 from src.utils import calculate_stride_size
@@ -174,6 +175,83 @@ def process_and_plot_snarl(snarl_id, chrom, snarl_ref_start, snarl_ref_end, fina
     snarl_dotplot_dict[dotplot_id] = dotplot_objects_bundle
 
 
+def save_combined_dotplot_grid(bundle, output_path):
+    m_ref2ref = bundle["x2x_ref2ref"].matrix
+    m_ref2alt = bundle["x2y_ref2alt"].matrix
+    m_alt2alt = bundle["x2x_alt2alt"].matrix
+    m_ref2alt_rev = bundle["x2y_ref2alt"].matrix_rev
+    
+    if m_ref2alt.size == 0:
+        logging.warning(f"Skipping dotplot pngs generation for {output_path}: ref2alt matrix is empty.")
+        return
+    
+    h, w = m_ref2alt.shape
+    max_side = max(h, w)
+    padding = max(40, int(max_side * 0.12))
+    quad_size = max_side + (2 * padding)
+    
+    gray_bg_val = 245
+    dotplot_grid = np.ones((quad_size * 2, quad_size * 2), dtype=np.uint8) * gray_bg_val
+    
+    quadrants = [
+        (m_ref2ref, 0, 0, "ref2ref"),
+        (m_ref2alt, 0, quad_size, "ref2alt"),
+        (m_alt2alt, quad_size, 0, "alt2alt"),
+        (m_ref2alt_rev, quad_size, quad_size, "ref2alt_rev")
+    ]
+    
+    for m, q_y, q_x, label in quadrants:
+        if m.size == 0:
+            continue
+            
+        m_h, m_w = m.shape
+        
+        offset_y = q_y + padding + (max_side - m_h) // 2
+        offset_x = q_x + padding + (max_side - m_w) // 2
+        
+        dotplot_grid[offset_y:offset_y + m_h, offset_x:offset_x + m_w] = 255
+        
+        dotplot_grid[offset_y : offset_y + m_h, offset_x : offset_x + m_w] = np.where(m > 0, 0, 255)
+    
+    total_size_px = quad_size * 2
+    dpi = 100
+    fig_size_inch = total_size_px / dpi
+    
+    fig, ax = plt.subplots(figsize=(fig_size_inch, fig_size_inch), dpi=dpi)
+    
+    ax.imshow(dotplot_grid, cmap='gray', aspect='equal', interpolation='none')
+    
+    ax.axis('off')
+    fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
+    
+    for m, q_y, q_x, label in quadrants:
+        if m.size == 0:
+            continue
+        m_h, m_w = m.shape
+        
+        offset_y = q_y + padding + (max_side - m_h) // 2
+        offset_x = q_x + padding + (max_side - m_w) // 2
+        
+        text = f"{label} ({m_w}x{m_h})"
+        
+        font_size = max(6, total_size_px / 64)
+        
+        text_x = offset_x + (m_w // 2)
+        text_y = offset_y - (padding * 0.12)
+        
+        ax.text(
+            text_x, text_y, text,
+            color='black',
+            fontsize=font_size,
+            va='bottom',
+            ha='center'
+        )
+    
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    plt.savefig(output_path, dpi=dpi, bbox_inches='tight', pad_inches=0)
+    plt.close()
+
+
 def generate_dotplots(ref_seq, alt_seq, dotplot_stride_size, dotplot_output_prefix, options):
     """
     Generates the dotplot objects for the given reference and alternative sequence and saves matrix PNG visualizations if specified.
@@ -191,16 +269,11 @@ def generate_dotplots(ref_seq, alt_seq, dotplot_stride_size, dotplot_output_pref
     x2x_alt2alt = Dotplot(alt_seq, alt_seq, options.kmer_size, out_prefix=f"{prefix_clean}.alt2alt", stride_size=dotplot_stride_size)
     
     if options.save_dotplot_images:
-        x2x_ref2ref.to_png(out_img=True)
-        x2y_ref2alt.to_png(out_img=True)
-        
-        if x2y_ref2alt.matrix_rev.size > 0 and np.max(x2y_ref2alt.matrix_rev) > 0:
-            orig_prefix = x2y_ref2alt.out_prefix
-            x2y_ref2alt.out_prefix = f"{prefix_clean}.ref2alt_reverse"
-            x2y_ref2alt.to_png(reverse=True, out_img=True)
-            x2y_ref2alt.out_prefix = orig_prefix
-        
-        x2x_alt2alt.to_png(out_img=True)
+        save_combined_dotplot_grid({
+            "x2x_ref2ref": x2x_ref2ref,
+            "x2y_ref2alt": x2y_ref2alt,
+            "x2x_alt2alt": x2x_alt2alt
+        }, f"{prefix_clean}_dotplots.png")
     
     return {
         "x2x_ref2ref": x2x_ref2ref,
