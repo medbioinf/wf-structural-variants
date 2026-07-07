@@ -20,7 +20,10 @@ workflow SWAVE_PREPROCESSING {
     SWAVE_EXTRACT_ALLELES(ch_bed, ch_gfa_fasta.toList())
     ch_versions = ch_versions.mix(SWAVE_EXTRACT_ALLELES.out.versions)
 
-    SEQKIT_SORT(SWAVE_EXTRACT_ALLELES.out.fa)
+    ch_sample_alleles = SWAVE_EXTRACT_ALLELES.out.fa
+        .filter { meta, _fa -> meta.is_ref != true }
+
+    SEQKIT_SORT(ch_sample_alleles)
     ch_versions = ch_versions.mix(SEQKIT_SORT.out.versions_seqkit)
 
     ch_fasta_for_split = SEQKIT_SORT.out.fastx
@@ -62,7 +65,10 @@ workflow SWAVE_PREPROCESSING {
     ch_versions = ch_versions.mix(SWAVE_GENERATE_PROJECTIONS.out.versions)
 
     emit:
-    alleles_fasta = SWAVE_EXTRACT_ALLELES.out.fa
+    alleles_fasta = ch_sample_alleles
+    alleles_fasta_sorted = SEQKIT_SORT.out.fastx
+    alleles_fasta_split_by_size = SEQKIT_SPLIT_BY_SIZE.out.reads
+    alleles_fasta_split_by_length = SEQKIT_SPLIT_BY_LENGTH.out.reads
     dotplots = SWAVE_GENERATE_DOTPLOTS.out.dotplots
     dotplot_pngs = SWAVE_GENERATE_DOTPLOTS.out.pngs
     projections = SWAVE_GENERATE_PROJECTIONS.out.projections

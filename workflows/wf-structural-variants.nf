@@ -49,13 +49,18 @@ workflow WF_STRUCTURAL_VARIANTS {
 
     ch_assemblies = ch_samplesheet
         .map { _sample_id, meta, fasta ->
-            def new_meta = meta + [ id: "${meta.sample}_hap${meta.haplotype}" ]
+            def new_meta = meta + [ id: "${meta.sample}_hap${meta.haplotype}", is_ref: false ]
             return [ new_meta, file(fasta) ]
         }
+    
+    ch_ref_as_assembly = ch_reference.map { meta, fasta -> 
+        [ meta + [ sample: 'reference', haplotype: 0, id: 'reference', is_ref: true ], fasta ] 
+    }
+
+    ch_assemblies = ch_assemblies.mix(ch_ref_as_assembly)
 
     PANGENOME_GRAPH(ch_reference, ch_assemblies)
 
-    _ch_pangenome_info = PANGENOME_GRAPH.out.info 
     ch_pangenome_fa = PANGENOME_GRAPH.out.fa
     ch_bed_files = PANGENOME_GRAPH.out.bed
 

@@ -19,9 +19,16 @@ workflow PANGENOME_GRAPH {
     if (!params.gfa) {
 
         ch_assemblies
-            .multiMap { meta, fasta ->
+            .branch { meta, _fa ->
+                samples: meta.is_ref != true
+                ref:    meta.is_ref == true
+            }
+            .set { ch_split_for_construct }
+        
+        ch_split_for_construct.samples
+            .multiMap { meta, fa ->
                 metas: meta
-                fastas: fasta
+                fastas: fa
             }
             .set { ch_split_assemblies }
 
