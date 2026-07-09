@@ -31,31 +31,84 @@
 > [!NOTE]
 > If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/get_started/environment_setup/overview) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/get_started/run-your-first-pipeline) with `-profile test` before running the workflow on actual data.
 
-<!-- TODO nf-core: Describe the minimum required steps to execute the pipeline, e.g. how to prepare samplesheets.
-     Explain what rows and columns represent. For instance (please edit as appropriate):
 
-First, prepare a samplesheet with your input data that looks as follows:
+> [!NOTE]
+> This repository contains a Nextflow-adapted version of [Swave](https://github.com/songbowang125/Swave). It will be migrated to a dedicated repository with a published container image. Currently, the pipeline only runs with Docker, and the image must be built locally.
 
-`samplesheet.csv`:
+### 1. Build the Docker Container Locally
 
-```csv
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-```
-
-Each row represents a fastq file (single-end) or a pair of fastq files (paired end).
-
--->
-
-Now, you can run the pipeline using:
-
-<!-- TODO nf-core: update the following command to include all required parameters for a minimal example -->
+Before running the pipeline, you must build the required Swave environment image locally. The tag **must** match the following name exactly so Nextflow can recognize it:
 
 ```bash
-nextflow run medbioinf/wf-structural-variants \
-   -profile <docker/singularity/.../institute> \
-   --input samplesheet.csv \
-   --outdir <OUTDIR>
+docker build -t quay.io/swave:latest .
+```
+
+### 2. Run with Included Test Data
+
+The repository comes with small, pre-configured test data (found under `assets/testdata/`). You can perform a minimal test run using the test profile (configured under `conf/test.config`):
+
+```bash
+nextflow run main.nf -profile test,docker --outdir test_results
+```
+
+### 3. Run with Your Own Data
+
+To execute the pipeline with custom data, you need to provide a reference genome and an input samplesheet (`.csv`).
+
+#### 3.1. Prepare Input Files
+
+By convention, it is recommended to organize your input files in a structured root directory:
+
+- Save your assemblies (FASTA format) inside `data/assemblies/`.
+- Place your reference genome FASTA anywhere accessible (e.g., directly under `data/` or in a `data/reference/` directory).
+
+(The `data/` directory is gitignored and must be created locally.)
+
+#### 3.2. Generate the Samplesheet
+
+The pipeline requires a three-column samplesheet (`sample,haplotype,fasta`).
+
+**Option 1: Automatic Generation**
+
+You can run the provided automated Python script to scan your assembly directory and create the samplesheet:
+
+```bash
+python3 scripts/create_samplesheet.py --dir data/assemblies --out data/samplesheet.csv
+```
+
+(`--dir` and `--out` default to these values. Add `--allow-unphased` if your assemblies are unphased, to treat them as haplotype 0.)
+
+**Option 2: Manual Creation**
+
+Alternatively, create a `samplesheet.csv` manually with the following format:
+
+```
+sample,haplotype,fasta
+assembly1,1,/path/to/assemblies/assembly1_hap1.fa
+assembly1,2,/path/to/assemblies/assembly1_hap2.fa
+assembly2,1,/path/to/assemblies/assembly2_hap1.fa
+assembly2,2,/path/to/assemblies/assembly2_hap2.fa
+...
+```
+
+#### 3.3. Run the Workflow
+
+Run the pipeline by passing the paths to your generated samplesheet and reference genome:
+
+```bash
+nextflow run main.nf \
+   -profile docker \
+   --input <path_to_samplesheet.csv> \
+   --fasta <path_to_reference_fasta> \
+   --outdir <output_directory>
+```
+
+(`--outdir` defaults to `results` if not specified.)
+
+For more detailed information on all available pipeline parameters, run:
+
+```bash
+nextflow run main.nf --help
 ```
 
 > [!WARNING]
