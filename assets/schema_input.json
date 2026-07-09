@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/medbioinf/wf-structural-variants/master/assets/schema_input.json",
-    "title": "medbioinf/wf-structural-variants pipeline - params.input schema",
+    "$id": "https://raw.githubusercontent.com/medbioinf/pangenomesv/master/assets/schema_input.json",
+    "title": "medbioinf/pangenomesv pipeline - params.input schema",
     "description": "Schema for the file provided with params.input",
     "type": "array",
     "items": {

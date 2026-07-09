@@ -3,23 +3,23 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-include { FASTQC                 } from '../modules/nf-core/fastqc/main'
 include { MULTIQC                } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_wf-structural-variants_pipeline'
+include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_pangenomesv_pipeline'
 
 include { PANGENOME_GRAPH } from '../subworkflows/local/pangenome_graph/main'
 include { SWAVE_PREPROCESSING } from '../subworkflows/local/swave_preprocessing/main'
 include { SWAVE_GENOTYPING } from '../subworkflows/local/swave_genotyping/main'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow WF_STRUCTURAL_VARIANTS {
+workflow PANGENOMESV {
 
     take:
     ch_samplesheet // channel: samplesheet read in from --input
@@ -29,17 +29,8 @@ workflow WF_STRUCTURAL_VARIANTS {
     outdir
 
     main:
-
     def ch_versions = channel.empty()
     def ch_multiqc_files = channel.empty()
-    //
-    // MODULE: Run FastQC
-    //
-    // FASTQC(ch_samplesheet)
-    // ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map{ _meta, file -> file })
-
-
-
 
 
     //
@@ -81,8 +72,6 @@ workflow WF_STRUCTURAL_VARIANTS {
 
 
 
-
-
     //
     // Collate and save software versions
     //
@@ -107,7 +96,7 @@ workflow WF_STRUCTURAL_VARIANTS {
         .mix(topic_versions_string)
         .collectFile(
             storeDir: "${outdir}/pipeline_info",
-            name:  'wf-structural-variants_software_'  + 'mqc_'  + 'versions.yml',
+            name:  'pangenomesv_software_'  + 'mqc_'  + 'versions.yml',
             sort: true,
             newLine: true
         )
@@ -127,7 +116,7 @@ workflow WF_STRUCTURAL_VARIANTS {
     MULTIQC(
         ch_multiqc_files.flatten().collect().map { files ->
             [
-                [id: 'wf-structural-variants'],
+                [id: 'pangenomesv'],
                 files,
                 multiqc_config
                     ? file(multiqc_config, checkIfExists: true)

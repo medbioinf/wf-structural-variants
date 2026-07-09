@@ -4,12 +4,22 @@ nf_core_version: 4.0.2
 
 lint:
   files_unchanged:
+    - .github/ISSUE_TEMPLATE/bug_report.yml
+    - .github/ISSUE_TEMPLATE/config.yml
+    - .github/ISSUE_TEMPLATE/feature_request.yml
+    - .github/PULL_REQUEST_TEMPLATE.md
+    - .github/workflows/branch.yml
+    - .github/workflows/linting_comment.yml
+    - .github/workflows/linting.yml
+    - .github/.dockstore.yml
+    - docs/CONTRIBUTING.md
     - CODE_OF_CONDUCT.md
-    - assets/nf-core-wf-structural-variants_logo_light.png
-    - docs/images/nf-core-wf-structural-variants_logo_light.png
-    - docs/images/nf-core-wf-structural-variants_logo_dark.png
+    - assets/nf-core-pangenomesv_logo_light.png
+    - docs/images/nf-core-pangenomesv_logo_light.png
+    - docs/images/nf-core-pangenomesv_logo_dark.png
     - .github/ISSUE_TEMPLATE/bug_report.yml
     - .github/PULL_REQUEST_TEMPLATE.md
+    - assets/email_template.html
     - assets/email_template.txt
     - docs/README.md
   nextflow_config:
@@ -18,23 +28,36 @@ lint:
   multiqc_config:
     - report_comment
   files_exist:
+    - .github/ISSUE_TEMPLATE/bug_report.yml
+    - .github/ISSUE_TEMPLATE/feature_request.yml
+    - .github/PULL_REQUEST_TEMPLATE.md
+    - .github/.dockstore.yml
+    - docs/CONTRIBUTING.md
     - CODE_OF_CONDUCT.md
-    - assets/nf-core-wf-structural-variants_logo_light.png
-    - docs/images/nf-core-wf-structural-variants_logo_light.png
-    - docs/images/nf-core-wf-structural-variants_logo_dark.png
+    - assets/nf-core-pangenomesv_logo_light.png
+    - docs/images/nf-core-pangenomesv_logo_light.png
+    - docs/images/nf-core-pangenomesv_logo_dark.png
     - .github/ISSUE_TEMPLATE/config.yml
     - .github/workflows/awstest.yml
     - .github/workflows/awsfulltest.yml
+    - conf/igenomes.config
+    - conf/igenomes_ignored.config
+  readme:
+    - nextflow_badge
 
 template:
   org: medbioinf
-  name: wf-structural-variants
-  description: Nextflow pipeline for structural variant detection using pangenome
-    graphs and deep learning
-  author: Jonah Kapski <jonah.kapski@edu.ruhr-uni-bochum.de>
+  name: pangenomesv
+  description: Pipeline for population-level structural variant characterization using
+    pangenome graphs
+  author: Jonah Kapski
   version: 1.0.0dev
   force: true
-  outdir: .
+  outdir: /home/ubuntu/medbioinf-wf-structural-variants
   skip_features:
-    - gpu
+    - github
+    - igenomes
+    - fastqc
+    - codespaces
+    - vscode
   is_nfcore: false

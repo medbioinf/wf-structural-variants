@@ -1,6 +1,6 @@
-# medbioinf/wf-structural-variants
+# medbioinf/pangenomesv
 
-[![Open in GitHub Codespaces](https://img.shields.io/badge/Open_In_GitHub_Codespaces-black?labelColor=grey&logo=github)](https://github.com/codespaces/new/medbioinf/wf-structural-variants)
+
 [![GitHub Actions CI Status](https://github.com/medbioinf/wf-structural-variants/actions/workflows/nf-test.yml/badge.svg)](https://github.com/medbioinf/wf-structural-variants/actions/workflows/nf-test.yml)
 [![GitHub Actions Linting Status](https://github.com/medbioinf/wf-structural-variants/actions/workflows/linting.yml/badge.svg)](https://github.com/medbioinf/wf-structural-variants/actions/workflows/linting.yml)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.XXXXXXX-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.XXXXXXX)
 [![nf-test](https://img.shields.io/badge/unit_tests-nf--test-337ab7.svg)](https://www.nf-test.com)
@@ -14,7 +14,7 @@
 
 ## Introduction
 
-**medbioinf/wf-structural-variants** is a bioinformatics pipeline that ...
+**medbioinf/pangenomesv** is a bioinformatics pipeline that ...
 
 <!-- TODO nf-core:
    Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
@@ -24,13 +24,12 @@
 
 <!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core
      workflows use the "tube map" design for that. See https://nf-co.re/docs/community/brand/workflow-schematics#examples for examples.   -->
-<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->1. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
+<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
 
 ## Usage
 
 > [!NOTE]
 > If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/get_started/environment_setup/overview) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/get_started/run-your-first-pipeline) with `-profile test` before running the workflow on actual data.
-
 
 > [!NOTE]
 > This repository contains a Nextflow-adapted version of [Swave](https://github.com/songbowang125/Swave). It will be migrated to a dedicated repository with a published container image. Currently, the pipeline only runs with Docker, and the image must be built locally.
@@ -116,7 +115,7 @@ nextflow run main.nf --help
 
 ## Credits
 
-medbioinf/wf-structural-variants was originally written by Jonah Kapski <jonah.kapski@edu.ruhr-uni-bochum.de>.
+medbioinf/pangenomesv was originally written by Jonah Kapski.
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
@@ -129,7 +128,7 @@ If you would like to contribute to this pipeline, please see the [contributing g
 ## Citations
 
 <!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi and badge at the top of this file. -->
-<!-- If you use medbioinf/wf-structural-variants for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
+<!-- If you use medbioinf/pangenomesv for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
 
 <!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
 

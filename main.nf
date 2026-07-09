@@ -1,9 +1,9 @@
 #!/usr/bin/env nextflow
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    medbioinf/wf-structural-variants
+    medbioinf/pangenomesv
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/medbioinf/wf-structural-variants
+    Github : https://github.com/medbioinf/pangenomesv
 ----------------------------------------------------------------------------------------
 */
 
@@ -13,22 +13,9 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { WF_STRUCTURAL_VARIANTS  } from './workflows/wf-structural-variants'
-include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_wf-structural-variants_pipeline'
-include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_wf-structural-variants_pipeline'
-include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_wf-structural-variants_pipeline'
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    GENOME PARAMETER VALUES
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-// TODO nf-core: Remove this line if you don't need a FASTA file
-//   This is an example of how to use getGenomeAttribute() to fetch parameters
-//   from igenomes.config using `--genome`
-params.fasta = getGenomeAttribute('fasta')
-
+include { PANGENOMESV  } from './workflows/pangenomesv'
+include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_pangenomesv_pipeline'
+include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_pangenomesv_pipeline'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     NAMED WORKFLOWS FOR PIPELINE
@@ -38,7 +25,7 @@ params.fasta = getGenomeAttribute('fasta')
 //
 // WORKFLOW: Run main analysis pipeline depending on type of input
 //
-workflow MEDBIOINF_WF_STRUCTURAL_VARIANTS {
+workflow MEDBIOINF_PANGENOMESV {
 
     take:
     samplesheet // channel: samplesheet read in from --input
@@ -48,7 +35,7 @@ workflow MEDBIOINF_WF_STRUCTURAL_VARIANTS {
     //
     // WORKFLOW: Run pipeline
     //
-    WF_STRUCTURAL_VARIANTS (
+    PANGENOMESV (
         samplesheet,
         params.multiqc_config,
         params.multiqc_logo,
@@ -56,7 +43,7 @@ workflow MEDBIOINF_WF_STRUCTURAL_VARIANTS {
         params.outdir,
     )
     emit:
-    multiqc_report = WF_STRUCTURAL_VARIANTS.out.multiqc_report // channel: /path/to/multiqc_report.html
+    multiqc_report = PANGENOMESV.out.multiqc_report // channel: /path/to/multiqc_report.html
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -85,7 +72,7 @@ workflow {
     //
     // WORKFLOW: Run main workflow
     //
-    MEDBIOINF_WF_STRUCTURAL_VARIANTS (
+    MEDBIOINF_PANGENOMESV (
         PIPELINE_INITIALISATION.out.samplesheet
     )
     //
@@ -97,7 +84,7 @@ workflow {
         params.plaintext_email,
         params.outdir,
         params.monochrome_logs,
-        MEDBIOINF_WF_STRUCTURAL_VARIANTS.out.multiqc_report
+        MEDBIOINF_PANGENOMESV.out.multiqc_report
     )
 }
 

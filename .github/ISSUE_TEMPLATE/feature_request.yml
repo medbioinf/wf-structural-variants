@@ -1,5 +1,5 @@
 name: Feature request
-description: Suggest an idea for the medbioinf/wf-structural-variants pipeline
+description: Suggest an idea for the medbioinf/pangenomesv pipeline
 labels: enhancement
 body:
   - type: textarea
