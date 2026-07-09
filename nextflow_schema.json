@@ -207,20 +207,6 @@
             "fa_icon": "fas fa-dna",
             "description": "Parameters used during the Swave variant calling phase.",
             "properties": {
-                "min_sv_size": {
-                    "type": "integer",
-                    "default": 50,
-                    "description": "Minimum size (in base pairs) for a variant to be called.",
-                    "help_text": "Variants smaller than this threshold will not be called. Adjust this value based on the expected size range of structural variants in your data.",
-                    "fa_icon": "fas fa-compress-arrows-alt"
-                },
-                "max_sv_size": {
-                    "type": "integer",
-                    "default": 1000000,
-                    "description": "Maximum size (in base pairs) for a variant to be called.",
-                    "help_text": "Variants larger than this threshold will not be called. Adjust this value based on the expected size range of structural variants in your data.",
-                    "fa_icon": "fas fa-expand-arrows-alt"
-                },
                 "max_sv_comps": {
                     "type": "integer",
                     "default": 5,
