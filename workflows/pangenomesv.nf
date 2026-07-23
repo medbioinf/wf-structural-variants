@@ -12,6 +12,7 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_pang
 include { PANGENOME_GRAPH } from '../subworkflows/local/pangenome_graph/main'
 include { SWAVE_PREPROCESSING } from '../subworkflows/local/swave_preprocessing/main'
 include { SWAVE_GENOTYPING } from '../subworkflows/local/swave_genotyping/main'
+include { SWAVE_ANNOTATION } from '../subworkflows/local/swave_annotation/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -69,6 +70,12 @@ workflow PANGENOMESV {
     // SUBWORKFLOW: Run SWAVE Genotyping
     //
     SWAVE_GENOTYPING(ch_dotplots, ch_projections, ch_reference.map{ _meta, fa -> fa })
+
+
+    //
+    // SUBWORKFLOW: Run SWAVE Annotation
+    //
+    SWAVE_ANNOTATION ( SWAVE_GENOTYPING.out.vcf_split )
 
 
 

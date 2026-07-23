@@ -27,7 +27,7 @@ workflow SWAVE_GENOTYPING {
         .map { _meta, tsv -> tsv }
         .collect()
         .map { tsv_list -> 
-            def meta = [ id: 'swave_population' ]
+            def meta = [ id: 'pangenomesv' ]
             return [ meta, tsv_list ]
         }
         .set { ch_tsv_collection }
@@ -38,6 +38,16 @@ workflow SWAVE_GENOTYPING {
     emit:
     predictions = SWAVE_PREDICT.out.predictions
     variants_tsv = SWAVE_CALL_VARIANTS.out.tsv
-    vcf = SWAVE_WRITE_VCF.out.vcf
+    
+   vcf_merged   = SWAVE_WRITE_VCF.out.vcf.map { meta, files -> 
+        def merged_file = files.find { f -> f.name.endsWith('.vcf') && !f.name.endsWith('split.vcf') }
+        [ meta, merged_file ]
+    }
+    
+    vcf_split    = SWAVE_WRITE_VCF.out.vcf.map { meta, files -> 
+        def split_file = files.find { f -> f.name.endsWith('split.vcf') }
+        [ meta, split_file ]
+    }
+
     versions = ch_versions
 }

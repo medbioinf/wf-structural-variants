@@ -203,6 +203,28 @@
                 }
             }
         },
+        "swave_annotation_options": {
+            "title": "Swave annotation options",
+            "type": "object",
+            "fa_icon": "fas fa-clipboard-list",
+            "description": "Parameters used during the Swave variant annotation phase.",
+            "properties": {
+                "af_rare": {
+                    "type": ["number", "string"],
+                    "default": 0.01,
+                    "description": "Allele frequency threshold for rare variants.",
+                    "help_text": "Variants with an allele frequency below this threshold will be considered rare.",
+                    "fa_icon": "fas fa-percent"
+                },
+                "af_frequent": {
+                    "type": ["number", "string"],
+                    "default": 0.05,
+                    "description": "Allele frequency threshold for frequent variants.",
+                    "help_text": "Variants with an allele frequency above this threshold will be considered frequent.",
+                    "fa_icon": "fas fa-percent"
+                }
+            }
+        },
         "institutional_config_options": {
             "title": "Institutional config options",
             "type": "object",
@@ -375,6 +397,9 @@
         },
         {
             "$ref": "#/$defs/swave_variant_calling_options"
+        },
+        {
+            "$ref": "#/$defs/swave_annotation_options"
         },
         {
             "$ref": "#/$defs/institutional_config_options"
