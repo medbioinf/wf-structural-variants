@@ -1,6 +1,7 @@
-include { MINIGRAPH_CONSTRUCT } from '../../../modules/local/minigraph_construct/main'
-include { MINIGRAPH_CALL } from '../../../modules/local/minigraph_call/main'
-include { GFATOOLS_GFA2FA } from '../../../modules/local/gfatools_gfa2fa/main'
+include { MINIGRAPH_CONSTRUCT } from '../../../modules/local/minigraph/construct/main'
+include { MINIGRAPH_CALL } from '../../../modules/local/minigraph/call/main'
+include { GFATOOLS_GFA2FA } from '../../../modules/nf-core/gfatools/gfa2fa/main'
+include { GUNZIP } from '../../../modules/nf-core/gunzip/main'
 
 workflow PANGENOME_GRAPH {
 
@@ -44,11 +45,23 @@ workflow PANGENOME_GRAPH {
 
     if (!params.gfa) {
         GFATOOLS_GFA2FA(ch_gfa_with_meta)
-        ch_fa = GFATOOLS_GFA2FA.out.fa.map { _meta, fa -> fa }
-        ch_versions = ch_versions.mix(GFATOOLS_GFA2FA.out.versions)
+        ch_fa_raw = GFATOOLS_GFA2FA.out.fasta
+        ch_versions = ch_versions.mix(GFATOOLS_GFA2FA.out.versions_gfatools)
     } else {
-        ch_fa = channel.fromPath(params.gfa2fa_fa)
+        ch_fa_raw = channel.fromPath(params.gfa2fa_fa).map { fa -> [ [id: fa.baseName], fa ] }
     }
+
+    ch_fa_raw.branch { _meta, fa ->
+        zipped: fa.name.endsWith('.gz')
+        unzipped: !fa.name.endsWith('.gz')
+    }.set { ch_fa_split }
+
+    GUNZIP(ch_fa_split.zipped)
+    ch_versions = ch_versions.mix(GUNZIP.out.versions_gunzip)
+
+    ch_fa = GUNZIP.out.gunzip
+        .mix(ch_fa_split.unzipped)
+        .map { _meta, fa -> fa }
 
     ch_gfa_raw = ch_gfa_with_meta.map { _meta, gfa -> gfa }
     MINIGRAPH_CALL(ch_gfa_raw.toList(), ch_assemblies)
@@ -60,5 +73,4 @@ workflow PANGENOME_GRAPH {
     info = ch_info
     bed = MINIGRAPH_CALL.out.bed
     versions = ch_versions
-
 }
