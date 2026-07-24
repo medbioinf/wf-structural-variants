@@ -20,7 +20,7 @@ process SWAVE_PREDICT {
     def device_flag = params.use_gpu ? "--device gpu" : "--device cpu"
     def model_param = params.model ? "--model ${params.model}" : ""
     """
-    python3 /app/swave/src/predict.py \\
+    swave-predict \\
         --projections_pkl $projections_pkl \\
         --predictions_out_prefix "${meta.id}" \\
         --cpu_threads ${task.cpus} \\

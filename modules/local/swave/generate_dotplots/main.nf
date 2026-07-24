@@ -25,8 +25,8 @@ process SWAVE_GENERATE_DOTPLOTS {
     def kmer_size_param = params.kmer_size ? "--kmer_size ${params.kmer_size}" : ""
     def spec_path_param = params.spec_path ? "--spec_path ${params.spec_path}" : ""
     def save_images_flag = params.save_dotplot_images ? "--save_dotplot_images" : ""
-    """
-    python3 /app/swave/src/generate_dotplots.py \\
+    """    
+    swave-generate-dotplots \\
         --alt_fasta $alt_fasta \\
         --ref_fasta $ref_fasta \\
         --gfa_fasta $gfa_fasta \\

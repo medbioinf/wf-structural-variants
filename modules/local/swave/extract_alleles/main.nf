@@ -24,7 +24,7 @@ process SWAVE_EXTRACT_ALLELES {
     def min_sv_size_param = params.min_sv_size ? "--min_sv_size ${params.min_sv_size}" : ""
     def spec_snarl_param = params.spec_snarl ? "--spec_snarl ${params.spec_snarl}" : ""
     """
-    python3 /app/swave/src/extract_alleles.py \\
+    swave-extract-alleles \\
         --gfa_fasta $gfa_fasta \\
         --bed $bed \\
         --sample_id ${meta.id} \\

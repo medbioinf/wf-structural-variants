@@ -1,9 +1,9 @@
-include { SWAVE_EXTRACT_ALLELES } from '../../../modules/local/swave_extract_alleles/main'
+include { SWAVE_EXTRACT_ALLELES } from '../../../modules/local/swave/extract_alleles/main'
 include { SEQKIT_SORT } from '../../../modules/nf-core/seqkit/sort/main'
 include { SEQKIT_SPLIT2 as SEQKIT_SPLIT_BY_SIZE } from '../../../modules/nf-core/seqkit/split2/main'
 include { SEQKIT_SPLIT2 as SEQKIT_SPLIT_BY_LENGTH } from '../../../modules/nf-core/seqkit/split2/main'
-include { SWAVE_GENERATE_DOTPLOTS } from '../../../modules/local/swave_generate_dotplots/main'
-include { SWAVE_GENERATE_PROJECTIONS } from '../../../modules/local/swave_generate_projections/main'
+include { SWAVE_GENERATE_DOTPLOTS } from '../../../modules/local/swave/generate_dotplots/main'
+include { SWAVE_GENERATE_PROJECTIONS } from '../../../modules/local/swave/generate_projections/main'
 
 workflow SWAVE_PREPROCESSING {
 

@@ -18,7 +18,7 @@ process SWAVE_WRITE_VCF {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    python3 /app/swave/src/write_vcf.py \\
+    swave-write-vcf \\
         --tsv_files ${tsv_files.join(' ')} \\
         --ref_fasta $ref_fasta \\
         --output_vcf "${prefix}.vcf" \\

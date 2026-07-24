@@ -1,6 +1,6 @@
-include { SWAVE_PREDICT } from '../../../modules/local/swave_predict/main'
-include { SWAVE_CALL_VARIANTS } from '../../../modules/local/swave_call_variants/main'
-include { SWAVE_WRITE_VCF } from '../../../modules/local/swave_write_vcf/main'
+include { SWAVE_PREDICT } from '../../../modules/local/swave/predict/main'
+include { SWAVE_CALL_VARIANTS } from '../../../modules/local/swave/call_variants/main'
+include { SWAVE_WRITE_VCF } from '../../../modules/local/swave/write_vcf/main'
 
 workflow SWAVE_GENOTYPING {
 

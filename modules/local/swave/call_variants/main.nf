@@ -19,7 +19,7 @@ process SWAVE_CALL_VARIANTS {
     def max_sv_comps = params.max_sv_comps ? "--max_sv_comps ${params.max_sv_comps}" : ""
     def dup_to_ins   = params.dup_to_ins ? "--dup_to_ins" : ""
     """
-    python3 /app/swave/src/call_variants.py \\
+    swave-call-variants \\
         --predictions_pkl $predictions_pkl \\
         --projections_pkl $projections_pkl \\
         --dotplots_pkl $dotplots_pkl \\
