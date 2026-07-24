@@ -1,2 +1,0 @@
-
-from .variant_call_processing import process_predictions_to_tsv
