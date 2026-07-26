@@ -43,12 +43,12 @@ workflow PANGENOME_GRAPH {
         ch_gfa_with_meta = channel.fromPath(params.gfa).map { gfa -> [ [id: gfa.baseName], gfa] }
     }
 
-    if (!params.gfa) {
+    if (params.gfa2fa_fa) {
+        ch_fa_raw = channel.fromPath(params.gfa2fa_fa).map { fa -> [ [id: fa.baseName], fa ] }
+    } else {
         GFATOOLS_GFA2FA(ch_gfa_with_meta)
         ch_fa_raw = GFATOOLS_GFA2FA.out.fasta
         ch_versions = ch_versions.mix(GFATOOLS_GFA2FA.out.versions_gfatools)
-    } else {
-        ch_fa_raw = channel.fromPath(params.gfa2fa_fa).map { fa -> [ [id: fa.baseName], fa ] }
     }
 
     ch_fa_raw.branch { _meta, fa ->
@@ -63,8 +63,8 @@ workflow PANGENOME_GRAPH {
         .mix(ch_fa_split.unzipped)
         .map { _meta, fa -> fa }
 
-    ch_gfa_raw = ch_gfa_with_meta.map { _meta, gfa -> gfa }
-    MINIGRAPH_CALL(ch_gfa_raw.toList(), ch_assemblies)
+    ch_gfa_raw = ch_gfa_with_meta.map { _meta, gfa -> gfa }.collect()
+    MINIGRAPH_CALL(ch_gfa_raw, ch_assemblies)
     ch_versions = ch_versions.mix(MINIGRAPH_CALL.out.versions)    
 
     emit:
