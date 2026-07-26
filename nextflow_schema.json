@@ -108,6 +108,21 @@
                 }
             }
         },
+        "swave_split_alleles_options": {
+            "title": "Swave Allele Splitting Options",
+            "type": "object",
+            "fa_icon": "fas fa-cut",
+            "description": "Parameters used during the allele splitting phase.",
+            "properties": {
+                "seq_per_split": {
+                    "type": "integer",
+                    "default": 2000,
+                    "description": "Number of sequences to include in each split FASTA file.",
+                    "help_text": "The number of sequences to include in each round-robin manner split FASTA file. This can help with parallel processing and memory management in downstream steps. The default value is 2000.",
+                    "fa_icon": "fas fa-layer-group"
+                }
+            }
+        },
         "swave_dotplot_options": {
             "title": "Swave dotplot options",
             "type": "object",
@@ -385,6 +400,9 @@
         },
         {
             "$ref": "#/$defs/swave_extraction_options"
+        },
+        {
+            "$ref": "#/$defs/swave_split_alleles_options"
         },
         {
             "$ref": "#/$defs/swave_dotplot_options"
