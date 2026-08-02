@@ -9,6 +9,7 @@ include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pi
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_pangenomesv_pipeline'
 
+include { LONGREAD_ASSEMBLY } from '../subworkflows/local/longread_assembly/main'
 include { PANGENOME_GRAPH } from '../subworkflows/local/pangenome_graph/main'
 include { SWAVE_PREPROCESSING } from '../subworkflows/local/swave_preprocessing/main'
 include { SWAVE_GENOTYPING } from '../subworkflows/local/swave_genotyping/main'
@@ -35,15 +36,33 @@ workflow PANGENOMESV {
 
 
     //
+    // Samplesheet processing & optionally run Subworkflow LONGREAD_ASSEMBLY
+    //
+    ch_samplesheet
+        .branch { meta, fasta, bam_dir ->
+            fasta: fasta
+                return [ meta, file(fasta) ]
+            bam: bam_dir
+                return [ meta, file(bam_dir) ]
+        }
+        .set { ch_input_branched }
+    
+    ch_existing_assemblies = ch_input_branched.fasta
+        .map { meta, fasta ->
+            def new_meta = meta + [ id: "${meta.sample}_hap${meta.haplotype}", is_ref: false ]
+            return [ new_meta, fasta ]
+        }
+    
+    LONGREAD_ASSEMBLY(ch_input_branched.bam)
+    ch_assembled_fastas = LONGREAD_ASSEMBLY.out.assemblies
+
+    ch_assemblies = ch_existing_assemblies.mix( ch_assembled_fastas )
+
+
+    //
     // SUBWORKFLOW: Run Minigraph Pangenome Graph Construction & Snarl Calling
     //
-    ch_reference = channel.fromPath(params.fasta, checkIfExists: true).map { fasta -> [ [ id:'reference' ], fasta ] }
-
-    ch_assemblies = ch_samplesheet
-        .map { _sample_id, meta, fasta ->
-            def new_meta = meta + [ id: "${meta.sample}_hap${meta.haplotype}", is_ref: false ]
-            return [ new_meta, file(fasta) ]
-        }
+    ch_reference = channel.fromPath(params.fasta, checkIfExists: true).map { fasta -> [ [ id:'reference' ], fasta ] }    
     
     ch_ref_as_assembly = ch_reference.map { meta, fasta -> 
         [ meta + [ sample: 'reference', haplotype: 0, id: 'reference', is_ref: true ], fasta ] 
@@ -55,6 +74,7 @@ workflow PANGENOMESV {
 
     ch_pangenome_fa = PANGENOME_GRAPH.out.fa
     ch_bed_files = PANGENOME_GRAPH.out.bed
+        .filter { meta,_bed -> !meta.is_ref }
 
 
     //
@@ -75,8 +95,12 @@ workflow PANGENOMESV {
     //
     // SUBWORKFLOW: Run SWAVE Annotation
     //
-    SWAVE_ANNOTATION ( SWAVE_GENOTYPING.out.vcf_split )
-
+    ch_vcf_for_annotation = SWAVE_GENOTYPING.out.vcf_split
+        .filter { _meta, vcf ->
+            vcf.exists() && vcf.readLines().any { line -> !line.startsWith('#') && line.trim() }    // check if VCF has any non-header lines
+        }
+        
+    SWAVE_ANNOTATION ( ch_vcf_for_annotation )
 
 
     //

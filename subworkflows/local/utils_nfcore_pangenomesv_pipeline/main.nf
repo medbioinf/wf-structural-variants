@@ -84,24 +84,32 @@ workflow PIPELINE_INITIALISATION {
     //
     // Create channel from input file provided through params.input
     //
-
     channel
         .fromList(samplesheetToList(input, "${projectDir}/assets/schema_input.json"))
-        .map {
-            sample, haplotype, fasta ->
-                def meta_map = [ sample: sample, haplotype: haplotype ]
-                return [ sample, meta_map, fasta ]
+        .map { row ->
+            def entry = row instanceof Map ? row : [sample: row[0], haplotype: row[1], fasta: row[2], bam_dir: row[3]]
+
+            def sample_id = [entry.sample].flatten().find()?.toString()
+            def raw_hap = [entry.haplotype].flatten().find()
+            def raw_fa = [entry.fasta].flatten().find()
+            def raw_bam = [entry.bam_dir].flatten().find()
+
+            def meta = [ sample: sample_id ]
+            if (raw_hap != null && raw_hap.toString() != '') {
+                meta.haplotype = raw_hap.toString().toInteger()
+            }
+
+            def fasta   = raw_fa  ? file(raw_fa)  : null
+            def bam_dir = raw_bam ? file(raw_bam) : null
+
+            return [ sample_id, meta, fasta, bam_dir ]
         }
-        .groupTuple()
-        .map { samplesheet ->
-            validateInputSamplesheet(samplesheet)
+        .groupTuple(by: 0)
+        .map { sample_id, metas, fastas, bam_dirs ->
+            validateInputSamplesheet(sample_id, metas)
+            return [ metas, fastas, bam_dirs ]
         }
-        .flatMap { _sample_id, metas, fastas ->
-            return [ metas, fastas ].transpose()
-        }
-        .map { meta, fasta ->
-            return [ meta.sample, meta, fasta ]
-        }
+        .transpose()
         .set { ch_samplesheet }
 
     emit:
@@ -163,19 +171,18 @@ workflow PIPELINE_COMPLETION {
 //
 // Validate channels from input samplesheet
 //
-def validateInputSamplesheet(input) {
-    def sample_id = input[0]
-    def (metas, fastas) = input[1..2]
+def validateInputSamplesheet(sample_id, metas) {
+    def haplotypes = metas
+        .findAll { entry -> entry instanceof Map && entry.containsKey('haplotype') && entry.haplotype != null }
+        .collect { entry -> entry.haplotype }
 
-    def haplotypes = metas.collect{ meta -> meta.haplotype }
-
-    // Check that the same haplotype has not been assigned multiple times for the same sample
     if (haplotypes.size() != haplotypes.unique().size()) {
-        error("Sample '${sample_id}' has multiple entries with the same haplotype. Ensure that each haplotype is only assigned once per sample.")
+        error("Sample '${sample_id}' has multiple FASTA entries with the same haplotype. Ensure that each haplotype is only assigned once per sample.")
     }
 
-    return [ sample_id, metas, fastas ]
+    return true
 }
+
 //
 // Generate methods description for MultiQC
 //

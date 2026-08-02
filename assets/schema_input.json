@@ -8,7 +8,7 @@
         "type": "object",
         "properties": {
             "sample": {
-                "type": "string",
+                "type": ["string", "integer"],
                 "pattern": "^\\S+$",
                 "errorMessage": "Sample name must be provided and cannot contain spaces"
             },
@@ -22,8 +22,16 @@
                 "format": "file-path",
                 "pattern": "^\\S+\\.(fasta|fa|fna)(\\.gz)?$",
                 "errorMessage": "FASTA file must be provided, cannot contain spaces and must be a valid fasta file (.fa, .fasta, .fna)"
+            },
+            "bam_dir": {
+                "type": "string",
+                "errorMessage": "BAM directory path must be provided as a string"
             }
         },
-        "required": ["sample", "haplotype", "fasta"]
+        "required": ["sample"],
+        "anyOf": [
+            { "required": ["fasta", "haplotype"] },
+            { "required": ["bam_dir"] }
+        ]
     }
 }
