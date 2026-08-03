@@ -1,5 +1,5 @@
-include { SAMTOOLS_CAT } from '../../../modules/nf-core/samtools/cat/main'
-include { SAMTOOLS_BAM2FQ } from '../../../modules/nf-core/samtools/bam2fq/main'
+include { SAMTOOLS_FASTQ } from '../../../modules/nf-core/samtools/fastq/main'
+include { CAT_FASTQ } from '../../../modules/nf-core/cat/fastq/main'
 include { HIFIASM } from '../../../modules/nf-core/hifiasm/main'
 include { GFATOOLS_GFA2FA } from '../../../modules/nf-core/gfatools/gfa2fa/main'
 
@@ -11,7 +11,7 @@ workflow LONGREAD_ASSEMBLY {
     main:
     ch_versions = channel.empty()
 
-    ch_bam_files = ch_bams.map { meta, bam_dir ->
+    ch_individual_bams = ch_bams.flatMap { meta, bam_dir ->
         def dir_path = file(bam_dir)
         def bam_files = files("${dir_path}/**.bam").unique()
 
@@ -19,22 +19,33 @@ workflow LONGREAD_ASSEMBLY {
             error "No BAM files found in '${dir_path.toAbsolutePath()}'."
         }
 
-        def meta_new = meta + [ id: meta.id ?: meta.sample, single_end: true ]
-        return [ meta_new, bam_files ]
+        def sample_id = meta.id ?: meta.sample
+
+        return bam_files.collect { bam ->
+            def bam_name = bam.name.replaceAll(/\.bam$/, '')
+            def meta_new = meta + [ sample_id: sample_id, id: "${sample_id}_${bam_name}", single_end: true ]
+            [ meta_new, bam ]
+        }
     }
 
-    SAMTOOLS_CAT(ch_bam_files)
-    ch_versions = ch_versions.mix(SAMTOOLS_CAT.out.versions_samtools)
+    SAMTOOLS_FASTQ(ch_individual_bams, false)
+    ch_versions = ch_versions.mix(SAMTOOLS_FASTQ.out.versions_samtools)
 
-    ch_bams_fastq = SAMTOOLS_CAT.out.bam.map { meta, merged_bam ->
-        [ meta + [ single_end: true ], merged_bam ]
-    }
+    ch_fastqs_to_cat = SAMTOOLS_FASTQ.out.other
+        .map { meta, fastq -> 
+            def meta_clean = meta + [ id: meta.sample_id, single_end: true ]
+            [ meta_clean, fastq ] 
+        }
+        .groupTuple()
+        .map { meta, fastqs -> 
+            [ meta, fastqs.flatten() ] 
+        }
 
-    SAMTOOLS_BAM2FQ(ch_bams_fastq, false)
-    ch_versions = ch_versions.mix(SAMTOOLS_BAM2FQ.out.versions_samtools)
+    CAT_FASTQ(ch_fastqs_to_cat)
+    ch_versions = ch_versions.mix(CAT_FASTQ.out.versions_cat)
 
-    ch_hifiasm_in = SAMTOOLS_BAM2FQ.out.reads.map { meta, fastq -> 
-        [ meta, fastq, [] ] 
+    ch_hifiasm_in = CAT_FASTQ.out.reads.map { meta, merged_fastq -> 
+        [ meta, merged_fastq, [] ] 
     }
 
     HIFIASM ( 
