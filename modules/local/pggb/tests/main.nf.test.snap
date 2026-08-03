@@ -1,0 +1,125 @@
+{
+    "sarscov2 - fasta - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.gfa.gz:md5,68b329da9893e34099c7d8ad5cb9c940"
+                    ]
+                ],
+                "1": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.og:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "2": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.vcf.gz:md5,68b329da9893e34099c7d8ad5cb9c940"
+                    ]
+                ],
+                "3": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.vcf.gz.tbi:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "4": [
+                    [
+                        "PGGB",
+                        "pggb",
+                        "0.7.4"
+                    ]
+                ],
+                "gfa": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.gfa.gz:md5,68b329da9893e34099c7d8ad5cb9c940"
+                    ]
+                ],
+                "og": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.og:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "tbi": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.vcf.gz.tbi:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "vcf": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.vcf.gz:md5,68b329da9893e34099c7d8ad5cb9c940"
+                    ]
+                ],
+                "versions_pggb": [
+                    [
+                        "PGGB",
+                        "pggb",
+                        "0.7.4"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-03T22:39:45.289154177",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "sarscov2 - fasta": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "test"
+                    },
+                    "genome.fasta.5cf061b.11fba48.c556566.smooth.final.gfa.gz:md5,3d034957bc85518c00b995e5e985ef69"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "test"
+                    },
+                    "genome.fasta.5cf061b.11fba48.c556566.smooth.final.og:md5,a46c55f3d4c37d1201b1dad545582d60"
+                ]
+            ],
+            {
+                "versions_pggb": [
+                    [
+                        "PGGB",
+                        "pggb",
+                        "0.7.4"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-03T22:42:51.178723141",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

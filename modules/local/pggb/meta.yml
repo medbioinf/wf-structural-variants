@@ -1,0 +1,98 @@
+name: pggb
+description: pggb builds pangenome variation graphs using an all-to-all alignment of input sequences (wfmash), graph induction (seqwish), and progressive normalization (smoothxg, gfaffix).
+keywords:
+  - pangenome
+  - graph
+  - gfa
+  - vcf
+  - variation
+tools:
+  - pggb:
+      description: |
+        pggb builds pangenome variation graphs from a set of input sequences
+        using an all-to-all alignment of input sequences (wfmash), graph
+        induction (seqwish), and progressive normalization (smoothxg, gfaffix).
+      homepage: https://github.com/pangenome/pggb
+      documentation: https://pggb.readthedocs.io/
+      doi: 10.1038/s41592-024-02430-3
+      licence:
+        - "MIT"
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test' ]
+    - fasta:
+        type: file
+        description: Input FASTA file containing all sequences/haplotypes
+        pattern: "*.{fa,fasta,fa.gz,fasta.gz}"
+    - fai:
+        type: file
+        description: FASTA index file (.fai)
+        pattern: "*.fai"
+output:
+  gfa:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "*.gfa.gz":
+          type: file
+          description: Pangenome graph in GFA format
+          pattern: "*.gfa.gz"
+  smooth_gfa:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "*.smooth.final.gfa.gz":
+          type: file
+          description: Final smoothed pangenome graph in GFA format
+          pattern: "*.smooth.final.gfa.gz"
+  og:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "*.og":
+          type: file
+          description: Graph in ODGI format
+          pattern: "*.og"
+  vcf:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "*.vcf.gz":
+          type: file
+          description: Variant calls in VCF format against specified reference
+          pattern: "*.vcf.gz"
+  tbi:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "*.vcf.gz.tbi":
+          type: file
+          description: Tabix index for the VCF file
+          pattern: "*.vcf.gz.tbi"
+  versions_pggb:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - pggb:
+          type: string
+          description: The name of the tool
+      - pggb --version 2>&1 | head -n 1 | sed 's/pggb //g':
+          type: eval
+          description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - pggb:
+          type: string
+          description: The name of the tool
+      - pggb --version 2>&1 | head -n 1 | sed 's/pggb //g':
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@jonahKps"
