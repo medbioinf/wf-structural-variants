@@ -1,0 +1,60 @@
+name: "pansn_format"
+description: Formats FASTA headers using awk to adhere to the PanSN convention (>sample#hap#contig)
+keywords:
+  - fasta
+  - pangenome
+  - pansn
+  - header
+  - preprocessing
+tools:
+  - gawk:
+      description: |
+        GNU awk pattern-scanning and processing language used to reformat FASTA
+        headers to PanSN standard.
+      homepage: https://www.gnu.org/software/gawk/
+      documentation: https://www.gnu.org/software/gawk/manual/
+      licence:
+        - "GPL-3.0-or-later"
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'sample1', sample:'HG001', haplotype:'1' ]
+    - fasta:
+        type: file
+        description: Input FASTA file (can be gzipped)
+        pattern: "*.{fa,fasta,fa.gz,fasta.gz}"
+output:
+  fasta:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "*.pansn.fa":
+          type: file
+          description: PanSN-formatted FASTA file
+          pattern: "*.pansn.fa"
+  versions_gawk:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - gawk:
+          type: string
+          description: The name of the tool
+      - awk --version 2>&1 | head -n1 | sed 's/GNU Awk //; s/,.*//':
+          type: eval
+          description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - gawk:
+          type: string
+          description: The name of the tool
+      - awk --version 2>&1 | head -n1 | sed 's/GNU Awk //; s/,.*//':
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@jonahKps"
