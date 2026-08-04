@@ -62,25 +62,23 @@ workflow PANGENOMESV {
     //
     // SUBWORKFLOW: Run Minigraph Pangenome Graph Construction & Snarl Calling
     //
-    ch_reference = channel.fromPath(params.fasta, checkIfExists: true).map { fasta -> [ [ id:'reference' ], fasta ] }    
-    
-    ch_ref_as_assembly = ch_reference.map { meta, fasta -> 
-        [ meta + [ sample: 'reference', haplotype: 0, id: 'reference', is_ref: true ], fasta ] 
-    }
-
-    ch_assemblies = ch_assemblies.mix(ch_ref_as_assembly)
+    ch_reference = channel.fromPath(params.fasta, checkIfExists: true)
+        .map { fasta -> 
+            def ref_name = fasta.name.replaceAll(/(\.fa|\.fasta)?(\.gz)?$/, '')
+            [ [ id: ref_name, sample: ref_name, haplotype: 0, is_ref: true ], fasta ] 
+        }
 
     PANGENOME_GRAPH(ch_reference, ch_assemblies)
 
-    ch_pangenome_fa = PANGENOME_GRAPH.out.fa
+    ch_ref_fasta = PANGENOME_GRAPH.out.ref_fasta_pansn
+    ch_pangenome_fa = PANGENOME_GRAPH.out.pangenome_fa
     ch_bed_files = PANGENOME_GRAPH.out.bed
-        .filter { meta,_bed -> !meta.is_ref }
 
 
     //
     // SUBWORKFLOW: Run SWAVE Preprocessing
     //
-    SWAVE_PREPROCESSING(ch_bed_files, ch_pangenome_fa, ch_reference.map{ _meta, fa -> fa })
+    SWAVE_PREPROCESSING(ch_bed_files, ch_pangenome_fa, ch_ref_fasta)
 
     ch_dotplots = SWAVE_PREPROCESSING.out.dotplots
     ch_projections = SWAVE_PREPROCESSING.out.projections
