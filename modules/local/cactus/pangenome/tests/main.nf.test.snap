@@ -1,0 +1,112 @@
+{
+    "sarscov2 - two haplotypes": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "pangenome",
+                            "sample": "reference"
+                        },
+                        "pangenome.gfa.gz:md5,bb24823331e8d6b5af97355d75e9a9c1"
+                    ]
+                ],
+                "1": [
+                    [
+                        {
+                            "id": "pangenome",
+                            "sample": "reference"
+                        },
+                        "pangenome.sv.gfa.gz:md5,67283e4dd86f4d2e7014c6a2eaa6ca36"
+                    ]
+                ],
+                "2": [
+                    [
+                        "CACTUS_PANGENOME",
+                        "cactus",
+                        "7.0.0"
+                    ]
+                ],
+                "gfa": [
+                    [
+                        {
+                            "id": "pangenome",
+                            "sample": "reference"
+                        },
+                        "pangenome.gfa.gz:md5,bb24823331e8d6b5af97355d75e9a9c1"
+                    ]
+                ],
+                "sv_gfa": [
+                    [
+                        {
+                            "id": "pangenome",
+                            "sample": "reference"
+                        },
+                        "pangenome.sv.gfa.gz:md5,67283e4dd86f4d2e7014c6a2eaa6ca36"
+                    ]
+                ],
+                "versions_cactus": [
+                    [
+                        "CACTUS_PANGENOME",
+                        "cactus",
+                        "7.0.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-04T22:10:09.536544898",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "sarscov2 - two haplotypes - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "pangenome",
+                            "sample": "reference"
+                        },
+                        "pangenome.gfa.gz:md5,68b329da9893e34099c7d8ad5cb9c940"
+                    ]
+                ],
+                "1": [
+                    
+                ],
+                "2": [
+                    [
+                        "CACTUS_PANGENOME",
+                        "cactus",
+                        "7.0.0"
+                    ]
+                ],
+                "gfa": [
+                    [
+                        {
+                            "id": "pangenome",
+                            "sample": "reference"
+                        },
+                        "pangenome.gfa.gz:md5,68b329da9893e34099c7d8ad5cb9c940"
+                    ]
+                ],
+                "sv_gfa": [
+                    
+                ],
+                "versions_cactus": [
+                    [
+                        "CACTUS_PANGENOME",
+                        "cactus",
+                        "7.0.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-04T22:10:15.345929435",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

@@ -1,0 +1,64 @@
+nextflow_process {
+
+    name "Test Process CACTUS_PANGENOME"
+    script "../main.nf"
+    process "CACTUS_PANGENOME"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "modules_local"
+    tag "cactus"
+    tag "cactus_pangenome"
+
+    test("sarscov2 - two haplotypes") {
+
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id:'pangenome', sample:'reference' ],
+                    file("${projectDir}/modules/local/cactus/pangenome/tests/seqfile.txt", checkIfExists: true)
+                ])
+                input[1] = Channel.of([
+                    file(params.modules_testdata_base_path + 'genomics/sarscov2/genome/genome.fasta', checkIfExists: true),
+                    file("${projectDir}/modules/local/cactus/pangenome/tests/sample.fa", checkIfExists: true)
+                ])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assertAll(
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+    test("sarscov2 - two haplotypes - stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id:'pangenome', sample:'reference' ],
+                    file("${projectDir}/modules/local/cactus/pangenome/tests/seqfile.txt", checkIfExists: true)
+                ])
+                input[1] = Channel.of([
+                    file(params.modules_testdata_base_path + 'genomics/sarscov2/genome/genome.fasta', checkIfExists: true),
+                    file("${projectDir}/modules/local/cactus/pangenome/tests/sample.fa", checkIfExists: true)
+                ])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assertAll(
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+}

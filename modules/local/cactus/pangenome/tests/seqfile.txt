@@ -1,0 +1,2 @@
+reference	genome.fasta
+sample	sample.fa

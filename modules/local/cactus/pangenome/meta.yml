@@ -1,0 +1,68 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "cactus_pangenome"
+description: Constructs a pangenome variation graph from a reference and a set of haplotype assemblies using the Minigraph-Cactus pipeline (cactus-pangenome).
+keywords:
+  - pangenome
+  - graph
+  - gfa
+  - minigraph-cactus
+  - variation
+tools:
+  - cactus:
+      description: |
+        Cactus is a reference-free whole-genome alignment program that also
+        implements the Minigraph-Cactus pangenome pipeline (cactus-pangenome),
+        combining minigraph-based structural variant mapping with base-level
+        Cactus alignment to build pangenome variation graphs.
+      homepage: https://github.com/ComparativeGenomicsToolkit/cactus
+      documentation: https://github.com/ComparativeGenomicsToolkit/cactus/blob/master/doc/pangenome.md
+      doi: 10.1038/s41587-023-01793-w
+      licence:
+        - "BSD-3-Clause"
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'pangenome', sample:'mini_chm13v2.0', haplotype:0, is_ref:true ]
+    - seqfile:
+        type: file
+        description: Tab-separated Cactus seqFile listing sample names and paths to their FASTA files (one row per haplotype)
+        pattern: "*.{txt,tsv}"
+    - fastas:
+        type: file
+        description: All FASTA files referenced in the seqFile (reference and sample assemblies), staged alongside it so Cactus can resolve the listed paths
+        pattern: "*.{fa,fasta,fa.gz,fasta.gz}"
+output:
+  gfa:
+    - - meta:
+        type: map
+        description: Groovy Map containing sample information
+      - "*.gfa.gz":
+        type: file
+        description: Pangenome graph in GFA format
+        pattern: "*.gfa.gz"
+  versions_cactus:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - cactus:
+        type: string
+        description: The name of the tool
+      - cactus --version 2>&1 | head -n1:
+        type: eval
+        description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - cactus:
+        type: string
+        description: The name of the tool
+      - cactus --version 2>&1 | head -n1:
+        type: eval
+        description: The expression to obtain the version of the tool
+authors:
+  - "@jonahKps"
