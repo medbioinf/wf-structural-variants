@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "gfa_set_reference"
+description: Tags the GFA header line with an RS (reference sample) attribute so vg recognizes PanSN-named reference paths as reference-sense
+keywords:
+  - gfa
+  - pangenome
+  - vg
+  - reference
+  - preprocessing
+tools:
+  - gawk:
+      description: |
+        GNU awk pattern-scanning and processing language used to inject an
+        RS:Z: reference-sample tag into a GFA header line.
+      homepage: https://www.gnu.org/software/gawk/
+      documentation: https://www.gnu.org/software/gawk/manual/
+      licence:
+        - "GPL-3.0-or-later"
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'pangenome', sample:'mini_chm13v2.0', haplotype:0, is_ref:true ]
+    - gfa:
+        type: file
+        description: Input GFA file (uncompressed) whose reference path's sample name is given in meta.sample
+        pattern: "*.gfa"
+output:
+  gfa:
+    - - meta:
+        type: map
+        description: Groovy Map containing sample information
+      - "*.reftagged.gfa":
+        type: file
+        description: GFA file with an RS:Z: reference-sample tag added to the header line
+        pattern: "*.reftagged.gfa"
+  versions_gawk:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - gawk:
+        type: string
+        description: The name of the tool
+      - awk --version 2>&1 | head -n1 | sed 's/GNU Awk //; s/,.*//':
+        type: eval
+        description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - gawk:
+        type: string
+        description: The name of the tool
+      - awk --version 2>&1 | head -n1 | sed 's/GNU Awk //; s/,.*//':
+        type: eval
+        description: The expression to obtain the version of the tool
+authors:
+  - "@jonahKps"
