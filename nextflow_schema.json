@@ -58,6 +58,22 @@
                     "description": "Path to the FASTA reference genome.",
                     "help_text": "The primary reference genome used for pangenome graph construction or variant calling.",
                     "fa_icon": "far fa-file-code"
+                }
+            }
+        },
+        "pangenome_graph_options": {
+            "title": "Pangenome graph options",
+            "type": "object",
+            "fa_icon": "fas fa-project-diagram",
+            "description": "Parameters used during the pangenome graph construction phase.",
+            "properties": {
+                "graph_construction_tool": {
+                    "type": "string",
+                    "default": "minigraph",
+                    "description": "Tool to use for pangenome graph construction.",
+                    "help_text": "The tool used to construct the pangenome graph (minigraph, pggb, or cactus). The default is minigraph.",
+                    "fa_icon": "fas fa-project-diagram",
+                    "enum": ["minigraph", "pggb", "cactus"]
                 },
                 "gfa": {
                     "type": "string",
@@ -72,6 +88,34 @@
                     "description": "Path to an existing GFA-to-FASTA conversion file.",
                     "help_text": "If an existing GFA is provided via --gfa, its pre-extracted FASTA sequence file can be provided here.",
                     "fa_icon": "fas fa-file-alt"
+                },
+                "pggb_segment_length": {
+                    "type": "string",
+                    "default": "10k",
+                    "description": "Segment length for PGGB graph construction.",
+                    "help_text": "The segment length parameter for PGGB graph construction. Default is 10k.",
+                    "fa_icon": "fas fa-ruler"
+                },
+                "pggb_identity": {
+                    "type": "string",
+                    "default": "98",
+                    "description": "Identity threshold for PGGB graph construction.",
+                    "help_text": "The identity threshold parameter for PGGB graph construction. Default is 98.",
+                    "fa_icon": "fas fa-percent"
+                },
+                "pggb_kmer_length": {
+                    "type": "string",
+                    "default": "47",
+                    "description": "K-mer length for PGGB graph construction.",
+                    "help_text": "The k-mer length parameter for PGGB graph construction. Default is 47.",
+                    "fa_icon": "fas fa-cubes"
+                },
+                "pggb_n_haplotypes": {
+                    "type": "integer",
+                    "default": null,
+                    "description": "Number of haplotypes for PGGB graph construction.",
+                    "help_text": "The number of haplotypes parameter for PGGB graph construction. If not provided, the workflow will automatically determine the number of haplotypes from the input samples.",
+                    "fa_icon": "fas fa-users"
                 }
             }
         },
@@ -397,6 +441,9 @@
         },
         {
             "$ref": "#/$defs/reference_genome_options"
+        },
+        {
+            "$ref": "#/$defs/pangenome_graph_options"
         },
         {
             "$ref": "#/$defs/swave_extraction_options"
