@@ -1,0 +1,84 @@
+{
+    "minigraph - bed input - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "HG002_hap1"
+                        },
+                        "HG002_hap1_alleles.fa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "1": [
+                    [
+                        "SWAVE_EXTRACT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ],
+                "fa": [
+                    [
+                        {
+                            "id": "HG002_hap1"
+                        },
+                        "HG002_hap1_alleles.fa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "versions_swave": [
+                    [
+                        "SWAVE_EXTRACT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-05T06:40:57.664793288",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "minigraph - bed input": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "HG002_hap1"
+                        },
+                        "HG002_hap1_alleles.fa:md5,8ca3ecfb39dc0e65623ac25ea6bc9255"
+                    ]
+                ],
+                "1": [
+                    [
+                        "SWAVE_EXTRACT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ],
+                "fa": [
+                    [
+                        {
+                            "id": "HG002_hap1"
+                        },
+                        "HG002_hap1_alleles.fa:md5,8ca3ecfb39dc0e65623ac25ea6bc9255"
+                    ]
+                ],
+                "versions_swave": [
+                    [
+                        "SWAVE_EXTRACT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-05T06:40:51.109539206",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

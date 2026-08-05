@@ -1,0 +1,133 @@
+{
+    "vg-deconstruct - sample vcf input": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "HG002"
+                        },
+                        [
+                            "HG002_hap1_alleles.fa:md5,293219ba55a1dbb58db0ef41f3ec783d",
+                            "HG002_hap2_alleles.fa:md5,359a521f0400065c09479fef544783b1"
+                        ]
+                    ]
+                ],
+                "1": [
+                    [
+                        "SWAVE_EXTRACT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ],
+                "fa": [
+                    [
+                        {
+                            "id": "HG002"
+                        },
+                        [
+                            "HG002_hap1_alleles.fa:md5,293219ba55a1dbb58db0ef41f3ec783d",
+                            "HG002_hap2_alleles.fa:md5,359a521f0400065c09479fef544783b1"
+                        ]
+                    ]
+                ],
+                "versions_swave": [
+                    [
+                        "SWAVE_EXTRACT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-05T06:41:27.668764582",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "vg-deconstruct - sample vcf input - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "HG002"
+                        },
+                        "HG002_alleles.fa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "1": [
+                    [
+                        "SWAVE_EXTRACT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ],
+                "fa": [
+                    [
+                        {
+                            "id": "HG002"
+                        },
+                        "HG002_alleles.fa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "versions_swave": [
+                    [
+                        "SWAVE_EXTRACT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-05T06:41:40.754449678",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "vg-deconstruct - reference vcf input": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "mini_chm13v2_0",
+                            "sample": "mini_chm13v2.0"
+                        },
+                        "mini_chm13v2_0_alleles.fa:md5,3af9d73c9e5959197f6f5b4cbaa52b36"
+                    ]
+                ],
+                "1": [
+                    [
+                        "SWAVE_EXTRACT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ],
+                "fa": [
+                    [
+                        {
+                            "id": "mini_chm13v2_0",
+                            "sample": "mini_chm13v2.0"
+                        },
+                        "mini_chm13v2_0_alleles.fa:md5,3af9d73c9e5959197f6f5b4cbaa52b36"
+                    ]
+                ],
+                "versions_swave": [
+                    [
+                        "SWAVE_EXTRACT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-05T06:41:34.221714302",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

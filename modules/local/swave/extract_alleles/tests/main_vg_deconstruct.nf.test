@@ -1,0 +1,76 @@
+nextflow_process {
+
+    name "Test Process SWAVE_EXTRACT_ALLELES - vg-deconstruct"
+    script "../main.nf"
+    process "SWAVE_EXTRACT_ALLELES"
+    config "./nextflow_vg_deconstruct.config"
+
+    tag "modules"
+    tag "modules_local"
+    tag "swave"
+    tag "swave_extract_alleles"
+
+    test("vg-deconstruct - sample vcf input") {
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id:'HG002' ],
+                    [],
+                    file("${projectDir}/modules/local/swave/extract_alleles/tests/sample.vcf", checkIfExists: true)
+                ])
+                input[1] = file("${projectDir}/modules/local/swave/extract_alleles/tests/pggb_gfa_fasta.fa", checkIfExists: true)
+                """
+            }
+        }
+        then {
+            assert process.success
+            assertAll(
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+    test("vg-deconstruct - reference vcf input") {
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id:'mini_chm13v2_0', sample:'mini_chm13v2.0' ],
+                    [],
+                    file("${projectDir}/modules/local/swave/extract_alleles/tests/ref.vcf", checkIfExists: true)
+                ])
+                input[1] = file("${projectDir}/modules/local/swave/extract_alleles/tests/pggb_gfa_fasta.fa", checkIfExists: true)
+                """
+            }
+        }
+        then {
+            assert process.success
+            assertAll(
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+    test("vg-deconstruct - sample vcf input - stub") {
+        options "-stub"
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id:'HG002' ],
+                    [],
+                    file("${projectDir}/modules/local/swave/extract_alleles/tests/sample.vcf", checkIfExists: true)
+                ])
+                input[1] = file("${projectDir}/modules/local/swave/extract_alleles/tests/pggb_gfa_fasta.fa", checkIfExists: true)
+                """
+            }
+        }
+        then {
+            assert process.success
+            assertAll(
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+}

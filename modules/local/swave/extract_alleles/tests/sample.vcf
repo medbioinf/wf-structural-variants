@@ -1,0 +1,38 @@
+##fileformat=VCFv4.2
+##FILTER=<ID=PASS,Description="All filters passed">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##INFO=<ID=CONFLICT,Number=.,Type=String,Description="Sample names for which there are multiple paths in the graph with conflicting alleles">
+##INFO=<ID=AC,Number=A,Type=Integer,Description="Total number of alternate alleles in called genotypes">
+##INFO=<ID=AF,Number=A,Type=Float,Description="Estimated allele frequency in the range (0,1]">
+##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of samples with data">
+##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles in called genotypes">
+##INFO=<ID=LV,Number=1,Type=Integer,Description="Level in the snarl tree (0=top level)">
+##INFO=<ID=PS,Number=1,Type=String,Description="ID of variant corresponding to parent snarl">
+##INFO=<ID=RC,Number=1,Type=String,Description="Reference contig of top-level containing site">
+##INFO=<ID=RS,Number=1,Type=Integer,Description="Reference start position of top-level containing site">
+##INFO=<ID=RD,Number=1,Type=Integer,Description="Reference end position of top-level containing site">
+##INFO=<ID=AT,Number=R,Type=String,Description="Allele Traversal as path in graph">
+##contig=<ID=mini_chm13v2.0#0#chr1,length=1199920>
+##bcftools_viewVersion=1.23.1+htslib-1.23.1
+##bcftools_viewCommand=view --output HG002.vcf.gz -s HG002 -Oz --threads 2 pangenome.deconstructed.vcf; Date=Wed Aug  5 01:12:13 2026
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	HG002
+mini_chm13v2.0#0#chr1	3211	>3>5	A	AGAGGCGCGGCGCGCCT	60	.	AC=2;AF=1;AN=2;AT=>3>5,>3>4>5;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=3211;RD=3212	GT	1|1
+mini_chm13v2.0#0#chr1	3225	>5>7	T	TGGGGGGG	60	.	AC=2;AF=1;AN=2;AT=>5>7,>5>6>7;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=3225;RD=3226	GT	1|1
+mini_chm13v2.0#0#chr1	3242	>7>10	T	C	60	.	AC=2;AF=1;AN=2;AT=>7>8>10,>7>9>10;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=3242;RD=3243	GT	1|1
+mini_chm13v2.0#0#chr1	3381	>10>13	A	G	60	.	AC=2;AF=1;AN=2;AT=>10>11>13,>10>12>13;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=3381;RD=3382	GT	1|1
+mini_chm13v2.0#0#chr1	3427	>13>15	GC	G	60	.	AC=2;AF=1;AN=2;AT=>13>14>15,>13>15;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=3427;RD=3429	GT	1|1
+mini_chm13v2.0#0#chr1	3506	>15>18	A	G	60	.	AC=2;AF=1;AN=2;AT=>15>16>18,>15>17>18;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=3506;RD=3507	GT	1|1
+mini_chm13v2.0#0#chr1	3634	>18>20	GCCCTCTTGCTCACAGTGTAGTGGCAGCACGCCCGCCTGCTGGCAGCTGGGGACACTGCCGGA	G	60	.	AC=2;AF=1;AN=2;AT=>18>19>20,>18>20;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=3634;RD=3697	GT	1|1
+mini_chm13v2.0#0#chr1	3801	>20>23	T	C	60	.	AC=2;AF=1;AN=2;AT=>20>22>23,>20>21>23;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=3801;RD=3802	GT	1|1
+mini_chm13v2.0#0#chr1	3876	>23>26	T	C	60	.	AC=2;AF=1;AN=2;AT=>23>25>26,>23>24>26;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=3876;RD=3877	GT	1|1
+mini_chm13v2.0#0#chr1	4008	>26>29	G	C	60	.	AC=2;AF=1;AN=2;AT=>26>28>29,>26>27>29;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=4008;RD=4009	GT	1|1
+mini_chm13v2.0#0#chr1	4427	>29>32	A	C	60	.	AC=2;AF=1;AN=2;AT=>29>31>32,>29>30>32;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=4427;RD=4428	GT	1|1
+mini_chm13v2.0#0#chr1	4438	>32>35	C	T	60	.	AC=2;AF=1;AN=2;AT=>32>34>35,>32>33>35;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=4438;RD=4439	GT	1|1
+mini_chm13v2.0#0#chr1	4440	>35>38	G	A	60	.	AC=2;AF=1;AN=2;AT=>35>37>38,>35>36>38;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=4440;RD=4441	GT	1|1
+mini_chm13v2.0#0#chr1	4464	>38>41	C	T	60	.	AC=2;AF=1;AN=2;AT=>38>40>41,>38>39>41;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=4464;RD=4465	GT	1|1
+mini_chm13v2.0#0#chr1	4501	>41>44	T	C	60	.	AC=2;AF=1;AN=2;AT=>41>43>44,>41>42>44;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=4501;RD=4502	GT	1|1
+mini_chm13v2.0#0#chr1	5021	>44>47	A	T	60	.	AC=2;AF=1;AN=2;AT=>44>46>47,>44>45>47;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=5021;RD=5022	GT	1|1
+mini_chm13v2.0#0#chr1	5268	>47>50	G	A	60	.	AC=2;AF=1;AN=2;AT=>47>49>50,>47>48>50;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=5268;RD=5269	GT	1|1
+mini_chm13v2.0#0#chr1	5284	>50>53	T	C	60	.	AC=2;AF=1;AN=2;AT=>50>52>53,>50>51>53;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=5284;RD=5285	GT	1|1
+mini_chm13v2.0#0#chr1	5487	>53>56	T	G	60	.	AC=2;AF=1;AN=2;AT=>53>55>56,>53>54>56;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=5487;RD=5488	GT	1|1
+mini_chm13v2.0#0#chr1	5546	>56>59	A	C	60	.	AC=2;AF=1;AN=2;AT=>56>58>59,>56>57>59;NS=1;LV=0;RC=mini_chm13v2.0#0#chr1;RS=5546;RD=5547	GT	1|1
