@@ -70,15 +70,16 @@ workflow PANGENOMESV {
 
     PANGENOME_GRAPH(ch_reference, ch_assemblies)
 
-    ch_ref_fasta = PANGENOME_GRAPH.out.ref_fasta_pansn
-    ch_pangenome_fa = PANGENOME_GRAPH.out.pangenome_fa
     ch_bed_files = PANGENOME_GRAPH.out.bed
+    ch_vcf = PANGENOME_GRAPH.out.vcf
+    ch_pangenome_fa = PANGENOME_GRAPH.out.pangenome_fa
+    ch_ref_fasta = PANGENOME_GRAPH.out.ref_fasta_pansn
 
 
     //
     // SUBWORKFLOW: Run SWAVE Preprocessing
     //
-    SWAVE_PREPROCESSING(ch_bed_files, ch_pangenome_fa, ch_ref_fasta)
+    SWAVE_PREPROCESSING(ch_bed_files, ch_vcf, ch_pangenome_fa, ch_ref_fasta)
 
     ch_dotplots = SWAVE_PREPROCESSING.out.dotplots
     ch_projections = SWAVE_PREPROCESSING.out.projections
