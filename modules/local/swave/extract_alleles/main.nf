@@ -11,7 +11,8 @@ process SWAVE_EXTRACT_ALLELES {
     container "quay.io/swave:latest"
 
     input:
-    tuple val(meta), path(bed), path(vcf)
+    tuple val(meta), val(is_ref), path(bed), path(vcf)
+    path(ref_bed, stageAs: "ref_bed/*")
     path(gfa_fasta)
 
     output:
@@ -22,12 +23,16 @@ process SWAVE_EXTRACT_ALLELES {
     def args = task.ext.args ?: ''
     def bed_param = bed ? "--bed ${bed}" : ""
     def vcf_param = vcf ? "--vcf ${vcf}" : ""
+    def is_ref_flag = is_ref ? "--is_ref" : ""
+    def ref_bed_param = (ref_bed && !is_ref) ? "--ref_bed ${ref_bed}" : ""
     """
     swave-extract-alleles \\
         --gfa_fasta $gfa_fasta \\
         --sample_id ${meta.id} \\
         ${bed_param} \\
         ${vcf_param} \\
+        ${is_ref_flag} \\
+        ${ref_bed_param} \\
         ${args} \\
         --output_dir .
     """
