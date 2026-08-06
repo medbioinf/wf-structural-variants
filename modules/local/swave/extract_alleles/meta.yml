@@ -58,7 +58,7 @@ output:
       - swave:
         type: string
         description: The name of the tool
-      - swave-extract-alleles --version 2>&1:
+      - swave-extract-alleles --version 2>/dev/null | tail -n1:
         type: eval
         description: The expression to obtain the version of the tool
 topics:
@@ -69,7 +69,7 @@ topics:
       - swave:
         type: string
         description: The name of the tool
-      - swave-extract-alleles --version 2>&1:
+      - swave-extract-alleles --version 2>/dev/null | tail -n1:
         type: eval
         description: The expression to obtain the version of the tool
 authors:

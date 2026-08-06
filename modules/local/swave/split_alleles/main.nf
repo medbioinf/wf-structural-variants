@@ -15,7 +15,7 @@ process SWAVE_SPLIT_ALLELES {
 
     output:
     tuple val(meta), path("*.split_*.fa"), emit: splits
-    tuple val("${task.process}"), val('swave'), eval("swave-split-alleles --version 2>&1"), emit: versions_swave, topic: versions
+    tuple val("${task.process}"), val('swave'), eval("swave-split-alleles --version 2>/dev/null | tail -n1"), emit: versions_swave, topic: versions
 
     script:
     def args = task.ext.args ?: ''
