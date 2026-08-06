@@ -34,13 +34,54 @@
                 ]
             }
         ],
-        "timestamp": "2026-08-05T06:40:57.664793288",
+        "timestamp": "2026-08-05T18:24:06.537199382",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"
         }
     },
-    "minigraph - bed input": {
+    "minigraph - reference bed input": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "mini_chm13v2_0"
+                        },
+                        "mini_chm13v2_0_alleles.fa:md5,04bc58d9f80f8e0c6b2d861040888623"
+                    ]
+                ],
+                "1": [
+                    [
+                        "SWAVE_EXTRACT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ],
+                "fa": [
+                    [
+                        {
+                            "id": "mini_chm13v2_0"
+                        },
+                        "mini_chm13v2_0_alleles.fa:md5,04bc58d9f80f8e0c6b2d861040888623"
+                    ]
+                ],
+                "versions_swave": [
+                    [
+                        "SWAVE_EXTRACT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-05T18:24:00.112270289",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "minigraph - sample bed input": {
         "content": [
             {
                 "0": [
@@ -48,7 +89,7 @@
                         {
                             "id": "HG002_hap1"
                         },
-                        "HG002_hap1_alleles.fa:md5,8ca3ecfb39dc0e65623ac25ea6bc9255"
+                        "HG002_hap1_alleles.fa:md5,95be68a4f05cd4a6cadc82b1585fe591"
                     ]
                 ],
                 "1": [
@@ -63,7 +104,7 @@
                         {
                             "id": "HG002_hap1"
                         },
-                        "HG002_hap1_alleles.fa:md5,8ca3ecfb39dc0e65623ac25ea6bc9255"
+                        "HG002_hap1_alleles.fa:md5,95be68a4f05cd4a6cadc82b1585fe591"
                     ]
                 ],
                 "versions_swave": [
@@ -75,7 +116,7 @@
                 ]
             }
         ],
-        "timestamp": "2026-08-05T06:40:51.109539206",
+        "timestamp": "2026-08-05T18:23:53.791114363",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"

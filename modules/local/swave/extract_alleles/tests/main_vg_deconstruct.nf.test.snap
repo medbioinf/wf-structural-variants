@@ -8,8 +8,8 @@
                             "id": "HG002"
                         },
                         [
-                            "HG002_hap1_alleles.fa:md5,293219ba55a1dbb58db0ef41f3ec783d",
-                            "HG002_hap2_alleles.fa:md5,359a521f0400065c09479fef544783b1"
+                            "HG002_hap1_alleles.fa:md5,abe9af1d0a4a034a028156495620b72c",
+                            "HG002_hap2_alleles.fa:md5,a3a40a1430df15b24df39707e3e8939f"
                         ]
                     ]
                 ],
@@ -26,8 +26,8 @@
                             "id": "HG002"
                         },
                         [
-                            "HG002_hap1_alleles.fa:md5,293219ba55a1dbb58db0ef41f3ec783d",
-                            "HG002_hap2_alleles.fa:md5,359a521f0400065c09479fef544783b1"
+                            "HG002_hap1_alleles.fa:md5,abe9af1d0a4a034a028156495620b72c",
+                            "HG002_hap2_alleles.fa:md5,a3a40a1430df15b24df39707e3e8939f"
                         ]
                     ]
                 ],
@@ -40,7 +40,7 @@
                 ]
             }
         ],
-        "timestamp": "2026-08-05T06:41:27.668764582",
+        "timestamp": "2026-08-05T18:22:59.455872371",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"
@@ -81,7 +81,7 @@
                 ]
             }
         ],
-        "timestamp": "2026-08-05T06:41:40.754449678",
+        "timestamp": "2026-08-05T18:23:13.072745852",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"
@@ -96,7 +96,7 @@
                             "id": "mini_chm13v2_0",
                             "sample": "mini_chm13v2.0"
                         },
-                        "mini_chm13v2_0_alleles.fa:md5,3af9d73c9e5959197f6f5b4cbaa52b36"
+                        "mini_chm13v2_0_alleles.fa:md5,a3f94c153a0d87af3e2804ac265fc0c2"
                     ]
                 ],
                 "1": [
@@ -112,7 +112,7 @@
                             "id": "mini_chm13v2_0",
                             "sample": "mini_chm13v2.0"
                         },
-                        "mini_chm13v2_0_alleles.fa:md5,3af9d73c9e5959197f6f5b4cbaa52b36"
+                        "mini_chm13v2_0_alleles.fa:md5,a3f94c153a0d87af3e2804ac265fc0c2"
                     ]
                 ],
                 "versions_swave": [
@@ -124,7 +124,7 @@
                 ]
             }
         ],
-        "timestamp": "2026-08-05T06:41:34.221714302",
+        "timestamp": "2026-08-05T18:23:06.316053014",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"

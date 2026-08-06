@@ -1,0 +1,77 @@
+name: "swave_extract_alleles"
+description: Extracts structural variant alleles for a sample or reference from a pangenome graph, using either a minigraph --call BED file or a vg-deconstruct VCF as the allele-path source.
+keywords:
+  - pangenome
+  - structural-variant
+  - snarl
+  - allele
+  - swave
+tools:
+  - swave:
+      description: |
+        Modular, Nextflow-integrated reimplementation of Swave (Wang et al.,
+        Nat Genet 2026), extended with multi-tool pangenome graph support
+        (minigraph/pggb/cactus). Extracts allele-path sequences and their
+        graph traversal information from pangenome graph snarls, for
+        downstream dotplot-based structural variant classification.
+      homepage: https://github.com/medbioinf/structural-variants-swave
+      licence:
+        - "GPL-3.0-or-later"
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'HG002_hap1', sample:'HG002', is_ref:false ]
+    - is_ref:
+        type: boolean
+        description: Whether this input is the reference genome rather than a sample. Only used for the minigraph path; ignored for pggb/cactus (inferred from the VCF itself).
+    - bed:
+        type: file
+        description: Path to the sample or reference minigraph --call BED file. Required when graph_construction_tool=minigraph.
+        pattern: "*.bed"
+    - vcf:
+        type: file
+        description: Path to the sample or reference vg-deconstruct VCF file. Required when graph_construction_tool=pggb or cactus.
+        pattern: "*.vcf"
+  - - ref_bed:
+        type: file
+        description: Path to the reference's minigraph --call BED file, used to look up each snarl's reference-assembly path. Only used for the minigraph path when processing a sample (not the reference itself).
+        pattern: "*.bed"
+  - - gfa_fasta:
+        type: file
+        description: Node FASTA file of the pangenome graph, as produced by gfatools gfa2fa.
+        pattern: "*.{fa,fasta}"
+output:
+  fa:
+    - - meta:
+        type: map
+        description: Groovy Map containing sample information
+      - "*_alleles.fa":
+        type: file
+        description: FASTA file(s) containing the extracted allele sequences for each snarl, one file per resulting haplotype/reference label.
+        pattern: "*_alleles.fa"
+  versions_swave:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - swave:
+        type: string
+        description: The name of the tool
+      - swave-extract-alleles --version 2>&1:
+        type: eval
+        description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - swave:
+        type: string
+        description: The name of the tool
+      - swave-extract-alleles --version 2>&1:
+        type: eval
+        description: The expression to obtain the version of the tool
+authors:
+  - "@jonahKps"

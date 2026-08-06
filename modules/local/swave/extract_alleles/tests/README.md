@@ -1,5 +1,6 @@
-sample.bed: first 20 records of the pangenomesv pipeline's minigraph --call
-output for HG002_hap1 (chm13v2.0 chr1 test dataset).
+sample.bed / ref.bed: first 20 records of the pangenomesv pipeline's minigraph --call
+output for HG002_hap1 and for the reference (chm13v2.0 chr1 test dataset) used to test
+the --is_ref and --ref_bed lookup logic.
 
 minigraph_gfa_fasta.fa: pangenome node fasta (chm13v2.0 chr1, minigraph
 output), trimmed to only the node IDs referenced in sample.bed.
