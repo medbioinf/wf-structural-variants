@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "swave_split_alleles"
+description: Splits an extracted allele FASTA into N length-balanced FASTA files using round-robin distribution, sorted by sequence length beforehand to keep splits balanced.
+keywords:
+  - pangenome
+  - structural-variant
+  - allele
+  - fasta
+  - swave
+tools:
+  - swave:
+      description: |
+        Swave (Wang et al., Nat Genet 2026) is a tool used for population-wide structural
+        variant analysis using pangenome graphs. swave-split-alleles splits per-sample
+        allele FASTA files into balanced chunks for parallelized dotplot generation.
+      homepage: https://github.com/medbioinf/structural-variants-swave
+      licence:
+        - "GPL-3.0-or-later"
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'HG002_hap1', sample:'HG002', is_ref:false ]
+    - fasta:
+        type: file
+        description: Extracted allele FASTA file for one sample/haplotype, as produced by SWAVE_EXTRACT_ALLELES.
+        pattern: "*_alleles.fa"
+output:
+  splits:
+    - - meta:
+        type: map
+        description: Groovy Map containing sample information
+      - "*.split_*.fa":
+        type: file
+        description: One or more length-balanced FASTA files, each containing a round-robin subset of the input alleles.
+        pattern: "*.split_*.fa"
+  versions_swave:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - swave:
+        type: string
+        description: The name of the tool
+      - swave-split-alleles --version 2>&1:
+        type: eval
+        description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - swave:
+        type: string
+        description: The name of the tool
+      - swave-split-alleles --version 2>&1:
+        type: eval
+        description: The expression to obtain the version of the tool
+authors:
+  - "@jonahKps"

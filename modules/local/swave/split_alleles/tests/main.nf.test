@@ -1,0 +1,70 @@
+nextflow_process {
+
+    name "Test Process SWAVE_SPLIT_ALLELES"
+    script "../main.nf"
+    process "SWAVE_SPLIT_ALLELES"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "modules_local"
+    tag "swave"
+    tag "swave_split_alleles"
+
+    test("balanced round-robin split") {
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id:'HG002_hap1' ],
+                    file("${projectDir}/modules/local/swave/split_alleles/tests/sample_alleles.fa", checkIfExists: true)
+                ])
+                """
+            }
+        }
+        then {
+            assert process.success
+            assertAll(
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+    test("empty input fasta") {
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id:'empty_sample' ],
+                    file("${projectDir}/modules/local/swave/split_alleles/tests/empty_alleles.fa", checkIfExists: true)
+                ])
+                """
+            }
+        }
+        then {
+            assert process.success
+            assertAll(
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+    test("balanced round-robin split - stub") {
+        options "-stub"
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id:'HG002_hap1' ],
+                    file("${projectDir}/modules/local/swave/split_alleles/tests/sample_alleles.fa", checkIfExists: true)
+                ])
+                """
+            }
+        }
+        then {
+            assert process.success
+            assertAll(
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+}

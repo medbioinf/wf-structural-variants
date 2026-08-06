@@ -1,0 +1,10 @@
+>HG002_hap1|>s3>s5|mini_chm13v2.0#0#chr1:1000-1040|reversed:false|alt_path:>s10|ref_path:>s11
+ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT
+>HG002_hap1|>s5>s7|mini_chm13v2.0#0#chr1:2000-2030|reversed:false|alt_path:>s12|ref_path:>s13
+ACGTACGTACGTACGTACGTACGTACGTACGT
+>HG002_hap1|>s7>s9|mini_chm13v2.0#0#chr1:3000-3020|reversed:false|alt_path:*|ref_path:*
+ACGTACGTACGTACGTACGT
+>HG002_hap1|>s9>s11|mini_chm13v2.0#0#chr1:4000-4010|reversed:false|alt_path:*|ref_path:*
+ACGTACGTAC
+>HG002_hap1|>s11>s13|mini_chm13v2.0#0#chr1:5000-5005|reversed:false|alt_path:*|ref_path:*
+ACGTA

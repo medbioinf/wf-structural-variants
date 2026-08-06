@@ -84,7 +84,7 @@ workflow SWAVE_PREPROCESSING {
         .filter { meta, _fa -> meta.is_ref != true }
     
     SWAVE_SPLIT_ALLELES(ch_sample_alleles)
-    ch_versions = ch_versions.mix(SWAVE_SPLIT_ALLELES.out.versions)
+    ch_versions = ch_versions.mix(SWAVE_SPLIT_ALLELES.out.versions_swave)
 
     if (params.graph_construction_tool == "minigraph") {
         ch_dotplot_inputs = SWAVE_SPLIT_ALLELES.out.splits

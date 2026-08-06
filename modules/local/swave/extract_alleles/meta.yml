@@ -9,10 +9,9 @@ keywords:
 tools:
   - swave:
       description: |
-        Modular, Nextflow-integrated reimplementation of Swave (Wang et al.,
-        Nat Genet 2026), extended with multi-tool pangenome graph support
-        (minigraph/pggb/cactus). Extracts allele-path sequences and their
-        graph traversal information from pangenome graph snarls, for
+        Swave (Wang et al., Nat Genet 2026) is a tool used for population-wide structural
+        variant analysis using pangenome graphs. swave-extract-alleles extracts allele-path
+        sequences and their graph traversal information from pangenome graph snarls, for
         downstream dotplot-based structural variant classification.
       homepage: https://github.com/medbioinf/structural-variants-swave
       licence:

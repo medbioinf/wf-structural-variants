@@ -1,0 +1,133 @@
+{
+    "balanced round-robin split - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "HG002_hap1"
+                        },
+                        "HG002_hap1.split_01.fa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "1": [
+                    [
+                        "SWAVE_SPLIT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ],
+                "splits": [
+                    [
+                        {
+                            "id": "HG002_hap1"
+                        },
+                        "HG002_hap1.split_01.fa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "versions_swave": [
+                    [
+                        "SWAVE_SPLIT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-06T14:23:57.07342685",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "empty input fasta": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "empty_sample"
+                        },
+                        "empty_sample.split_01.fa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "1": [
+                    [
+                        "SWAVE_SPLIT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ],
+                "splits": [
+                    [
+                        {
+                            "id": "empty_sample"
+                        },
+                        "empty_sample.split_01.fa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "versions_swave": [
+                    [
+                        "SWAVE_SPLIT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-06T14:23:51.388879322",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "balanced round-robin split": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "HG002_hap1"
+                        },
+                        [
+                            "HG002_hap1.split_01.fa:md5,f632960abb0aa81f2085b125217c76b4",
+                            "HG002_hap1.split_02.fa:md5,2ddd8cbf476d430b64553a1c18036b84",
+                            "HG002_hap1.split_03.fa:md5,50eb8ad2e0afdd4a828596b12ac6c203"
+                        ]
+                    ]
+                ],
+                "1": [
+                    [
+                        "SWAVE_SPLIT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ],
+                "splits": [
+                    [
+                        {
+                            "id": "HG002_hap1"
+                        },
+                        [
+                            "HG002_hap1.split_01.fa:md5,f632960abb0aa81f2085b125217c76b4",
+                            "HG002_hap1.split_02.fa:md5,2ddd8cbf476d430b64553a1c18036b84",
+                            "HG002_hap1.split_03.fa:md5,50eb8ad2e0afdd4a828596b12ac6c203"
+                        ]
+                    ]
+                ],
+                "versions_swave": [
+                    [
+                        "SWAVE_SPLIT_ALLELES",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-06T14:23:46.019639867",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}
