@@ -26,9 +26,13 @@ workflow SWAVE_PREPROCESSING {
 
     if (params.graph_construction_tool == "minigraph") {
 
-        ch_extract_input = ch_bed.map { meta, bed -> [ meta, bed, [] ] }
+        ch_extract_input = ch_bed.map { meta, bed -> [ meta, meta.is_ref, bed, [] ] }
 
-        SWAVE_EXTRACT_ALLELES(ch_extract_input, ch_gfa_fasta.toList())
+        ch_ref_bed = ch_bed
+            .filter { meta, _bed -> meta.is_ref }
+            .map { _meta, bed -> bed }
+
+        SWAVE_EXTRACT_ALLELES(ch_extract_input, ch_ref_bed.toList(), ch_gfa_fasta.toList())
         ch_versions = ch_versions.mix(SWAVE_EXTRACT_ALLELES.out.versions_swave)
         ch_extracted_alleles = SWAVE_EXTRACT_ALLELES.out.fa
 
@@ -59,9 +63,9 @@ workflow SWAVE_PREPROCESSING {
 
         ch_vcf_for_extraction = ch_ref_vcf.mix(BCFTOOLS_VIEW_SAMPLES.out.vcf)
 
-        ch_extract_input = ch_vcf_for_extraction.map { meta, vcf -> [ meta, [], vcf ] }
+        ch_extract_input = ch_vcf_for_extraction.map { meta, vcf -> [ meta, false, [], vcf ] }
 
-        SWAVE_EXTRACT_ALLELES(ch_extract_input, ch_gfa_fasta.toList())
+        SWAVE_EXTRACT_ALLELES(ch_extract_input, channel.empty().toList(), ch_gfa_fasta.toList())
         ch_versions = ch_versions.mix(SWAVE_EXTRACT_ALLELES.out.versions_swave)
         ch_extracted_alleles = SWAVE_EXTRACT_ALLELES.out.fa
     }
