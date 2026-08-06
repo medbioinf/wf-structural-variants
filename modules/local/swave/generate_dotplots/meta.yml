@@ -1,0 +1,81 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "swave_generate_dotplots"
+description: Resolves pangenome graph snarls into sub-snarls where reference and alternative paths diverge, then generates dotplot objects (REF2REF, REF2ALT, ALT2ALT) for each and exports them into a compressed pickle file.
+keywords:
+  - pangenome
+  - structural-variant
+  - dotplot
+  - snarl
+  - swave
+tools:
+  - swave:
+      description: |
+        Swave (Wang et al., Nat Genet 2026) is a tool used for population-wide structural
+        variant analysis using pangenome graphs. swave-generate-dotplots builds sequence-to-image
+        dotplot representations of each sample's allele sequences against the reference,
+        as input for structural variant classification.
+      homepage: https://github.com/medbioinf/structural-variants-swave
+      licence:
+        - "GPL-3.0-or-later"
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'HG002_hap1', sample:'HG002', is_ref:false ]
+    - alt_fasta:
+        type: file
+        description: Extracted (and optionally split) allele FASTA file for one sample/haplotype, as produced by SWAVE_EXTRACT_ALLELES / SWAVE_SPLIT_ALLELES.
+        pattern: "*.fa"
+  - - ref_fasta:
+        type: file
+        description: Original reference genome FASTA file.
+        pattern: "*.{fa,fasta}"
+  - - gfa_fasta:
+        type: file
+        description: Node FASTA file of the pangenome graph, as produced by gfatools gfa2fa.
+        pattern: "*.{fa,fasta}"
+output:
+  dotplots:
+    - - meta:
+        type: map
+        description: Groovy Map containing sample information
+      - "*_dotplots.pkl.gz":
+        type: file
+        description: Gzip-compressed pickle file containing the dotplot object bundles for each resolved sub-snarl.
+        pattern: "*_dotplots.pkl.gz"
+  pngs:
+    - - meta:
+        type: map
+        description: Groovy Map containing sample information
+      - "**.png":
+        type: file
+        description: Optional combined dotplot grid images (REF2REF, REF2ALT, ALT2ALT, REF2ALT reverse-complement) for each resolved sub-snarl, only produced when --save_dotplot_images is set.
+        pattern: "*.png"
+        optional: true
+  versions_swave:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - swave:
+        type: string
+        description: The name of the tool
+      - swave-generate-dotplots --version 2>/dev/null | tail -n1:
+        type: eval
+        description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - swave:
+        type: string
+        description: The name of the tool
+      - swave-generate-dotplots --version 2>/dev/null | tail -n1:
+        type: eval
+        description: The expression to obtain the version of the tool
+authors:
+  - "@jonahKps"
+maintainers:
+  - "@jonahKps"

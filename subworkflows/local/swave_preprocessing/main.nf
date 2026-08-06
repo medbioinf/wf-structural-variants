@@ -97,7 +97,7 @@ workflow SWAVE_PREPROCESSING {
             }
 
         SWAVE_GENERATE_DOTPLOTS(ch_dotplot_inputs, ch_ref_fasta.toList(), ch_gfa_fasta.toList())
-        ch_versions = ch_versions.mix(SWAVE_GENERATE_DOTPLOTS.out.versions)
+        ch_versions = ch_versions.mix(SWAVE_GENERATE_DOTPLOTS.out.versions_swave)
         ch_dotplots = SWAVE_GENERATE_DOTPLOTS.out.dotplots
         ch_dotplot_pngs = SWAVE_GENERATE_DOTPLOTS.out.pngs
 
