@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "swave_generate_projections"
+description: Denoises each dotplot bundle against its REF2REF dotplot, extends matched diagonals to base-pair resolution, and segments the resulting REF2ALT and ALT2REF projection waves into compressed matrices for structural variant classification.
+keywords:
+  - pangenome
+  - structural-variant
+  - projection
+  - dotplot
+  - swave
+tools:
+  - swave:
+      description: |
+        Swave (Wang et al., Nat Genet 2026) is a tool used for population-wide structural
+        variant analysis using pangenome graphs. swave-generate-projections transforms
+        precomputed dotplots into 1D "projection wave" signals, separating true structural
+        variant signal from background noise introduced by genomic repeats.
+      homepage: https://github.com/medbioinf/structural-variants-swave
+      licence:
+        - "GPL-3.0-or-later"
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'HG002_hap1', sample:'HG002', is_ref:false ]
+    - dotplot_bundles_pkl:
+        type: file
+        description: Gzip-compressed pickle file containing the dotplot object bundles for each resolved sub-snarl, as produced by SWAVE_GENERATE_DOTPLOTS.
+        pattern: "*_dotplots.pkl.gz"
+output:
+  projections:
+    - - meta:
+        type: map
+        description: Groovy Map containing sample information
+      - "*_projections.pkl.gz":
+        type: file
+        description: Gzip-compressed pickle file containing the segmented REF2ALT and ALT2REF projection matrices for each resolved sub-snarl.
+        pattern: "*_projections.pkl.gz"
+  pngs:
+    - - meta:
+        type: map
+        description: Groovy Map containing sample information
+      - "**.png":
+        type: file
+        description: Optional synthesized wave-projection plots (background wave, SV-indicating wave, and their difference, forward and reverse), only produced when --save_projections_images is set.
+        pattern: "*.png"
+        optional: true
+  versions_swave:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - swave:
+        type: string
+        description: The name of the tool
+      - swave-generate-projections --version 2>/dev/null | tail -n1:
+        type: eval
+        description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - swave:
+        type: string
+        description: The name of the tool
+      - swave-generate-projections --version 2>/dev/null | tail -n1:
+        type: eval
+        description: The expression to obtain the version of the tool
+authors:
+  - "@jonahKps"
