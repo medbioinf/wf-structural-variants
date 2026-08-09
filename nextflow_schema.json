@@ -82,13 +82,6 @@
                     "help_text": "If provided, the pipeline will completely skip the pangenome graph construction step and directly use this GFA file to run variant calling for the input samples.",
                     "fa_icon": "fas fa-project-diagram"
                 },
-                "gfa2fa_fa": {
-                    "type": "string",
-                    "format": "file-path",
-                    "description": "Path to an existing GFA-to-FASTA conversion file.",
-                    "help_text": "If an existing GFA is provided via --gfa, its pre-extracted FASTA sequence file can be provided here.",
-                    "fa_icon": "fas fa-file-alt"
-                },
                 "pggb_segment_length": {
                     "type": "string",
                     "default": "10k",

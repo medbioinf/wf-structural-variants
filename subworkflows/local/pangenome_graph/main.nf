@@ -43,7 +43,6 @@ workflow PANGENOME_GRAPH {
             MINIGRAPH_CONSTRUCT(ch_formatted_ref, ch_minigraph_assemblies)
 
             ch_gfa_with_meta = MINIGRAPH_CONSTRUCT.out.gfa
-            ch_info = MINIGRAPH_CONSTRUCT.out.info  // TODO: remove
             ch_versions = ch_versions.mix(MINIGRAPH_CONSTRUCT.out.versions)
 
         } else if (params.graph_construction_tool == "pggb") {
@@ -80,7 +79,6 @@ workflow PANGENOME_GRAPH {
             PGGB(ch_pggb_input)
 
             ch_gfa_with_meta = PGGB.out.gfa
-            ch_info = channel.empty()
             ch_versions = ch_versions.mix(PGGB.out.versions_pggb)
 
         } else if (params.graph_construction_tool == "cactus") {
@@ -115,7 +113,6 @@ workflow PANGENOME_GRAPH {
             CACTUS_PANGENOME(ch_cactus_meta_seqfile, ch_cactus_fastas)
 
             ch_gfa_with_meta = CACTUS_PANGENOME.out.gfa
-            ch_info = channel.empty()
             ch_versions = ch_versions.mix(CACTUS_PANGENOME.out.versions_cactus)
             
         } else {
@@ -126,13 +123,9 @@ workflow PANGENOME_GRAPH {
         ch_gfa_with_meta = channel.fromPath(params.gfa).map { gfa -> [ [id: gfa.baseName], gfa] }
     }
 
-    if (params.gfa2fa_fa) { // TODO: potentially unnecessary, remove?
-        ch_fa_raw = channel.fromPath(params.gfa2fa_fa).map { fa -> [ [id: fa.baseName], fa ] }
-    } else {
-        GFATOOLS_GFA2FA(ch_gfa_with_meta)
-        ch_fa_raw = GFATOOLS_GFA2FA.out.fasta
-        ch_versions = ch_versions.mix(GFATOOLS_GFA2FA.out.versions_gfatools)
-    }
+    GFATOOLS_GFA2FA(ch_gfa_with_meta)
+    ch_fa_raw = GFATOOLS_GFA2FA.out.fasta
+    ch_versions = ch_versions.mix(GFATOOLS_GFA2FA.out.versions_gfatools)
 
     ch_fa_raw.branch { _meta, fa ->
         zipped: fa.name.endsWith('.gz')
@@ -182,7 +175,6 @@ workflow PANGENOME_GRAPH {
     gfa = ch_gfa_raw
     pangenome_fa = ch_fa
     ref_fasta_pansn = ch_formatted_ref.map { _meta, fa -> fa }
-    info = ch_info
     bed = ch_bed
     vcf = ch_vcf
     versions = ch_versions
