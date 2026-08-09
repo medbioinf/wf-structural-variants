@@ -13,7 +13,7 @@ workflow SWAVE_GENOTYPING {
     ch_versions = channel.empty()
 
     SWAVE_PREDICT(ch_projections)
-    ch_versions = ch_versions.mix(SWAVE_PREDICT.out.versions)
+    ch_versions = ch_versions.mix(SWAVE_PREDICT.out.versions_swave)
 
     ch_calling_inputs = SWAVE_PREDICT.out.predictions
         .join(ch_projections)

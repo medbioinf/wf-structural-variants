@@ -1,0 +1,62 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "swave_predict"
+description: Runs a pretrained bidirectional LSTM network on segments of the projection waves of each resolved sub-snarl to predict its structural variant type (None, REF, DEL, INV, DUP, invDUP).
+keywords:
+  - pangenome
+  - structural-variant
+  - prediction
+  - lstm
+  - swave
+tools:
+  - swave:
+      description: |
+        Swave (Wang et al., Nat Genet 2026) is a tool used for population-wide structural
+        variant analysis using pangenome graphs. swave-predict classifies each sub-snarl's
+        REF2ALT and ALT2REF projection wave segments into structural variant type labels
+        using a bidirectional LSTM network.
+      homepage: https://github.com/medbioinf/structural-variants-swave
+      licence:
+        - "GPL-3.0-or-later"
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'HG002_hap1', sample:'HG002', is_ref:false ]
+    - projections_pkl:
+        type: file
+        description: Gzip-compressed pickle file containing the segmented REF2ALT and ALT2REF projection matrices for each resolved sub-snarl, as produced by SWAVE_GENERATE_PROJECTIONS.
+        pattern: "*_projections.pkl.gz"
+output:
+  predictions:
+    - - meta:
+        type: map
+        description: Groovy Map containing sample information
+      - "*.predictions.pkl.gz":
+        type: file
+        description: Gzip-compressed pickle file containing the predicted structural variant type label for each REF2ALT and ALT2REF projection segment.
+        pattern: "*.predictions.pkl.gz"
+  versions_swave:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - swave:
+        type: string
+        description: The name of the tool
+      - swave-predict --version 2>/dev/null | tail -n1:
+        type: eval
+        description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - swave:
+        type: string
+        description: The name of the tool
+      - swave-predict --version 2>/dev/null | tail -n1:
+        type: eval
+        description: The expression to obtain the version of the tool
+authors:
+  - "@jonahKps"
