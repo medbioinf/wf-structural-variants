@@ -18,7 +18,7 @@ process PANSN_FORMAT {
     task.ext.when == null || task.ext.when
 
     script:
-    def sample = meta.sample ?: meta.id
+    def sample = (meta.sample ?: meta.id).replaceAll(/\./, '_')
     def haplotype = meta.haplotype ?: "0"
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
