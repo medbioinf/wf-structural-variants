@@ -77,5 +77,3 @@ topics:
         description: The expression to obtain the version of the tool
 authors:
   - "@jonahKps"
-maintainers:
-  - "@jonahKps"

@@ -16,7 +16,7 @@ process SWAVE_GENERATE_DOTPLOTS {
     path(gfa_fasta)
 
     output:
-    tuple val(meta), path("*_dotplots.pkl.gz"), emit: dotplots
+    tuple val(meta), path("*.dotplots.pkl.gz"), emit: dotplots
     tuple val(meta), path("**.png"), emit: pngs, optional: true
     tuple val("${task.process}"), val('swave'), eval("swave-generate-dotplots --version 2>/dev/null | tail -n1"), emit: versions_swave, topic: versions
 
