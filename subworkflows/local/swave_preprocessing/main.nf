@@ -17,12 +17,6 @@ workflow SWAVE_PREPROCESSING {
 
     main:
     ch_versions = channel.empty()
-    
-    // TODO: remove after dotplot & projection generation is implemented for pggb and cactus graphs
-    ch_dotplots = channel.empty()
-    ch_dotplot_pngs = channel.empty()
-    ch_projections = channel.empty()
-    ch_projections_pngs = channel.empty()
 
     if (params.graph_construction_tool == "minigraph") {
 
@@ -86,26 +80,24 @@ workflow SWAVE_PREPROCESSING {
     SWAVE_SPLIT_ALLELES(ch_sample_alleles)
     ch_versions = ch_versions.mix(SWAVE_SPLIT_ALLELES.out.versions_swave)
 
-    if (params.graph_construction_tool == "minigraph") {
-        ch_dotplot_inputs = SWAVE_SPLIT_ALLELES.out.splits
-            .transpose()
-            .map { meta, fa ->
-                def new_meta = meta.clone()
-                new_meta.sample = meta.id
-                new_meta.id = fa.baseName
-                return [ new_meta, fa ]
-            }
+    ch_dotplot_inputs = SWAVE_SPLIT_ALLELES.out.splits
+        .transpose()
+        .map { meta, fa ->
+            def new_meta = meta.clone()
+            new_meta.sample = meta.id
+            new_meta.id = fa.baseName
+            return [ new_meta, fa ]
+        }
 
-        SWAVE_GENERATE_DOTPLOTS(ch_dotplot_inputs, ch_ref_fasta.toList(), ch_gfa_fasta.toList())
-        ch_versions = ch_versions.mix(SWAVE_GENERATE_DOTPLOTS.out.versions_swave)
-        ch_dotplots = SWAVE_GENERATE_DOTPLOTS.out.dotplots
-        ch_dotplot_pngs = SWAVE_GENERATE_DOTPLOTS.out.pngs
+    SWAVE_GENERATE_DOTPLOTS(ch_dotplot_inputs, ch_ref_fasta.toList(), ch_gfa_fasta.toList())
+    ch_versions = ch_versions.mix(SWAVE_GENERATE_DOTPLOTS.out.versions_swave)
+    ch_dotplots = SWAVE_GENERATE_DOTPLOTS.out.dotplots
+    ch_dotplot_pngs = SWAVE_GENERATE_DOTPLOTS.out.pngs
 
-        SWAVE_GENERATE_PROJECTIONS(SWAVE_GENERATE_DOTPLOTS.out.dotplots)
-        ch_versions = ch_versions.mix(SWAVE_GENERATE_PROJECTIONS.out.versions)
-        ch_projections = SWAVE_GENERATE_PROJECTIONS.out.projections
-        ch_projections_pngs = SWAVE_GENERATE_PROJECTIONS.out.pngs
-    }
+    SWAVE_GENERATE_PROJECTIONS(SWAVE_GENERATE_DOTPLOTS.out.dotplots)
+    ch_versions = ch_versions.mix(SWAVE_GENERATE_PROJECTIONS.out.versions_swave)
+    ch_projections = SWAVE_GENERATE_PROJECTIONS.out.projections
+    ch_projections_pngs = SWAVE_GENERATE_PROJECTIONS.out.pngs
 
     emit:
     alleles_fasta = SWAVE_SPLIT_ALLELES.out.splits
