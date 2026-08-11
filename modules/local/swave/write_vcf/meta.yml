@@ -1,0 +1,70 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "swave_write_vcf"
+description: Merges per-haplotype structural variant TSVs across the population into haplotype-level and sample-level (diploid) VCFs, each with a corresponding split VCF.
+keywords:
+  - pangenome
+  - structural-variant
+  - vcf
+  - swave
+tools:
+  - swave:
+      description: |
+        Swave (Wang et al., Nat Genet 2026) is a tool used for population-wide structural
+        variant analysis using pangenome graphs. swave-write-vcf collects per-haplotype
+        structural variant TSVs across the whole population, merges sub-snarl components
+        back into complete top-level snarl variants, resolves diploid genotypes per sample,
+        and writes the result as standardized multi-sample VCF files.
+      homepage: https://github.com/medbioinf/structural-variants-swave
+      licence:
+        - "GPL-3.0-or-later"
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'pangenomesv' ]
+    - tsv_files:
+        type: file
+        description: One or more per-haplotype called-variants TSV files across the population, as produced by SWAVE_CALL_VARIANTS.
+        pattern: "*.variants.tsv"
+  - - ref_fasta:
+        type: file
+        description: Reference genome FASTA file, used for VCF header contig lengths and stripping any PanSN prefix from the CHROM field.
+        pattern: "*.{fa,fasta}"
+  - - equal_paths:
+        type: file
+        description: Combined equal-paths file listing, per haplotype, which snarls exactly match the reference path (no variant). Used to distinguish "no variant" (GT=0) from "no data" (GT=.) for haplotypes without a called variant at a given snarl.
+        pattern: "*.txt"
+output:
+  vcf:
+    - - meta:
+        type: map
+        description: Groovy Map containing sample information
+      - "*.vcf":
+        type: file
+        description: The four output VCF files - haplotype-level and sample-level (diploid), each in a full and a split (one record per alternative allele) variant.
+        pattern: "*.{hap_level,hap_level.split,sample_level,sample_level.split}.vcf"
+  versions_swave:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - swave:
+        type: string
+        description: The name of the tool
+      - swave-write-vcf --version 2>/dev/null | tail -n1:
+        type: eval
+        description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - swave:
+        type: string
+        description: The name of the tool
+      - swave-write-vcf --version 2>/dev/null | tail -n1:
+        type: eval
+        description: The expression to obtain the version of the tool
+authors:
+  - "@jonahKps"
