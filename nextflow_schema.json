@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/medbioinf/wf-structural-variants/master/nextflow_schema.json",
+    "$id": "https://raw.githubusercontent.com/medbioinf/pangenomesv/main/nextflow_schema.json",
     "title": "medbioinf/pangenomesv pipeline parameters",
     "description": "Pipeline for population-level structural variant characterization using pangenome graphs",
     "type": "object",
@@ -61,6 +61,21 @@
                 }
             }
         },
+        "longread_assembly_options": {
+            "title": "Longread assembly options",
+            "type": "object",
+            "fa_icon": "fas fa-dna",
+            "description": "Parameters used during the longread assembly phase.",
+            "properties": {
+                "assembly_only": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Run only the longread assembly phase and skip everything else.",
+                    "help_text": "If enabled, the workflow will only run the longread assembly phase and skip the pangenome graph construction and variant calling phases. This is useful if you only want to generate assemblies from longreads without directly performing downstream analyses.",
+                    "fa_icon": "fas fa-cogs"
+                }
+            }
+        },
         "pangenome_graph_options": {
             "title": "Pangenome graph options",
             "type": "object",
@@ -81,6 +96,20 @@
                     "description": "Path to an existing pangenome GFA file to skip graph construction.",
                     "help_text": "If provided, the pipeline will completely skip the pangenome graph construction step and directly use this GFA file to run variant calling for the input samples.",
                     "fa_icon": "fas fa-project-diagram"
+                },
+                "minigraph_incremental": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Treat --gfa as an existing graph to incrementally extend with the input assemblies, instead of using it as-is.",
+                    "help_text": "Only applies when --gfa is also set and --graph_construction_tool=minigraph. If enabled, minigraph will align the newly provided assemblies against the graph given via --gfa and extend it with any diverging sequence, rather than skipping graph construction entirely. If not set, --gfa is used as-is with no further construction.",
+                    "fa_icon": "fas fa-project-diagram"
+                },
+                "pangenome_only": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Run only the pangenome graph construction phase and skip everything else.",
+                    "help_text": "If enabled, the workflow will only run the pangenome graph construction phase and skip the variant calling phase. This is useful if you only want to generate a pangenome graph without directly performing downstream analyses.",
+                    "fa_icon": "fas fa-cogs"
                 },
                 "pggb_segment_length": {
                     "type": "string",
@@ -104,8 +133,7 @@
                     "fa_icon": "fas fa-cubes"
                 },
                 "pggb_n_haplotypes": {
-                    "type": "integer",
-                    "default": null,
+                    "type": ["integer", "null"],
                     "description": "Number of haplotypes for PGGB graph construction.",
                     "help_text": "The number of haplotypes parameter for PGGB graph construction. If not provided, the workflow will automatically determine the number of haplotypes from the input samples.",
                     "fa_icon": "fas fa-users"
@@ -138,7 +166,6 @@
                 },
                 "spec_snarl": {
                     "type": ["string", "null"],
-                    "default": null,
                     "description": "Specific snarl ID to process (e.g. '>s1>s3') for debugging/analysis.",
                     "help_text": "If provided, the workflow will only extract alleles for this specific snarl. Leave blank/null to process all snarls.",
                     "fa_icon": "fas fa-bug"
@@ -153,7 +180,7 @@
             "properties": {
                 "seq_per_split": {
                     "type": "integer",
-                    "default": 2000,
+                    "default": 2500,
                     "description": "Number of sequences to include in each split FASTA file.",
                     "help_text": "The number of sequences to include in each round-robin manner split FASTA file. This can help with parallel processing and memory management in downstream steps. The default value is 2000.",
                     "fa_icon": "fas fa-layer-group"
@@ -182,14 +209,13 @@
                 },
                 "spec_path": {
                     "type": ["string", "null"],
-                    "default": null,
                     "description": "Specific path ID to generate a dotplot for (e.g. 's1>>s3') for debugging/analysis.",
                     "help_text": "If provided, the workflow will only generate a dotplot for this specific path. Leave blank/null to generate dotplots for all paths.",
                     "fa_icon": "fas fa-bug"
                 },
                 "save_dotplot_images": {
                     "type": "boolean",
-                    "default": true,
+                    "default": false,
                     "description": "Whether to save the generated dotplot images as PNG files.",
                     "help_text": "If enabled, the generated dotplot images will be saved as PNG files.",
                     "fa_icon": "fas fa-image"
@@ -202,9 +228,9 @@
             "fa_icon": "fas fa-project-diagram",
             "description": "Parameters used during the Swave projection generation phase.",
             "properties": {
-                "save_projections_images": {
+                "save_projection_images": {
                     "type": "boolean",
-                    "default": true,
+                    "default": false,
                     "description": "Whether to save the the synthesized 6-subplot wave projection PNGs.",
                     "help_text": "If enabled, the synthesized 6-subplot wave projection PNGs will be saved.",
                     "fa_icon": "fas fa-image"
@@ -226,7 +252,6 @@
                 },
                 "model": {
                     "type": ["string", "null"],
-                    "default": null,
                     "description": "Path to a custom Swave deep learning model .pth file.",
                     "help_text": "If provided, the workflow will use this custom model for predictions instead of the default model. Leave blank/null to use the default pretrained swave model.",
                     "fa_icon": "fas fa-file-model"
@@ -274,6 +299,18 @@
                     "description": "Allele frequency threshold for frequent variants.",
                     "help_text": "Variants with an allele frequency above this threshold will be considered frequent.",
                     "fa_icon": "fas fa-percent"
+                },
+                "annovar_dir": {
+                    "type": ["string", "null"],
+                    "description": "Path to the ANNOVAR installation directory.",
+                    "help_text": "Path to a locally downloaded ANNOVAR installation (including table_annovar.pl and a populated humandb/ subdirectory with the desired annotation database). ANNOVAR requires individual, registration-based download from https://annovar.openbioinformatics.org and is not bundled with this pipeline due to its license. If not set, the ANNOVAR annotation step is skipped entirely.",
+                    "fa_icon": "fas fa-folder"
+                },
+                "annovar_db": {
+                    "type": ["string", "null"],
+                    "description": "Genome build identifier matching the downloaded ANNOVAR annotation database.",
+                    "help_text": "Must correspond to the annotation database(s) present in `--annovar_dir`'s humandb/ folder, e.g. `hg38`, `hg19`, or `hs1` (for T2T-CHM13v2.0). Required whenever `--annovar_dir` is set.",
+                    "fa_icon": "fas fa-dna"
                 }
             }
         },
@@ -340,7 +377,7 @@
                 },
                 "publish_dir_mode": {
                     "type": "string",
-                    "default": "copy",
+                    "default": "symlink",
                     "description": "Method used to save pipeline results to output directory.",
                     "help_text": "The Nextflow `publishDir` option specifies which intermediate files should be saved to the output directory. This option tells the pipeline what method should be used to move these files. See [Nextflow docs](https://www.nextflow.io/docs/latest/process.html#publishdir) for details.",
                     "fa_icon": "fas fa-copy",
@@ -434,6 +471,9 @@
         },
         {
             "$ref": "#/$defs/reference_genome_options"
+        },
+        {
+            "$ref": "#/$defs/longread_assembly_options"
         },
         {
             "$ref": "#/$defs/pangenome_graph_options"
