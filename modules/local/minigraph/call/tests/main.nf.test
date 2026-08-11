@@ -1,0 +1,74 @@
+nextflow_process {
+
+    name "Test Process MINIGRAPH_CALL"
+    script "../main.nf"
+    process "MINIGRAPH_CALL"
+
+    tag "modules"
+    tag "modules_local"
+    tag "minigraph"
+    tag "minigraph_call"
+
+    setup {
+        run("MINIGRAPH_PANGENOME") {
+            script "../../pangenome/main.nf"
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id:'test' ],
+                    file(params.modules_testdata_base_path + 'genomics/sarscov2/genome/genome.fasta', checkIfExists: true)
+                ])
+                input[1] = Channel.of(
+                    file("${projectDir}/modules/local/minigraph/pangenome/tests/sample.fa", checkIfExists: true)
+                ).collect()
+                """
+            }
+        }
+    }
+
+    test("sarscov2 - fasta") {
+        when {
+            process {
+                """
+                input[0] = MINIGRAPH_PANGENOME.out.gfa.map { _meta, gfa -> gfa }
+                input[1] = Channel.of([
+                    [ id:'test' ],
+                    file(params.modules_testdata_base_path + 'genomics/sarscov2/genome/genome.fasta', checkIfExists: true)
+                ])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assertAll(
+                { assert snapshot(
+                    process.out.bed,
+                    process.out.findAll { key, val -> key.startsWith('versions') }
+                ).match() }
+            )
+        }
+    }
+
+    test("sarscov2 - fasta - stub") {
+        options "-stub"
+        when {
+            process {
+                """
+                input[0] = MINIGRAPH_PANGENOME.out.gfa.map { _meta, gfa -> gfa }
+                input[1] = Channel.of([
+                    [ id:'test' ],
+                    file(params.modules_testdata_base_path + 'genomics/sarscov2/genome/genome.fasta', checkIfExists: true)
+                ])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assertAll(
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+}

@@ -1,0 +1,65 @@
+name: "minigraph_call"
+description: Maps a sample assembly back onto an existing pangenome graph to determine its traversal path through each snarl, producing a BED file of per-sample allele paths.
+keywords:
+  - pangenome
+  - graph
+  - structural-variant
+  - minigraph
+tools:
+  - minigraph:
+      description: |
+        Minigraph is a sequence-to-graph mapper and pangenome graph
+        constructor. The `--call` mode realigns an assembly against a
+        constructed pangenome graph to recover its traversal path through
+        each graph snarl, encoding the sample's allele at each locus.
+      homepage: https://github.com/lh3/minigraph
+      documentation: https://github.com/lh3/minigraph
+      licence:
+        - "MIT"
+      identifier: ""
+input:
+  - - gfa:
+        type: file
+        description: Pangenome graph in GFA format, as produced by MINIGRAPH_PANGENOME.
+        pattern: "*.gfa"
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test' ]
+    - assembly:
+        type: file
+        description: Sample or reference assembly FASTA file to realign against the graph.
+        pattern: "*.{fa,fasta}"
+output:
+  bed:
+    - - meta:
+        type: map
+        description: Groovy Map containing sample information
+      - "*.bed":
+        type: file
+        description: BED file listing, for each snarl, the sample's traversal path (allele) through the pangenome graph.
+        pattern: "*.bed"
+  versions_minigraph:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - minigraph:
+        type: string
+        description: The name of the tool
+      - minigraph --version 2>&1:
+        type: eval
+        description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - minigraph:
+        type: string
+        description: The name of the tool
+      - minigraph --version 2>&1:
+        type: eval
+        description: The expression to obtain the version of the tool
+authors:
+  - "@jonahKps"
