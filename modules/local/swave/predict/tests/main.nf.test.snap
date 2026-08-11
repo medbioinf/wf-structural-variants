@@ -1,0 +1,72 @@
+{
+    "projections pkl - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "HG002_hap1",
+                            "sample": "HG002"
+                        },
+                        "HG002_hap1.predictions.pkl.gz:md5,68b329da9893e34099c7d8ad5cb9c940"
+                    ]
+                ],
+                "1": [
+                    [
+                        "SWAVE_PREDICT",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ],
+                "predictions": [
+                    [
+                        {
+                            "id": "HG002_hap1",
+                            "sample": "HG002"
+                        },
+                        "HG002_hap1.predictions.pkl.gz:md5,68b329da9893e34099c7d8ad5cb9c940"
+                    ]
+                ],
+                "versions_swave": [
+                    [
+                        "SWAVE_PREDICT",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-11T00:28:40.186222058",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "projections pkl": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "HG002_hap1",
+                        "sample": "HG002"
+                    },
+                    "HG002_hap1.predictions.pkl.gz:md5,2ddd9737b3f2a91027bc24ec02add11d"
+                ]
+            ],
+            {
+                "versions_swave": [
+                    [
+                        "SWAVE_PREDICT",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-11T00:28:29.074243576",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}
