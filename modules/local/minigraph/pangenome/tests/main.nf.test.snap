@@ -1,0 +1,69 @@
+{
+    "sarscov2 - fasta - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.gfa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "1": [
+                    [
+                        "MINIGRAPH_PANGENOME",
+                        "minigraph",
+                        "0.20-r559"
+                    ]
+                ],
+                "gfa": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.gfa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "versions_minigraph": [
+                    [
+                        "MINIGRAPH_PANGENOME",
+                        "minigraph",
+                        "0.20-r559"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-10T14:28:09.180658255",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "sarscov2 - fasta": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "test"
+                    },
+                    "test.gfa:md5,1efb517bed9570918567e4124cf39880"
+                ]
+            ],
+            {
+                "versions_minigraph": [
+                    [
+                        "MINIGRAPH_PANGENOME",
+                        "minigraph",
+                        "0.20-r559"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-10T14:28:03.679284724",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

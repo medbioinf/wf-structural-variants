@@ -1,0 +1,65 @@
+name: "minigraph_pangenome"
+description: Constructs a pangenome graph in GFA format from a reference genome and a set of sample assemblies using minigraph's incremental graph generation.
+keywords:
+  - pangenome
+  - graph
+  - gfa
+  - minigraph
+tools:
+  - minigraph:
+      description: |
+        Minigraph is a sequence-to-graph mapper and pangenome graph
+        constructor. It incrementally builds a pangenome graph by aligning
+        each input assembly against the growing graph, adding new nodes and
+        edges wherever an assembly diverges from the existing graph.
+      homepage: https://github.com/lh3/minigraph
+      documentation: https://github.com/lh3/minigraph
+      licence:
+        - "MIT"
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test' ]
+    - reference:
+        type: file
+        description: Reference genome FASTA file, used as the graph backbone.
+        pattern: "*.{fa,fasta}"
+  - - assemblies:
+        type: file
+        description: One or more sample assembly FASTA files to incorporate into the pangenome graph.
+        pattern: "*.{fa,fasta}"
+output:
+  gfa:
+    - - meta:
+        type: map
+        description: Groovy Map containing sample information
+      - "*.gfa":
+        type: file
+        description: Constructed pangenome graph in GFA format.
+        pattern: "*.gfa"
+  versions_minigraph:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - minigraph:
+        type: string
+        description: The name of the tool
+      - minigraph --version 2>&1:
+        type: eval
+        description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - minigraph:
+        type: string
+        description: The name of the tool
+      - minigraph --version 2>&1:
+        type: eval
+        description: The expression to obtain the version of the tool
+authors:
+  - "@jonahKps"

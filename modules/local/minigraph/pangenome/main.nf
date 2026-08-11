@@ -1,9 +1,8 @@
-process MINIGRAPH_CONSTRUCT {
+process MINIGRAPH_PANGENOME {
     tag "${meta.id}"
-    label 'process_high_single_task'
+    label 'process_high'
 
     conda "${moduleDir}/environment.yml"
-
     container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
         ? 'https://depot.galaxyproject.org/singularity/minigraph:0.20--he4a0461_2'
         : 'quay.io/biocontainers/minigraph:0.20--he4a0461_2'}"
@@ -13,20 +12,25 @@ process MINIGRAPH_CONSTRUCT {
     path assemblies
 
     output:
-    tuple val(meta), path("${reference.baseName.toString().split(/[_.]/)[0]}_pangenome.gfa"), emit: gfa
-    tuple val("${task.process}"), val('minigraph'), eval('minigraph --version 2>&1'), emit: versions, topic: versions
+    tuple val(meta), path("*.gfa"), emit: gfa
+    tuple val("${task.process}"), val('minigraph'), eval('minigraph --version 2>&1'), emit: versions_minigraph, topic: versions
 
     script:
     def args = task.ext.args ?: ''
-    prefix = reference.baseName.toString().split(/[_.]/)[0]
+    def prefix = task.ext.prefix ?: "${meta.id}"
     """
     minigraph \\
         -cxggs \\
-        -t $task.cpus \\
-        $args \\
-        $reference \\
-        $assemblies \\
-        > ${prefix}_pangenome.gfa
+        -t ${task.cpus} \\
+        ${args} \\
+        ${reference} \\
+        ${assemblies} \\
+        > ${prefix}.gfa
     """
 
+    stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
+    """
+    touch ${prefix}.gfa
+    """
 }
