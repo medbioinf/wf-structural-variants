@@ -5,9 +5,10 @@ include { SWAVE_WRITE_VCF } from '../../../modules/local/swave/write_vcf/main'
 workflow SWAVE_GENOTYPING {
 
     take:
-    ch_dotplots
-    ch_projections
-    ch_reference_fasta
+    ch_dotplots     // channel: [ meta, [dotplot_files] ]
+    ch_projections  // channel: [ meta, [projection_files] ]
+    ch_ref_fasta    // channel: [ fasta ]
+    ch_equal_paths  // channel: [ meta, txt ]
 
     main:
     ch_versions = channel.empty()
@@ -18,10 +19,9 @@ workflow SWAVE_GENOTYPING {
     ch_calling_inputs = SWAVE_PREDICT.out.predictions
         .join(ch_projections)
         .join(ch_dotplots)
-        
     
     SWAVE_CALL_VARIANTS(ch_calling_inputs)
-    ch_versions = ch_versions.mix(SWAVE_CALL_VARIANTS.out.versions)
+    ch_versions = ch_versions.mix(SWAVE_CALL_VARIANTS.out.versions_swave)
 
     SWAVE_CALL_VARIANTS.out.tsv
         .map { _meta, tsv -> tsv }
@@ -32,22 +32,21 @@ workflow SWAVE_GENOTYPING {
         }
         .set { ch_tsv_collection }
     
-    SWAVE_WRITE_VCF(ch_tsv_collection, ch_reference_fasta)
-    ch_versions = ch_versions.mix(SWAVE_WRITE_VCF.out.versions)
+    SWAVE_WRITE_VCF(ch_tsv_collection, ch_ref_fasta, ch_equal_paths)
+    ch_versions = ch_versions.mix(SWAVE_WRITE_VCF.out.versions_swave)
 
     emit:
-    predictions = SWAVE_PREDICT.out.predictions
-    variants_tsv = SWAVE_CALL_VARIANTS.out.tsv
-    
-   vcf_merged   = SWAVE_WRITE_VCF.out.vcf.map { meta, files -> 
-        def merged_file = files.find { f -> f.name.endsWith('.vcf') && !f.name.endsWith('split.vcf') }
-        [ meta, merged_file ]
+    vcf_hap_level = SWAVE_WRITE_VCF.out.vcf.map { meta, files ->
+        [ meta, files.find { f -> f.name.endsWith('hap_level.vcf') } ]
     }
-    
-    vcf_split    = SWAVE_WRITE_VCF.out.vcf.map { meta, files -> 
-        def split_file = files.find { f -> f.name.endsWith('split.vcf') }
-        [ meta, split_file ]
+    vcf_hap_level_split = SWAVE_WRITE_VCF.out.vcf.map { meta, files ->
+        [ meta, files.find { f -> f.name.endsWith('hap_level.split.vcf') } ]
     }
-
+    vcf_merged = SWAVE_WRITE_VCF.out.vcf.map { meta, files ->
+        [ meta, files.find { f -> f.name.endsWith('sample_level.vcf') } ]
+    }
+    vcf_split = SWAVE_WRITE_VCF.out.vcf.map { meta, files ->
+        [ meta, files.find { f -> f.name.endsWith('sample_level.split.vcf') } ]
+    }
     versions = ch_versions
 }
