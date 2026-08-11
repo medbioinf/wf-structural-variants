@@ -19,7 +19,6 @@
             },
             "fasta": {
                 "type": "string",
-                "format": "file-path",
                 "pattern": "^\\S+\\.(fasta|fa|fna)(\\.gz)?$",
                 "errorMessage": "FASTA file must be provided, cannot contain spaces and must be a valid fasta file (.fa, .fasta, .fna)"
             },

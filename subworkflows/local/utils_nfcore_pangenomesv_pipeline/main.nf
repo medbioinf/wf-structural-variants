@@ -11,7 +11,6 @@
 include { UTILS_NFSCHEMA_PLUGIN     } from '../../nf-core/utils_nfschema_plugin'
 include { paramsSummaryMap          } from 'plugin/nf-schema'
 include { samplesheetToList         } from 'plugin/nf-schema'
-include { paramsHelp                } from 'plugin/nf-schema'
 include { completionEmail           } from '../../nf-core/utils_nfcore_pipeline'
 include { completionSummary         } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NFCORE_PIPELINE     } from '../../nf-core/utils_nfcore_pipeline'
@@ -71,7 +70,8 @@ workflow PIPELINE_INITIALISATION {
         show_hidden,
         before_text,
         after_text,
-        command
+        command,
+        null
     )
 
     //
@@ -88,19 +88,26 @@ workflow PIPELINE_INITIALISATION {
         .fromList(samplesheetToList(input, "${projectDir}/assets/schema_input.json"))
         .map { row ->
             def entry = row instanceof Map ? row : [sample: row[0], haplotype: row[1], fasta: row[2], bam_dir: row[3]]
-
             def sample_id = [entry.sample].flatten().find()?.toString()
             def raw_hap = [entry.haplotype].flatten().find()
             def raw_fa = [entry.fasta].flatten().find()
             def raw_bam = [entry.bam_dir].flatten().find()
-
             def meta = [ sample: sample_id ]
             if (raw_hap != null && raw_hap.toString() != '') {
                 meta.haplotype = raw_hap.toString().toInteger()
             }
 
-            def fasta   = raw_fa  ? file(raw_fa)  : null
-            def bam_dir = raw_bam ? file(raw_bam) : null
+            def fasta = null
+            if (raw_fa) {
+                def fa_str = raw_fa.toString()
+                fasta = fa_str.startsWith('/') ? file(fa_str) : file("${projectDir}/${fa_str}")
+            }
+
+            def bam_dir = null
+            if (raw_bam) {
+                def bam_str = raw_bam.toString()
+                bam_dir = bam_str.startsWith('/') ? file(bam_str) : file("${projectDir}/${bam_str}")
+            }
 
             return [ sample_id, meta, fasta, bam_dir ]
         }
