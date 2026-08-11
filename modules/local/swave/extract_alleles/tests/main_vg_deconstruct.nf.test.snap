@@ -15,9 +15,31 @@
                 ],
                 "1": [
                     [
+                        {
+                            "id": "HG002"
+                        },
+                        [
+                            "HG002_hap1_equal_paths.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            "HG002_hap2_equal_paths.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
+                        ]
+                    ]
+                ],
+                "2": [
+                    [
                         "SWAVE_EXTRACT_ALLELES",
                         "swave",
                         "0.1.0"
+                    ]
+                ],
+                "equal_paths": [
+                    [
+                        {
+                            "id": "HG002"
+                        },
+                        [
+                            "HG002_hap1_equal_paths.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            "HG002_hap2_equal_paths.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
+                        ]
                     ]
                 ],
                 "fa": [
@@ -40,7 +62,7 @@
                 ]
             }
         ],
-        "timestamp": "2026-08-05T18:22:59.455872371",
+        "timestamp": "2026-08-10T23:56:46.663431689",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"
@@ -59,9 +81,25 @@
                 ],
                 "1": [
                     [
+                        {
+                            "id": "HG002"
+                        },
+                        "HG002_equal_paths.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "2": [
+                    [
                         "SWAVE_EXTRACT_ALLELES",
                         "swave",
                         "0.1.0"
+                    ]
+                ],
+                "equal_paths": [
+                    [
+                        {
+                            "id": "HG002"
+                        },
+                        "HG002_equal_paths.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
                     ]
                 ],
                 "fa": [
@@ -81,7 +119,7 @@
                 ]
             }
         ],
-        "timestamp": "2026-08-05T18:23:13.072745852",
+        "timestamp": "2026-08-10T23:56:56.948468581",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"
@@ -101,9 +139,27 @@
                 ],
                 "1": [
                     [
+                        {
+                            "id": "mini_chm13v2_0",
+                            "sample": "mini_chm13v2.0"
+                        },
+                        "mini_chm13v2_0_equal_paths.txt:md5,f89f8304c08520e9b2cc8391c72f7deb"
+                    ]
+                ],
+                "2": [
+                    [
                         "SWAVE_EXTRACT_ALLELES",
                         "swave",
                         "0.1.0"
+                    ]
+                ],
+                "equal_paths": [
+                    [
+                        {
+                            "id": "mini_chm13v2_0",
+                            "sample": "mini_chm13v2.0"
+                        },
+                        "mini_chm13v2_0_equal_paths.txt:md5,f89f8304c08520e9b2cc8391c72f7deb"
                     ]
                 ],
                 "fa": [
@@ -124,7 +180,7 @@
                 ]
             }
         ],
-        "timestamp": "2026-08-05T18:23:06.316053014",
+        "timestamp": "2026-08-10T23:56:51.818008089",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"

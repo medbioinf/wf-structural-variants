@@ -2,13 +2,11 @@ process SWAVE_EXTRACT_ALLELES {
     tag "${meta.id}"
     label 'process_low'
 
-    conda "${moduleDir}/environment.yml" // TODO: update conda path after publishing
+    conda "${moduleDir}/environment.yml"
 
-    // TODO: publish swave container to quay.io and update the container path
-    // container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
-    //     ? ''
-    //     : ''}"
-    container "quay.io/swave:latest"
+    container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
+        ? 'docker://jonahkps/panswave:0.1.0'
+        : 'docker.io/jonahkps/panswave:0.1.0'}"
 
     input:
     tuple val(meta), val(is_ref), path(bed), path(vcf)
@@ -17,6 +15,7 @@ process SWAVE_EXTRACT_ALLELES {
 
     output:
     tuple val(meta), path("*_alleles.fa"), emit: fa
+    tuple val(meta), path("*_equal_paths.txt"), emit: equal_paths
     tuple val("${task.process}"), val('swave'), eval("swave-extract-alleles --version 2>/dev/null | tail -n1"), emit: versions_swave, topic: versions
 
     script:
@@ -40,5 +39,6 @@ process SWAVE_EXTRACT_ALLELES {
     stub:
     """
     touch ${meta.id}_alleles.fa
+    touch ${meta.id}_equal_paths.txt
     """
 }
