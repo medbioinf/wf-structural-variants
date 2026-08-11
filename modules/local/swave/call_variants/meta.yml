@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "swave_call_variants"
+description: Merges predicted structural variant components from REF2ALT and ALT2REF of each resolved sub-snarl into resolved variant calls, streaming the results into a structured TSV file.
+keywords:
+  - pangenome
+  - structural-variant
+  - variant-calling
+  - swave
+tools:
+  - swave:
+      description: |
+        Swave (Wang et al., Nat Genet 2026) is a tool used for population-wide structural
+        variant analysis using pangenome graphs. swave-call-variants merges per-sub-snarl
+        REF2ALT and ALT2REF structural variant predictions into resolved simple (SSV) and
+        complex (CSV) structural variant calls.
+      homepage: https://github.com/medbioinf/structural-variants-swave
+      licence:
+        - "GPL-3.0-or-later"
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'HG002_hap1', sample:'HG002', is_ref:false ]
+    - predictions_pkl:
+        type: file
+        description: Gzip-compressed pickle file containing the predicted structural variant type label for each REF2ALT and ALT2REF projection segment, as produced by SWAVE_PREDICT.
+        pattern: "*.predictions.pkl.gz"
+    - projections_pkl:
+        type: file
+        description: Gzip-compressed pickle file containing the segmented REF2ALT and ALT2REF projection matrices for each resolved sub-snarl, as produced by SWAVE_GENERATE_PROJECTIONS.
+        pattern: "*_projections.pkl.gz"
+    - dotplots_pkl:
+        type: file
+        description: Gzip-compressed pickle file containing the dotplot object bundles for each resolved sub-snarl, as produced by SWAVE_GENERATE_DOTPLOTS.
+        pattern: "*_dotplots.pkl.gz"
+output:
+  tsv:
+    - - meta:
+        type: map
+        description: Groovy Map containing sample information
+      - "*.variants.tsv":
+        type: file
+        description: TSV file listing called structural variants per sub-snarl, including type, length, quality score, and breakpoint information.
+        pattern: "*.variants.tsv"
+  versions_swave:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - swave:
+        type: string
+        description: The name of the tool
+      - swave-call-variants --version 2>/dev/null | tail -n1:
+        type: eval
+        description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - swave:
+        type: string
+        description: The name of the tool
+      - swave-call-variants --version 2>/dev/null | tail -n1:
+        type: eval
+        description: The expression to obtain the version of the tool
+authors:
+  - "@jonahKps"
+maintainers:
+  - "@jonahKps"

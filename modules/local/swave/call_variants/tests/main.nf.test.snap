@@ -1,0 +1,72 @@
+{
+    "predictions/projections/dotplots - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "HG002_hap1",
+                            "sample": "HG002"
+                        },
+                        "HG002_hap1.variants.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "1": [
+                    [
+                        "SWAVE_CALL_VARIANTS",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ],
+                "tsv": [
+                    [
+                        {
+                            "id": "HG002_hap1",
+                            "sample": "HG002"
+                        },
+                        "HG002_hap1.variants.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "versions_swave": [
+                    [
+                        "SWAVE_CALL_VARIANTS",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-11T00:34:28.248824138",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "predictions/projections/dotplots": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "HG002_hap1",
+                        "sample": "HG002"
+                    },
+                    "HG002_hap1.variants.tsv:md5,98dd4ca229565d67e47328a753143bb2"
+                ]
+            ],
+            {
+                "versions_swave": [
+                    [
+                        "SWAVE_CALL_VARIANTS",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-11T00:34:15.511883717",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

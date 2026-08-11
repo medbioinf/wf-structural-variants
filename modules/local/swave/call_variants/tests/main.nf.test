@@ -1,0 +1,102 @@
+nextflow_process {
+
+    name "Test Process SWAVE_CALL_VARIANTS"
+    script "../main.nf"
+    process "SWAVE_CALL_VARIANTS"
+    config "../../extract_alleles/tests/nextflow_minigraph.config"
+
+    tag "modules"
+    tag "modules_local"
+    tag "swave"
+    tag "swave_call_variants"
+
+    setup {
+        run("SWAVE_EXTRACT_ALLELES") {
+            script "../../extract_alleles/main.nf"
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id:'HG002_hap1', sample:'HG002' ],
+                    false,
+                    file("${projectDir}/modules/local/swave/extract_alleles/tests/sample.bed", checkIfExists: true),
+                    []
+                ])
+                input[1] = file("${projectDir}/modules/local/swave/extract_alleles/tests/ref_minigraph.bed", checkIfExists: true)
+                input[2] = file("${projectDir}/modules/local/swave/extract_alleles/tests/minigraph_gfa_fasta.fa", checkIfExists: true)
+                """
+            }
+        }
+        run("SWAVE_GENERATE_DOTPLOTS") {
+            script "../../generate_dotplots/main.nf"
+            process {
+                """
+                input[0] = SWAVE_EXTRACT_ALLELES.out.fa
+                    .map { meta, fa_files ->
+                        def fa = fa_files instanceof List ? fa_files[0] : fa_files
+                        [ meta, fa ]
+                    }
+                input[1] = file("${projectDir}/modules/local/swave/generate_dotplots/tests/ref.fa", checkIfExists: true)
+                input[2] = file("${projectDir}/modules/local/swave/extract_alleles/tests/minigraph_gfa_fasta.fa", checkIfExists: true)
+                """
+            }
+        }
+        run("SWAVE_GENERATE_PROJECTIONS") {
+            script "../../generate_projections/main.nf"
+            process {
+                """
+                input[0] = SWAVE_GENERATE_DOTPLOTS.out.dotplots
+                """
+            }
+        }
+        run("SWAVE_PREDICT") {
+            script "../../predict/main.nf"
+            process {
+                """
+                input[0] = SWAVE_GENERATE_PROJECTIONS.out.projections
+                """
+            }
+        }
+    }
+
+    test("predictions/projections/dotplots") {
+        when {
+            process {
+                """
+                input[0] = SWAVE_PREDICT.out.predictions
+                    .join(SWAVE_GENERATE_PROJECTIONS.out.projections)
+                    .join(SWAVE_GENERATE_DOTPLOTS.out.dotplots)
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assertAll(
+                { assert snapshot(
+                    process.out.tsv,
+                    process.out.findAll { key, val -> key.startsWith('versions') }
+                ).match() }
+            )
+        }
+    }
+
+    test("predictions/projections/dotplots - stub") {
+        options "-stub"
+        when {
+            process {
+                """
+                input[0] = SWAVE_PREDICT.out.predictions
+                    .join(SWAVE_GENERATE_PROJECTIONS.out.projections)
+                    .join(SWAVE_GENERATE_DOTPLOTS.out.dotplots)
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assertAll(
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+}

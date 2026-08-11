@@ -1,10 +1,15 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/environment-schema.json
+# NOTE: panswave is not (yet) published on Bioconda/PyPI. It is installed directly from its GitHub repository via pip.
 channels:
   - conda-forge
   - bioconda
 dependencies:
-  - conda-forge::python=3.11
-  - conda-forge::numpy=1.23.5
-  - conda-forge::matplotlib=3.5.1
-  - bioconda::pysam=0.19.1
-  - conda-forge::pytorch=2.2.1
+  - python=3.9
+  - pip
+  - numpy=1.23.5
+  - scipy=1.10.1
+  - matplotlib=3.5.1
+  - pysam=0.19.1
+  - pytorch
+  - pip:
+      - git+https://github.com/medbioinf/structural-variants-swave.git@main
