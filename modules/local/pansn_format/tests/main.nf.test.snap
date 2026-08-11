@@ -1,0 +1,92 @@
+{
+    "simple sample": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test",
+                            "sample": "test_sample",
+                            "haplotype": "1"
+                        },
+                        "test.pansn.fa:md5,da4bffc06b00273d390d5fc4b70e5510"
+                    ]
+                ],
+                "1": [
+                    [
+                        "PANSN_FORMAT",
+                        "gawk",
+                        "5.3.0"
+                    ]
+                ],
+                "fasta": [
+                    [
+                        {
+                            "id": "test",
+                            "sample": "test_sample",
+                            "haplotype": "1"
+                        },
+                        "test.pansn.fa:md5,da4bffc06b00273d390d5fc4b70e5510"
+                    ]
+                ],
+                "versions_gawk": [
+                    [
+                        "PANSN_FORMAT",
+                        "gawk",
+                        "5.3.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-10T13:51:27.727458981",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test",
+                            "sample": "test_sample",
+                            "haplotype": "1"
+                        },
+                        "test.pansn.fa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "1": [
+                    [
+                        "PANSN_FORMAT",
+                        "gawk",
+                        "5.3.0"
+                    ]
+                ],
+                "fasta": [
+                    [
+                        {
+                            "id": "test",
+                            "sample": "test_sample",
+                            "haplotype": "1"
+                        },
+                        "test.pansn.fa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "versions_gawk": [
+                    [
+                        "PANSN_FORMAT",
+                        "gawk",
+                        "5.3.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-10T13:51:33.400455171",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}
