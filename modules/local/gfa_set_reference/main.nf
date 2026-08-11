@@ -4,11 +4,12 @@ process GFA_SET_REFERENCE {
 
     conda "${moduleDir}/environment.yml"
     container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
-            ? 'https://depot.galaxyproject.org/singularity/gawk:5.3.0'
-            : 'biocontainers/gawk:5.3.0'}"
+                ? 'https://depot.galaxyproject.org/singularity/gawk:5.3.0'
+                : 'biocontainers/gawk:5.3.0'}"
 
     input:
     tuple val(meta), path(gfa)
+    path(ref_contig_names)
 
     output:
     tuple val(meta), path("*.reftagged.gfa"), emit: gfa
@@ -19,9 +20,10 @@ process GFA_SET_REFERENCE {
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def ref_sample = meta.sample
     """
-    awk -v OFS='\\t' -v rs="RS:Z:${ref_sample}" '
+    RS_TAGS=\$(cut -d'#' -f1 ${ref_contig_names} | sort -u | awk '{printf "RS:Z:%s\\t", \$1}' | sed 's/\\t\$//')
+
+    awk -v OFS='\\t' -v rs="\$RS_TAGS" '
     NR==1 && \$1=="H" {
         if (\$0 ~ /RS:Z:/) { print; next }
         print \$0, rs; next

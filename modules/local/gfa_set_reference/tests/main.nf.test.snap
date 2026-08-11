@@ -1,0 +1,125 @@
+{
+    "gfa - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.reftagged.gfa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "1": [
+                    [
+                        "GFA_SET_REFERENCE",
+                        "gawk",
+                        "5.3.0"
+                    ]
+                ],
+                "gfa": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.reftagged.gfa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "versions_gawk": [
+                    [
+                        "GFA_SET_REFERENCE",
+                        "gawk",
+                        "5.3.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-10T13:54:45.662852801",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "gfa - existing header": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.reftagged.gfa:md5,8d88a0cab05b4fbf9810a8457d3e01bb"
+                    ]
+                ],
+                "1": [
+                    [
+                        "GFA_SET_REFERENCE",
+                        "gawk",
+                        "5.3.0"
+                    ]
+                ],
+                "gfa": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.reftagged.gfa:md5,8d88a0cab05b4fbf9810a8457d3e01bb"
+                    ]
+                ],
+                "versions_gawk": [
+                    [
+                        "GFA_SET_REFERENCE",
+                        "gawk",
+                        "5.3.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-10T13:54:40.015561235",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "gfa - no existing header": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.reftagged.gfa:md5,8d88a0cab05b4fbf9810a8457d3e01bb"
+                    ]
+                ],
+                "1": [
+                    [
+                        "GFA_SET_REFERENCE",
+                        "gawk",
+                        "5.3.0"
+                    ]
+                ],
+                "gfa": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.reftagged.gfa:md5,8d88a0cab05b4fbf9810a8457d3e01bb"
+                    ]
+                ],
+                "versions_gawk": [
+                    [
+                        "GFA_SET_REFERENCE",
+                        "gawk",
+                        "5.3.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-10T13:54:34.667609909",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

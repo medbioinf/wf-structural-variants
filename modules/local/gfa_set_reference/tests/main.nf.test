@@ -1,0 +1,74 @@
+nextflow_process {
+
+    name "Test Process GFA_SET_REFERENCE"
+    script "../main.nf"
+    process "GFA_SET_REFERENCE"
+
+    tag "modules"
+    tag "modules_local"
+    tag "gfa_set_reference"
+
+    test("gfa - no existing header") {
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id:'test' ],
+                    file("${projectDir}/modules/local/gfa_set_reference/tests/no_h_line.gfa", checkIfExists: true)
+                ])
+                input[1] = file("${projectDir}/modules/local/gfa_set_reference/tests/contig_names.txt", checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assertAll(
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+    test("gfa - existing header") {
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id:'test' ],
+                    file("${projectDir}/modules/local/gfa_set_reference/tests/with_h_line.gfa", checkIfExists: true)
+                ])
+                input[1] = file("${projectDir}/modules/local/gfa_set_reference/tests/contig_names.txt", checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assertAll(
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+    test("gfa - stub") {
+        options "-stub"
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id:'test' ],
+                    file("${projectDir}/modules/local/gfa_set_reference/tests/no_h_line.gfa", checkIfExists: true)
+                ])
+                input[1] = file("${projectDir}/modules/local/gfa_set_reference/tests/contig_names.txt", checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assertAll(
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+}
