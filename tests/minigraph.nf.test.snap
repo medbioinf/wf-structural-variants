@@ -1,0 +1,25 @@
+{
+    "software_versions": {
+        "content": [
+            "pangenomesv_software_mqc_versions.yml:md5,7078e0f3b4de15c994738fb2246b08c4"
+        ],
+        "timestamp": "2026-08-11T04:13:48.965425199",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "variants_raw_filelist": {
+        "content": [
+            "pangenomesv.hap_level.split.vcf:md5,93b4220fcf36e2ae0a5b6ce794688585",
+            "pangenomesv.hap_level.vcf:md5,5f0356a38b3c923f8aefc3a471b1e3fa",
+            "pangenomesv.sample_level.split.vcf:md5,0bf90fd29dbbbc0fd43a327dff7f10cb",
+            "pangenomesv.sample_level.vcf:md5,6a3458a64a3a72481f19a0a70d84d6e2"
+        ],
+        "timestamp": "2026-08-11T04:13:48.961153846",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

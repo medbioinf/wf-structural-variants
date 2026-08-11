@@ -1,0 +1,26 @@
+nextflow_pipeline {
+
+    name "Test Pipeline: Minigraph"
+    script "main.nf"
+    profile "test"
+    tag "minigraph"
+
+    test("run pipeline with minigraph (default)") {
+        when {
+            params {
+                outdir = "$outputDir"
+                graph_construction_tool = 'minigraph'
+            }
+        }
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert path("${params.outdir}/multiqc/multiqc_report.html").exists() },
+                { assert snapshot(
+                    path("${params.outdir}/variants/raw").list()
+                ).match("variants_raw_filelist") },
+                { assert snapshot(path("${params.outdir}/pipeline_info/pangenomesv_software_mqc_versions.yml")).match("software_versions") }
+            )
+        }
+    }
+}
