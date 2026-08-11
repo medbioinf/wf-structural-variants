@@ -1,0 +1,90 @@
+{
+    "dotplots pkl": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "HG002_hap1",
+                        "sample": "HG002"
+                    },
+                    "HG002_hap1.projections.pkl.gz:md5,3fce3232db47fc936a28fc47dba8216e"
+                ]
+            ],
+            {
+                "versions_swave": [
+                    [
+                        "SWAVE_GENERATE_PROJECTIONS",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-11T00:26:30.385166991",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "dotplots pkl - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "HG002_hap1",
+                            "sample": "HG002"
+                        },
+                        "HG002_hap1.projections.pkl.gz:md5,68b329da9893e34099c7d8ad5cb9c940"
+                    ]
+                ],
+                "1": [
+                    [
+                        {
+                            "id": "HG002_hap1",
+                            "sample": "HG002"
+                        },
+                        "stub.projections.png:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "2": [
+                    [
+                        "SWAVE_GENERATE_PROJECTIONS",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ],
+                "pngs": [
+                    [
+                        {
+                            "id": "HG002_hap1",
+                            "sample": "HG002"
+                        },
+                        "stub.projections.png:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "projections": [
+                    [
+                        {
+                            "id": "HG002_hap1",
+                            "sample": "HG002"
+                        },
+                        "HG002_hap1.projections.pkl.gz:md5,68b329da9893e34099c7d8ad5cb9c940"
+                    ]
+                ],
+                "versions_swave": [
+                    [
+                        "SWAVE_GENERATE_PROJECTIONS",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-11T00:26:38.808115366",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

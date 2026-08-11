@@ -2,13 +2,11 @@ process SWAVE_GENERATE_PROJECTIONS {
     tag "${meta.id}"
     label 'process_medium'
 
-    conda "${moduleDir}/environment.yml" // TODO: update conda path after publishing
+    conda "${moduleDir}/environment.yml"
 
-    // TODO: publish swave container to quay.io and update the container path
-    // container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
-    //     ? ''
-    //     : ''}"
-    container "quay.io/swave:latest"
+    container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
+        ? 'docker://jonahkps/panswave:0.1.0'
+        : 'docker.io/jonahkps/panswave:0.1.0'}"
     
     input:
     tuple val(meta), path(dotplot_bundles_pkl)
@@ -31,7 +29,7 @@ process SWAVE_GENERATE_PROJECTIONS {
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    echo "" | gzip -c > ${prefix}_projections.pkl.gz
+    echo "" | gzip -c > ${prefix}.projections.pkl.gz
     touch stub.projections.png
     """
 }
