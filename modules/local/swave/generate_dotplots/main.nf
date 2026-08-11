@@ -2,13 +2,11 @@ process SWAVE_GENERATE_DOTPLOTS {
     tag "${meta.id}"
     label 'process_medium'
 
-    conda "${moduleDir}/environment.yml" // TODO: update conda path after publishing
+    conda "${moduleDir}/environment.yml"
 
-    // TODO: publish swave container to quay.io and update the container path
-    // container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
-    //     ? ''
-    //     : ''}"
-    container "quay.io/swave:latest"
+    container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
+        ? 'docker://jonahkps/panswave:0.1.0'
+        : 'docker.io/jonahkps/panswave:0.1.0'}"
     
     input:
     tuple val(meta), path(alt_fasta)
@@ -38,7 +36,7 @@ process SWAVE_GENERATE_DOTPLOTS {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     mkdir -p ${meta.sample}
-    echo "" | gzip -c > ${prefix}_dotplots.pkl.gz
+    echo "" | gzip -c > ${prefix}.dotplots.pkl.gz
     touch ${meta.sample}/stub_dotplots.png
     """
 }

@@ -1,0 +1,85 @@
+{
+    "fasta - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "HG002_hap1"
+                        },
+                        "HG002_hap1.dotplots.pkl.gz:md5,68b329da9893e34099c7d8ad5cb9c940"
+                    ]
+                ],
+                "1": [
+                    [
+                        {
+                            "id": "HG002_hap1"
+                        },
+                        "stub_dotplots.png:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "2": [
+                    [
+                        "SWAVE_GENERATE_DOTPLOTS",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ],
+                "dotplots": [
+                    [
+                        {
+                            "id": "HG002_hap1"
+                        },
+                        "HG002_hap1.dotplots.pkl.gz:md5,68b329da9893e34099c7d8ad5cb9c940"
+                    ]
+                ],
+                "pngs": [
+                    [
+                        {
+                            "id": "HG002_hap1"
+                        },
+                        "stub_dotplots.png:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "versions_swave": [
+                    [
+                        "SWAVE_GENERATE_DOTPLOTS",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-11T00:23:57.283387993",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "fasta": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "HG002_hap1"
+                    },
+                    "HG002_hap1.dotplots.pkl.gz:md5,9aca422ef8aae4e07ead4d4d2d1faf48"
+                ]
+            ],
+            {
+                "versions_swave": [
+                    [
+                        "SWAVE_GENERATE_DOTPLOTS",
+                        "swave",
+                        "0.1.0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-08-11T00:21:56.049552312",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}
