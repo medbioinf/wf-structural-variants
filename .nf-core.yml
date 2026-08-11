@@ -1,8 +1,10 @@
 repository_type: pipeline
 
-nf_core_version: 4.0.2
+nf_core_version: "4.1.0"
 
 lint:
+  merge_markers: false
+  actions_nf_test: false
   files_unchanged:
     - .github/ISSUE_TEMPLATE/bug_report.yml
     - .github/ISSUE_TEMPLATE/config.yml
@@ -22,6 +24,8 @@ lint:
     - assets/email_template.html
     - assets/email_template.txt
     - docs/README.md
+    - .gitignore
+    - LICENSE
   nextflow_config:
     - manifest.name
     - manifest.homePage
@@ -42,6 +46,9 @@ lint:
     - .github/workflows/awsfulltest.yml
     - conf/igenomes.config
     - conf/igenomes_ignored.config
+    - conf/test_full.config
+    - tests/default.nf.test
+    - .github/workflows/pr-comment.yml
   readme:
     - nextflow_badge
 
