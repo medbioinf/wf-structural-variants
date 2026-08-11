@@ -1,3 +1,4 @@
-sample,haplotype,fasta
-HG002,1,assets/test_data/assemblies/mini_HG002_hap1.fa
-HG002,2,assets/test_data/assemblies/mini_HG002_hap2.fa
+sample,haplotype,fasta,bam_dir
+HG002_h2tg000171l,1,assets/test_data/assemblies/HG002_hap1_h2tg000171l.fa,
+HG002_h1tg000219l,2,assets/test_data/assemblies/HG002_hap2_h1tg000219l.fa,
+HG005_chr1_1.2Mb,,,assets/test_data/bams/HG005_chr1_1.2Mb
