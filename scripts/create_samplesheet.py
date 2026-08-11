@@ -1,26 +1,50 @@
 #!/usr/bin/env python3
-import sys
-import logging
 import argparse
+import logging
 from pathlib import Path
+import re
+import sys
 
 
-# Supported genome assembly file extensions
-SUPPORTED_EXTENSIONS = ("*.fa", "*.fasta", "*.fna")
+# supported genome assembly file extensions
+SUPPORTED_EXTENSIONS = ("*.fa", "*.fasta", "*.fna", "*.fa.gz", "*.fasta.gz", "*.fna.gz")
 EXTENSIONS_TO_STRIP = (".fa", ".fasta", ".fna", ".gz")
-
-HAPLOTYPE_TRANSLATION = {
-    "paternal": "1", "maternal": "2",
-    "hap1": "1", "hap2": "2",
-    "h1": "1", "h2": "2",
-    "1": "1", "2": "2"
-}
 
 logging.basicConfig(
     level=logging.INFO,
     format='[%(levelname)s] %(message)s',
     stream=sys.stdout
 )
+
+
+def strip_extension(filename):
+    changed = True
+    while changed:
+        changed = False
+        for ext in sorted(EXTENSIONS_TO_STRIP, key=len, reverse=True):
+            if filename.lower().endswith(ext):
+                filename = filename[: -len(ext)]
+                changed = True
+                break
+    return filename
+
+
+def get_sample_name(filename):
+    stem = strip_extension(filename)
+    stem = re.sub(r'(_|\b)(hap1|hap2|pat|mat|h1|h2)(_|\b)', '_', stem, flags=re.IGNORECASE)
+    return stem.strip('_')
+
+
+def get_haplotype(filename, allow_unphased=True):
+    if re.search(r'(_|\b)(hap2|pat|h2)(_|\b)', filename, re.IGNORECASE):
+        return "2"
+    elif re.search(r'(_|\b)(hap1|mat|h1)(_|\b)', filename, re.IGNORECASE):
+        return "1"
+    
+    if allow_unphased:
+        return "0"
+    else:
+        raise ValueError(f"Unrecognized haplotype in '{filename}' and unphased samples are not allowed")
 
 
 def find_bam_dir(sample_id, bams_path):
@@ -48,7 +72,7 @@ def generate_samplesheet(assemblies_dir="data/assemblies", bams_dir="data/bams",
     Scans the directory containing the assemblies and bams and automatically generates a pipeline compatible samplesheet.
     """
     if exclude_assemblies and exclude_bams:
-        logging.warning("Both assemblies and bams are excluded. Nothing to process.")
+        logging.warning("Both assemblies and bams are excluded, nothing to process")
         sys.exit(1)
     
     assemblies_path = Path(assemblies_dir)
@@ -56,9 +80,9 @@ def generate_samplesheet(assemblies_dir="data/assemblies", bams_dir="data/bams",
     output_path = Path(output_csv)
     
     if not exclude_assemblies and not assemblies_path.exists():
-        logging.warning(f"Assemblies folder '{assemblies_dir}' does not exist.")
+        logging.warning(f"Assemblies folder '{assemblies_dir}' does not exist")
     if not exclude_bams and not bams_path.exists():
-        logging.warning(f"BAMs folder '{bams_dir}' does not exist.")
+        logging.warning(f"BAMs folder '{bams_dir}' does not exist")
     
     # csv header        
     lines = ["sample,haplotype,fasta,bam_dir"]
@@ -79,27 +103,17 @@ def generate_samplesheet(assemblies_dir="data/assemblies", bams_dir="data/bams",
     if not exclude_assemblies and assemblies_path.exists():
         filepaths = []
         for ext in SUPPORTED_EXTENSIONS:
-            filepaths.extend(assemblies_path.glob(ext))
+            filepaths.extend(assemblies_path.rglob(ext))
         filepaths = sorted(list(set(filepaths)))
         
         for filepath in filepaths:
-            current_path = filepath
-            while current_path.suffix.lower() in EXTENSIONS_TO_STRIP:
-                current_path = current_path.with_suffix("")
-                
-            parts = current_path.name.split(".")
-            sample = parts[0]
+            sample = get_sample_name(filepath.name)
             
-            haplotype = None
-            if len(parts) > 1:
-                haplotype = HAPLOTYPE_TRANSLATION.get(parts[1].lower())
-            
-            if not haplotype:
-                if allow_unphased:
-                    haplotype = "0"
-                else:
-                    logging.warning(f"Skipping {filepath.name}: Unrecognized haplotype.")
-                    continue
+            try:
+                haplotype = get_haplotype(filepath.name, allow_unphased=allow_unphased)
+            except ValueError:
+                logging.warning(f"Skipping {filepath.name}: unrecognized haplotype")
+                continue
             
             fasta_records.append({
                 "sample": sample,
@@ -133,18 +147,19 @@ def generate_samplesheet(assemblies_dir="data/assemblies", bams_dir="data/bams",
 
 def main():
     parser = argparse.ArgumentParser(description="Automated samplesheet generation for FASTA and BAM files.")
-    parser.add_argument("--assemblies-dir", default="data/assemblies", help="Folder with the assemblies.")
-    parser.add_argument("--bams-dir", default="data/bams", help="Folder with the BAM files.")
+    parser.add_argument("--assemblies_dir", default="data/assemblies", help="Folder with the assemblies.")
+    parser.add_argument("--bams_dir", default="data/bams", help="Folder with the BAM files.")
     parser.add_argument("--out", default="data/samplesheet.csv", help="Output path of the CSV.")
-    parser.add_argument("--allow-unphased", action="store_true", help="Treat files with unrecognized haplotypes as unphased (assigned to '0') instead of skipping them.")
-    parser.add_argument("--exclude-bams", action="store_true", help="Ignore BAM directories when generating the sheet.")
-    parser.add_argument("--exclude-assemblies", action="store_true", help="Ignore assembly FASTA files when generating the sheet.")
+    parser.add_argument("--allow_unphased", action="store_true", help="Treat files with unrecognized haplotypes as unphased (assigned to '0') instead of skipping them.")
+    parser.add_argument("--exclude_bams", action="store_true", help="Ignore BAM directories when generating the sheet.")
+    parser.add_argument("--exclude_assemblies", action="store_true", help="Ignore assembly FASTA files when generating the sheet.")
     args = parser.parse_args()
     
     generate_samplesheet(assemblies_dir=args.assemblies_dir, bams_dir=args.bams_dir, output_csv=args.out,
                          allow_unphased=args.allow_unphased, exclude_bams=args.exclude_bams, exclude_assemblies=args.exclude_assemblies)
     
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()
