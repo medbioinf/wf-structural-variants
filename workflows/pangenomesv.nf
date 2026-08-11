@@ -24,7 +24,7 @@ include { SWAVE_ANNOTATION } from '../subworkflows/local/swave_annotation/main'
 workflow PANGENOMESV {
 
     take:
-    ch_samplesheet // channel: samplesheet read in from --input
+    ch_samplesheet  // samplesheet read in from --input
     multiqc_config
     multiqc_logo
     multiqc_methods_description
@@ -34,10 +34,11 @@ workflow PANGENOMESV {
     def ch_versions = channel.empty()
     def ch_multiqc_files = channel.empty()
 
-
-    //
-    // Samplesheet processing & optionally run Subworkflow LONGREAD_ASSEMBLY
-    //
+    if (params.use_gpu && !workflow.profile.contains('gpu')) {
+        error "--use_gpu is set, but the 'gpu' profile is not active. Run with '-profile gpu,<docker|apptainer|singularity|conda>' to enable GPU container access."
+    }
+    
+    // samplesheet preprocessing
     ch_samplesheet
         .branch { meta, fasta, bam_dir ->
             fasta: fasta
@@ -53,54 +54,62 @@ workflow PANGENOMESV {
             return [ new_meta, fasta ]
         }
     
+    //
+    // Run longread assembly if any BAM files are provided
+    //
     LONGREAD_ASSEMBLY(ch_input_branched.bam)
-    ch_assembled_fastas = LONGREAD_ASSEMBLY.out.assemblies
 
-    ch_assemblies = ch_existing_assemblies.mix( ch_assembled_fastas )
+    if (!params.assembly_only) {
 
+        ch_assembled_fastas = LONGREAD_ASSEMBLY.out.assemblies
 
-    //
-    // SUBWORKFLOW: Run Minigraph Pangenome Graph Construction & Snarl Calling
-    //
-    ch_reference = channel.fromPath(params.fasta, checkIfExists: true)
-        .map { fasta -> 
-            def ref_name = fasta.name.replaceAll(/(\.fa|\.fasta)?(\.gz)?$/, '')
-            [ [ id: ref_name, sample: ref_name, haplotype: 0, is_ref: true ], fasta ] 
-        }
+        ch_assemblies = ch_existing_assemblies.mix(ch_assembled_fastas)
 
-    PANGENOME_GRAPH(ch_reference, ch_assemblies)
-
-    ch_bed_files = PANGENOME_GRAPH.out.bed
-    ch_vcf = PANGENOME_GRAPH.out.vcf
-    ch_pangenome_fa = PANGENOME_GRAPH.out.pangenome_fa
-    ch_ref_fasta = PANGENOME_GRAPH.out.ref_fasta_pansn
-
-
-    //
-    // SUBWORKFLOW: Run SWAVE Preprocessing
-    //
-    SWAVE_PREPROCESSING(ch_bed_files, ch_vcf, ch_pangenome_fa, ch_ref_fasta)
-
-    ch_dotplots = SWAVE_PREPROCESSING.out.dotplots
-    ch_projections = SWAVE_PREPROCESSING.out.projections
-
-
-    //
-    // SUBWORKFLOW: Run SWAVE Genotyping
-    //
-    SWAVE_GENOTYPING(ch_dotplots, ch_projections, ch_reference.map{ _meta, fa -> fa })
-
-
-    //
-    // SUBWORKFLOW: Run SWAVE Annotation
-    //
-    ch_vcf_for_annotation = SWAVE_GENOTYPING.out.vcf_split
-        .filter { _meta, vcf ->
-            vcf.exists() && vcf.readLines().any { line -> !line.startsWith('#') && line.trim() }    // check if VCF has any non-header lines
-        }
+        //
+        // Run pangenome graph construction & snarl calling
+        //
+        ch_reference = channel.fromPath(params.fasta, checkIfExists: true)
+            .map { fasta -> 
+                def ref_name = fasta.name.replaceAll(/(\.fa|\.fasta)?(\.gz)?$/, '')
+                [ [ id: ref_name, sample: ref_name, haplotype: 0, is_ref: true ], fasta ] 
+            }
         
-    SWAVE_ANNOTATION ( ch_vcf_for_annotation )
+        PANGENOME_GRAPH(ch_reference, ch_assemblies)
 
+        if (!params.pangenome_only) {
+
+            ch_pangenome_fa = PANGENOME_GRAPH.out.pangenome_fa
+            ch_ref_fasta = PANGENOME_GRAPH.out.ref_fasta
+            ch_bed_files = PANGENOME_GRAPH.out.bed
+            ch_vcf = PANGENOME_GRAPH.out.vcf
+
+            //
+            // Run swave preprocessing to extract alleles, generate dotplots, and projections
+            //
+            SWAVE_PREPROCESSING(ch_bed_files, ch_vcf, ch_pangenome_fa, ch_ref_fasta)
+
+            ch_dotplots = SWAVE_PREPROCESSING.out.dotplots
+            ch_projections = SWAVE_PREPROCESSING.out.projections
+            ch_equal_paths = SWAVE_PREPROCESSING.out.equal_paths
+
+            //
+            // Run swave genotyping to predict structural variants and generate VCFs
+            //
+            SWAVE_GENOTYPING(ch_dotplots, ch_projections, ch_reference.map{ _meta, fa -> fa }, ch_equal_paths)
+
+            //
+            // Run swave annotation to annotate using annovar and filter by allele frequency
+            //
+            ch_vcf_for_annotation = SWAVE_GENOTYPING.out.vcf_split
+                .filter { _meta, vcf ->
+                    vcf.exists() && vcf.readLines().any { line -> !line.startsWith('#') && line.trim() }    // check if VCF has any non-header lines
+                }
+                
+            SWAVE_ANNOTATION(ch_vcf_for_annotation)
+
+        }
+
+    }
 
     //
     // Collate and save software versions
@@ -157,7 +166,8 @@ workflow PANGENOMESV {
             ]
         }
     )
-    emit:multiqc_report = MULTIQC.out.report.map { _meta, report -> [report] }.toList() // channel: /path/to/multiqc_report.html
+    emit:
+    multiqc_report = MULTIQC.out.report.map { _meta, report -> [report] }.toList() // channel: /path/to/multiqc_report.html
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
 }
 
