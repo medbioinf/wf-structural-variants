@@ -1,0 +1,41 @@
+name: "pangenome_graph"
+description: Constructs a pangenome graph from a reference genome and a set of sample assemblies using minigraph, PGGB, or Cactus, and derives per-sample allele paths (BED) or a population VCF depending on the tool used.
+keywords:
+  - pangenome
+  - graph
+  - minigraph
+  - pggb
+  - cactus
+components:
+  - pansn/format
+  - minigraph/pangenome
+  - minigraph/call
+  - pggb
+  - cactus/pangenome
+  - gfa/set/reference
+  - samtools/faidx
+  - vg/deconstruct
+  - gfatools/gfa2fa
+  - gunzip
+input:
+  - ch_reference:
+      type: file
+      description: Reference genome FASTA file.
+  - ch_assemblies:
+      type: file
+      description: Sample assembly FASTA files to incorporate into the pangenome graph.
+output:
+  - pangenome_fa:
+      type: file
+      description: Node sequence FASTA reconstructed from the pangenome graph.
+  - ref_fasta:
+      type: file
+      description: PanSN-formatted reference FASTA, aligned with the pangenome graph's own reference naming.
+  - bed:
+      type: file
+      description: Per-sample snarl traversal BED files (minigraph only).
+  - vcf:
+      type: file
+      description: Population VCF from vg deconstruct (pggb/cactus only).
+authors:
+  - "@jonahKps"

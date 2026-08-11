@@ -1,0 +1,21 @@
+name: "longread_assembly"
+description: Assembles phased haplotype assemblies from long-read BAM files using hifiasm, when raw reads (rather than pre-assembled FASTA files) are provided in the samplesheet.
+keywords:
+  - assembly
+  - long-read
+  - hifiasm
+components:
+  - samtools/fastq
+  - cat/fastq
+  - hifiasm
+  - gfatools/gfa2fa
+input:
+  - ch_bams:
+      type: file
+      description: Channel of sample BAM directories containing long-read alignments to assemble.
+output:
+  - assemblies:
+      type: file
+      description: Phased haplotype assembly FASTA files (hap1/hap2) produced by hifiasm, converted to FASTA via gfatools.
+authors:
+  - "@jonahKps"

@@ -1,0 +1,38 @@
+name: "swave_preprocessing"
+description: Extracts per-haplotype allele sequences from the pangenome graph, resolves sub-snarls, and generates dotplot and projection-wave representations for structural variant classification.
+keywords:
+  - structural-variant
+  - dotplot
+  - swave
+components:
+  - swave/extract/alleles
+  - swave/split/alleles
+  - swave/generate/dotplots
+  - swave/generate/projections
+  - bcftools/query
+  - bcftools/view
+input:
+  - ch_bed:
+      type: file
+      description: Per-sample snarl traversal BED files (minigraph).
+  - ch_vcf:
+      type: file
+      description: Population VCF (pggb/cactus).
+  - ch_gfa_fasta:
+      type: file
+      description: Pangenome graph node sequence FASTA.
+  - ch_ref_fasta:
+      type: file
+      description: Reference genome FASTA.
+output:
+  - dotplots:
+      type: file
+      description: Gzipped pickle files containing dotplot bundles per resolved sub-snarl.
+  - projections:
+      type: file
+      description: Gzipped pickle files containing projection wave matrices per resolved sub-snarl.
+  - equal_paths:
+      type: file
+      description: Combined list of snarls where a haplotype's path matches the reference exactly (no variant).
+authors:
+  - "@jonahKps"

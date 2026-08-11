@@ -1,0 +1,20 @@
+name: "swave_annotation"
+description: Annotates called structural variants using ANNOVAR (if provided) and filters the resulting VCF into rare, infrequent, and frequent allele-frequency tiers, published directly to the output directory.
+keywords:
+  - annotation
+  - annovar
+  - filtering
+components:
+  - annovar
+  - htslib/bgziptabix
+  - bcftools/filter
+input:
+  - ch_vcf:
+      type: file
+      description: VCF to optionally annotate with ANNOVAR and filter by allele frequency.
+output:
+  - versions:
+      type: file
+      description: File containing software versions used in the subworkflow.
+authors:
+  - "@jonahKps"

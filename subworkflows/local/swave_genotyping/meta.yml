@@ -1,0 +1,39 @@
+name: "swave_genotyping"
+description: Predicts structural variant types from projection waves using a pretrained Bi-LSTM model, calls variants per haplotype, and merges them into haplotype-level and sample-level (diploid) population VCFs.
+keywords:
+  - structural-variant
+  - genotyping
+  - lstm
+  - swave
+components:
+  - swave/predict
+  - swave/call/variants
+  - swave/write/vcf
+input:
+  - ch_dotplots:
+      type: file
+      description: Gzipped pickle files containing dotplot bundles per resolved sub-snarl.
+  - ch_projections:
+      type: file
+      description: Gzipped pickle files containing projection wave matrices per resolved sub-snarl.
+  - ch_ref_fasta:
+      type: file
+      description: Reference genome FASTA file.
+  - ch_equal_paths:
+      type: file
+      description: Combined equal-paths lookup file, listing snarls where a haplotype's path matches the reference exactly.
+output:
+  - vcf_hap_level:
+      type: file
+      description: Haplotype-level VCF (one column per haplotype, non-diploid genotypes).
+  - vcf_hap_level_split:
+      type: file
+      description: Haplotype-level split VCF, one record per sub-snarl.
+  - vcf_merged:
+      type: file
+      description: Sample-level (diploid) VCF.
+  - vcf_split:
+      type: file
+      description: Sample-level (diploid) split VCF, one record per sub-snarl.
+authors:
+  - "@jonahKps"
