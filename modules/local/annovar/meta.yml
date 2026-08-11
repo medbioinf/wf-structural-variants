@@ -1,0 +1,68 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "annovar"
+description: Annotates variants in a VCF file using a user-provided, locally installed ANNOVAR distribution. ANNOVAR itself is not bundled with this pipeline due to its individual-registration license; users must download it separately from https://annovar.openbioinformatics.org and provide the installation path.
+keywords:
+  - annotation
+  - variant-annotation
+  - gene-annotation
+  - vcf
+tools:
+  - annovar:
+      description: |
+        ANNOVAR is a software tool for functional annotation of genetic
+        variants (SNVs, indels, CNVs, SVs) against gene, region, and
+        filter-based annotation databases. Requires individual registration
+        for download.
+      homepage: https://annovar.openbioinformatics.org
+      documentation: https://annovar.openbioinformatics.org/en/latest/
+      licence:
+        - "Non-commercial use, registration required"
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'pangenomesv' ]
+    - vcf:
+        type: file
+        description: VCF file to annotate.
+        pattern: "*.vcf"
+  - - annovar_dir:
+        type: directory
+        description: Path to a locally downloaded ANNOVAR installation, including a populated humandb/ subdirectory with the desired annotation database(s).
+  - - buildver:
+        type: string
+        description: Genome build/assembly identifier matching the downloaded annotation database (e.g. "hg38", "hs1" for T2T-CHM13).
+output:
+  vcf:
+    - - meta:
+        type: map
+        description: Groovy Map containing sample information
+      - "*multianno.vcf":
+        type: file
+        description: VCF file annotated with gene-based (and any other configured) ANNOVAR annotations.
+        pattern: "*multianno.vcf"
+  versions_annovar:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - annovar:
+        type: string
+        description: The name of the tool
+      - stat -c %y ${annovar_dir}/table_annovar.pl | cut -d' ' -f1:
+        type: eval
+        description: The expression used as a version proxy (ANNOVAR has no built-in version string; the modification date of table_annovar.pl is used instead).
+topics:
+  versions:
+    - - ${task.process}:
+        type: string
+        description: The name of the process
+      - annovar:
+        type: string
+        description: The name of the tool
+      - stat -c %y ${annovar_dir}/table_annovar.pl | cut -d' ' -f1:
+        type: eval
+        description: The expression used as a version proxy (ANNOVAR has no built-in version string; the modification date of table_annovar.pl is used instead).
+authors:
+  - "@jonahKps"
