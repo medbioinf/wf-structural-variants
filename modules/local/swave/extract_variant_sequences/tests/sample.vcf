@@ -1,0 +1,12 @@
+##fileformat=VCFv4.3
+##contig=<ID=mini_chm13v2_0#0#chr1,length=1000000>
+##INFO=<ID=END,Number=1,Type=Integer,Description="End position">
+##INFO=<ID=AC,Number=1,Type=Integer,Description="Allele count">
+##INFO=<ID=AF,Number=1,Type=Float,Description="Allele frequency">
+##INFO=<ID=AN,Number=1,Type=Integer,Description="Total alleles">
+##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of samples">
+##INFO=<ID=LV,Number=1,Type=Integer,Description="Snarl level">
+##FORMAT=<ID=GT,Number=.,Type=String,Description="Genotype">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE1
+mini_chm13v2_0#0#chr1	100	>s1>s5	>s3	>s4	.	PASS	END=200;AC=1;AF=0.5;AN=2;NS=1;LV=0	GT	0|1
+mini_chm13v2_0#0#chr1	500	>s10>s15	>s12	>s13	.	PASS	END=600;AC=1;AF=0.5;AN=2;NS=1;LV=0	GT	0|1

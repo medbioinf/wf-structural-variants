@@ -1,0 +1,25 @@
+Tandem Repeats Finder Program written by:
+
+Gary Benson
+Program in Bioinformatics
+Boston University
+Version 4.09
+
+
+Sequence: test_variant_1|ref
+
+
+
+Parameters: 2 7 7 80 10 50 500
+
+
+
+
+Sequence: test_variant_1|alt
+
+
+
+Parameters: 2 7 7 80 10 50 500
+
+
+1 33 3 11.0 3 100 0 66 33 33 33 0 1.58 CAG CAGCAGCAGCAGCAGCAGCAGCAGCAGCAGCAG

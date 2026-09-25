@@ -1,0 +1,69 @@
+{
+    "annotate vcf with trf repeat ratios": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "pangenomesv"
+                    },
+                    "pangenomesv.trf_annotated.vcf:md5,e68febd7c1473c01e2dd0d96af0885dc"
+                ]
+            ],
+            {
+                "versions_swave": [
+                    [
+                        "SWAVE_ANNOTATE_VCF_WITH_TRF",
+                        "swave",
+                        ""
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-09-24T07:52:31.918192275",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "annotate vcf with trf repeat ratios - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "pangenomesv"
+                        },
+                        "pangenomesv.trf_annotated.vcf:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "1": [
+                    [
+                        "SWAVE_ANNOTATE_VCF_WITH_TRF",
+                        "swave",
+                        ""
+                    ]
+                ],
+                "vcf": [
+                    [
+                        {
+                            "id": "pangenomesv"
+                        },
+                        "pangenomesv.trf_annotated.vcf:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "versions_swave": [
+                    [
+                        "SWAVE_ANNOTATE_VCF_WITH_TRF",
+                        "swave",
+                        ""
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-09-24T07:52:36.983020694",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

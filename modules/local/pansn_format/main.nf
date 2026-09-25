@@ -4,14 +4,14 @@ process PANSN_FORMAT {
 
     conda "${moduleDir}/environment.yml"
     container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
-        ? 'https://depot.galaxyproject.org/singularity/gawk:5.3.0'
-        : 'biocontainers/gawk:5.3.0'}"
-    
+        ? 'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/22/2205c2e0d3f502badeaaedab3869a8aadf20f2d3771455515b7aa7de805e69bc/data'
+        : 'community.wave.seqera.io/library/gawk_htslib:02dcfa519ba75026'}"
+
     input:
     tuple val(meta), path(fasta)
 
     output:
-    tuple val(meta), path("*.pansn.fa"), emit: fasta
+    tuple val(meta), path("*.pansn.fa.gz"), emit: fasta
     tuple val("${task.process}"), val('gawk'), eval("awk --version 2>&1 | head -n1 | sed 's/GNU Awk //; s/,.*//'"), emit: versions_gawk, topic: versions
 
     when:
@@ -38,12 +38,12 @@ process PANSN_FORMAT {
             next
         }
         { print }
-    ' > ${prefix}.pansn.fa
+    ' | bgzip -c > ${prefix}.pansn.fa.gz
     """
 
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch ${prefix}.pansn.fa
+        echo -n "" | bgzip -c > ${prefix}.pansn.fa.gz
     """
 }

@@ -1,9 +1,9 @@
 {
     "software_versions": {
         "content": [
-            "pangenomesv_software_mqc_versions.yml:md5,7a6be5e5eac36657ede7a844b2a75a83"
+            "pangenomesv_software_mqc_versions.yml:md5,4c3e0c81eb4a32fd499cf0b0a323a8a0"
         ],
-        "timestamp": "2026-08-11T04:15:30.77028478",
+        "timestamp": "2026-09-24T23:10:13.323171198",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"
@@ -11,12 +11,12 @@
     },
     "variants_raw_filelist": {
         "content": [
-            "pangenomesv.hap_level.split.vcf:md5,584e4ab6a7c5e317c0ae63b3f6ca32d1",
-            "pangenomesv.hap_level.vcf:md5,6c7b2490a7b17010b8629748d80b6b1f",
-            "pangenomesv.sample_level.split.vcf:md5,68ddb1b163716368109f4963e8750858",
-            "pangenomesv.sample_level.vcf:md5,f56ef8d6baf884d9462a1d84c64de25f"
+            "pangenomesv.hap_level.split.vcf:md5,796bbac66e26ec261202783f99df0940",
+            "pangenomesv.hap_level.vcf:md5,86e7a7e9aee7c99b6587e1bf62885257",
+            "pangenomesv.sample_level.split.vcf:md5,fd3f55aada14d7a5f38a6b3eca67f047",
+            "pangenomesv.sample_level.vcf:md5,7e33ca65dcfba8dc8ff436c4d26697a5"
         ],
-        "timestamp": "2026-08-11T04:15:30.765994666",
+        "timestamp": "2026-09-24T10:18:13.316049286",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"

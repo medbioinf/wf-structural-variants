@@ -6,7 +6,6 @@ import re
 import sys
 
 
-# supported genome assembly file extensions
 SUPPORTED_EXTENSIONS = ("*.fa", "*.fasta", "*.fna", "*.fa.gz", "*.fasta.gz", "*.fna.gz")
 EXTENSIONS_TO_STRIP = (".fa", ".fasta", ".fna", ".gz")
 
@@ -84,7 +83,7 @@ def generate_samplesheet(assemblies_dir="data/assemblies", bams_dir="data/bams",
     if not exclude_bams and not bams_path.exists():
         logging.warning(f"BAMs folder '{bams_dir}' does not exist")
     
-    # csv header        
+    # csv header
     lines = ["sample,haplotype,fasta,bam_dir"]
     
     # map sample_id to bam_dir
@@ -123,6 +122,15 @@ def generate_samplesheet(assemblies_dir="data/assemblies", bams_dir="data/bams",
 
     processed_samples = set()
     count = 0
+    
+    fasta_samples = {record["sample"] for record in fasta_records}
+    conflicting_samples = fasta_samples & set(bam_map.keys())
+    if conflicting_samples:
+        logging.error(
+            f"Found both existing assembly FASTA file(s) and a BAM directory for the following sample(s): {', '.join(sorted(conflicting_samples))}. "
+            f"A sample cannot have both an existing assembly and reads to assemble at the same time. Please remove one of the two data sources for each affected sample."
+        )
+        sys.exit(1)
 
     # process fasta samples
     for record in fasta_records:

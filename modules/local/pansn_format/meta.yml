@@ -1,11 +1,12 @@
 name: "pansn_format"
-description: Formats FASTA headers using awk to adhere to the PanSN convention (>sample#hap#contig)
+description: Formats FASTA headers using awk to adhere to the PanSN convention (>sample#hap#contig) and compresses the output with bgzip
 keywords:
   - fasta
   - pangenome
   - pansn
   - header
   - preprocessing
+  - compression
 tools:
   - gawk:
       description: |
@@ -15,6 +16,15 @@ tools:
       documentation: https://www.gnu.org/software/gawk/manual/
       licence:
         - "GPL-3.0-or-later"
+      identifier: ""
+  - htslib:
+      description: |
+        A C library for reading/writing high-throughput sequencing data.
+        Used here for bgzip compression of the PanSN-formatted FASTA output.
+      homepage: https://www.htslib.org/
+      documentation: https://www.htslib.org/doc/bgzip.html
+      licence:
+        - "MIT"
       identifier: ""
 input:
   - - meta:
@@ -31,10 +41,10 @@ output:
     - - meta:
           type: map
           description: Groovy Map containing sample information
-      - "*.pansn.fa":
+      - "*.pansn.fa.gz":
           type: file
-          description: PanSN-formatted FASTA file
-          pattern: "*.pansn.fa"
+          description: PanSN-formatted, bgzip-compressed FASTA file
+          pattern: "*.pansn.fa.gz"
   versions_gawk:
     - - ${task.process}:
           type: string
@@ -45,16 +55,7 @@ output:
       - awk --version 2>&1 | head -n1 | sed 's/GNU Awk //; s/,.*//':
           type: eval
           description: The expression to obtain the version of the tool
-topics:
-  versions:
-    - - ${task.process}:
-          type: string
-          description: The name of the process
-      - gawk:
-          type: string
-          description: The name of the tool
-      - awk --version 2>&1 | head -n1 | sed 's/GNU Awk //; s/,.*//':
-          type: eval
-          description: The expression to obtain the version of the tool
+        topics:
+          - versions
 authors:
   - "@jonahKps"

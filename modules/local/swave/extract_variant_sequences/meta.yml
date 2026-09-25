@@ -1,0 +1,64 @@
+name: "swave_extract_variant_sequences"
+description: Extracts REF and ALT allele sequences for every variant in a Swave VCF, reconstructing them from the pangenome graph node FASTA, for downstream TRF repeat annotation.
+keywords:
+  - pangenome
+  - structural-variant
+  - repeat-annotation
+  - swave
+tools:
+  - swave:
+      description: |
+        Swave (Wang et al., Nat Genet 2026) is a tool used for population-wide structural
+        variant analysis using pangenome graphs. swave-extract-variant-sequences reconstructs
+        the actual REF and ALT sequences for each called variant from its graph path, for
+        downstream repeat-content annotation.
+      homepage: https://github.com/medbioinf/structural-variants-swave
+      licence:
+        - "GPL-3.0-or-later"
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'pangenomesv' ]
+    - vcf:
+        type: file
+        description: Swave VCF containing the variants to extract REF/ALT sequences for.
+        pattern: "*.vcf"
+  - - gfa_fasta:
+        type: file
+        description: Node FASTA file of the pangenome graph, as produced by gfatools gfa2fa.
+        pattern: "*.{fa,fasta}"
+output:
+  fa:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "*.variant_sequences.fa":
+          type: file
+          description: Combined multi-FASTA file containing the reconstructed REF and ALT sequence for every variant in the input VCF.
+          pattern: "*.variant_sequences.fa"
+  versions_swave:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - swave:
+          type: string
+          description: The name of the tool
+      - swave-extract-variant-sequences --version 2>/dev/null | tail -n1:
+          type: eval
+          description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - swave:
+          type: string
+          description: The name of the tool
+      - swave-extract-variant-sequences --version 2>/dev/null | tail -n1:
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@jonahKps"

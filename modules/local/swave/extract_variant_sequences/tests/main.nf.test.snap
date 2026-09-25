@@ -1,0 +1,84 @@
+{
+    "extract sequences from vcf": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "pangenomesv"
+                        },
+                        "pangenomesv.variant_sequences.fa:md5,58d63943865cb353a986b1cf91d6217b"
+                    ]
+                ],
+                "1": [
+                    [
+                        "SWAVE_EXTRACT_VARIANT_SEQUENCES",
+                        "swave",
+                        "0.1.1"
+                    ]
+                ],
+                "fa": [
+                    [
+                        {
+                            "id": "pangenomesv"
+                        },
+                        "pangenomesv.variant_sequences.fa:md5,58d63943865cb353a986b1cf91d6217b"
+                    ]
+                ],
+                "versions_swave": [
+                    [
+                        "SWAVE_EXTRACT_VARIANT_SEQUENCES",
+                        "swave",
+                        "0.1.1"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-09-24T09:53:37.151758272",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "extract sequences from vcf - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "pangenomesv"
+                        },
+                        "pangenomesv.variant_sequences.fa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "1": [
+                    [
+                        "SWAVE_EXTRACT_VARIANT_SEQUENCES",
+                        "swave",
+                        "0.1.1"
+                    ]
+                ],
+                "fa": [
+                    [
+                        {
+                            "id": "pangenomesv"
+                        },
+                        "pangenomesv.variant_sequences.fa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "versions_swave": [
+                    [
+                        "SWAVE_EXTRACT_VARIANT_SEQUENCES",
+                        "swave",
+                        "0.1.1"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-09-24T09:53:42.2706065",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

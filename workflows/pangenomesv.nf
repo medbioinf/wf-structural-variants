@@ -79,23 +79,25 @@ workflow PANGENOMESV {
         if (!params.pangenome_only) {
 
             ch_pangenome_fa = PANGENOME_GRAPH.out.pangenome_fa
-            ch_ref_fasta = PANGENOME_GRAPH.out.ref_fasta
+            ch_ref_fasta_zipped = PANGENOME_GRAPH.out.ref_fasta_zipped
             ch_bed_files = PANGENOME_GRAPH.out.bed
+            ch_ref_bed = PANGENOME_GRAPH.out.ref_bed
             ch_vcf = PANGENOME_GRAPH.out.vcf
 
             //
             // Run swave preprocessing to extract alleles, generate dotplots, and projections
             //
-            SWAVE_PREPROCESSING(ch_bed_files, ch_vcf, ch_pangenome_fa, ch_ref_fasta)
+            SWAVE_PREPROCESSING(ch_bed_files, ch_ref_bed, ch_vcf, ch_pangenome_fa, ch_ref_fasta_zipped)
 
+            ch_ref_fasta = SWAVE_PREPROCESSING.out.ref_fasta
+            ch_equal_paths = SWAVE_PREPROCESSING.out.equal_paths
             ch_dotplots = SWAVE_PREPROCESSING.out.dotplots
             ch_projections = SWAVE_PREPROCESSING.out.projections
-            ch_equal_paths = SWAVE_PREPROCESSING.out.equal_paths
 
             //
             // Run swave genotyping to predict structural variants and generate VCFs
             //
-            SWAVE_GENOTYPING(ch_dotplots, ch_projections, ch_reference.map{ _meta, fa -> fa }, ch_equal_paths)
+            SWAVE_GENOTYPING(ch_dotplots, ch_projections, ch_ref_fasta, ch_equal_paths)
 
             //
             // Run swave annotation to annotate using annovar and filter by allele frequency
@@ -105,7 +107,7 @@ workflow PANGENOMESV {
                     vcf.exists() && vcf.readLines().any { line -> !line.startsWith('#') && line.trim() }    // check if VCF has any non-header lines
                 }
                 
-            SWAVE_ANNOTATION(ch_vcf_for_annotation)
+            SWAVE_ANNOTATION(ch_vcf_for_annotation, ch_pangenome_fa)
 
         }
 

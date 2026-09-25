@@ -12,7 +12,7 @@ null/
 *.pyc
 
 data/
-results/
+*result*/
 testing/
 testing*
 

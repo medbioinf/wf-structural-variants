@@ -22,7 +22,7 @@
                     [
                         "SWAVE_EXTRACT_ALLELES",
                         "swave",
-                        "0.1.0"
+                        "0.1.1"
                     ]
                 ],
                 "equal_paths": [
@@ -45,12 +45,12 @@
                     [
                         "SWAVE_EXTRACT_ALLELES",
                         "swave",
-                        "0.1.0"
+                        "0.1.1"
                     ]
                 ]
             }
         ],
-        "timestamp": "2026-08-10T23:55:46.942019748",
+        "timestamp": "2026-09-24T09:53:16.152195942",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"
@@ -79,7 +79,7 @@
                     [
                         "SWAVE_EXTRACT_ALLELES",
                         "swave",
-                        "0.1.0"
+                        "0.1.1"
                     ]
                 ],
                 "equal_paths": [
@@ -102,12 +102,12 @@
                     [
                         "SWAVE_EXTRACT_ALLELES",
                         "swave",
-                        "0.1.0"
+                        "0.1.1"
                     ]
                 ]
             }
         ],
-        "timestamp": "2026-08-10T23:55:41.650504454",
+        "timestamp": "2026-09-24T09:53:11.045197789",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"
@@ -136,7 +136,7 @@
                     [
                         "SWAVE_EXTRACT_ALLELES",
                         "swave",
-                        "0.1.0"
+                        "0.1.1"
                     ]
                 ],
                 "equal_paths": [
@@ -159,12 +159,12 @@
                     [
                         "SWAVE_EXTRACT_ALLELES",
                         "swave",
-                        "0.1.0"
+                        "0.1.1"
                     ]
                 ]
             }
         ],
-        "timestamp": "2026-08-10T23:55:36.385494465",
+        "timestamp": "2026-09-24T09:53:05.909896159",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"

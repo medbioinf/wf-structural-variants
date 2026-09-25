@@ -1,0 +1,60 @@
+name: trf
+description: Locates and displays tandem repeats in DNA sequences.
+keywords:
+  - repeat-annotation
+  - tandem-repeats
+  - structural-variant
+tools:
+  - trf:
+      description: |
+        Tandem Repeats Finder (TRF) is a program to locate and display tandem
+        repeats in DNA sequences, without requiring the user to specify the
+        repeat pattern or its size in advance.
+      homepage: https://tandem.bu.edu/trf/trf.html
+      documentation: https://tandem.bu.edu/trf/trf.unix.help.html
+      tool_dev_url: https://github.com/Benson-Genomics-Lab/TRF
+      licence:
+        - "AGPL-3.0-or-later"
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'pangenomesv' ]
+    - fasta:
+        type: file
+        description: Multi-FASTA file containing the sequences to search for tandem repeats.
+        pattern: "*.{fa,fasta}"
+output:
+  dat:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "*.dat":
+          type: file
+          description: TRF output file listing all detected tandem repeats per input sequence, including their position, period size, and copy number.
+          pattern: "*.dat"
+  versions_trf:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - trf:
+          type: string
+          description: The name of the tool
+      - trf --version 2>&1 | head -n1:
+          type: eval
+          description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - trf:
+          type: string
+          description: The name of the tool
+      - trf --version 2>&1 | head -n1:
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@jonahKps"

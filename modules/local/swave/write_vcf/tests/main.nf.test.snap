@@ -19,7 +19,7 @@
                     [
                         "SWAVE_WRITE_VCF",
                         "swave",
-                        "0.1.0"
+                        "0.1.1"
                     ]
                 ],
                 "vcf": [
@@ -39,12 +39,12 @@
                     [
                         "SWAVE_WRITE_VCF",
                         "swave",
-                        "0.1.0"
+                        "0.1.1"
                     ]
                 ]
             }
         ],
-        "timestamp": "2026-08-11T00:41:53.764640963",
+        "timestamp": "2026-09-24T09:55:25.686476796",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"
@@ -58,10 +58,10 @@
                         "id": "pangenomesv"
                     },
                     [
-                        "pangenomesv.hap_level.split.vcf:md5,df05bbfbc90d7381d8f4410f2552c827",
-                        "pangenomesv.hap_level.vcf:md5,d0aad64c5aac4cac70f22703e00445fc",
-                        "pangenomesv.sample_level.split.vcf:md5,df05bbfbc90d7381d8f4410f2552c827",
-                        "pangenomesv.sample_level.vcf:md5,d0aad64c5aac4cac70f22703e00445fc"
+                        "pangenomesv.hap_level.split.vcf:md5,e5d0d1b571ddc8fb3914a4d4dbae2767",
+                        "pangenomesv.hap_level.vcf:md5,23941b4ad0e5257ae708d69e0196f8eb",
+                        "pangenomesv.sample_level.split.vcf:md5,e5d0d1b571ddc8fb3914a4d4dbae2767",
+                        "pangenomesv.sample_level.vcf:md5,23941b4ad0e5257ae708d69e0196f8eb"
                     ]
                 ]
             ],
@@ -70,12 +70,12 @@
                     [
                         "SWAVE_WRITE_VCF",
                         "swave",
-                        "0.1.0"
+                        "0.1.1"
                     ]
                 ]
             }
         ],
-        "timestamp": "2026-08-11T00:41:35.404327362",
+        "timestamp": "2026-09-24T09:55:14.704485778",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.6"

@@ -19,8 +19,8 @@
                     "schema": "assets/schema_input.json",
                     "mimetype": "text/csv",
                     "pattern": "^\\S+\\.csv$",
-                    "description": "Path to CSV samplesheet containing the haploid assembly FASTA files.",
-                    "help_text": "A comma-separated file with 3 columns (sample, haplotype, fasta) and a header row. Specifies the haploid assemblies used to construct or call against the pangenome graph.",
+                    "description": "Path to CSV samplesheet containing the haploid assembly FASTA files or raw long-read BAM directories.",
+                    "help_text": "A comma-separated file with 4 columns (sample, haplotype, fasta, bam_dir) and a header row. Specifies either pre-assembled haploid assemblies used to construct or call against the pangenome graph, or a directory of raw long-read BAM files to be assembled automatically with hifiasm. Either fasta or bam_dir must be provided per row; both input types can be mixed within the same samplesheet.",
                     "fa_icon": "fas fa-file-csv"
                 },
                 "outdir": {
@@ -56,7 +56,7 @@
                     "mimetype": "text/plain",
                     "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
                     "description": "Path to the FASTA reference genome.",
-                    "help_text": "The primary reference genome used for pangenome graph construction or variant calling.",
+                    "help_text": "The primary reference genome used for pangenome graph construction or variant calling. When using an existing GFA (--gfa) built with Minigraph, the reference sample name is automatically detected from the graph and applied to this FASTA; for PGGB/Cactus GFAs, ensure the derived sample name already matches the reference naming used inside the provided graph.",
                     "fa_icon": "far fa-file-code"
                 }
             }
@@ -94,7 +94,7 @@
                     "type": "string",
                     "format": "file-path",
                     "description": "Path to an existing pangenome GFA file to skip graph construction.",
-                    "help_text": "If provided, the pipeline will completely skip the pangenome graph construction step and directly use this GFA file to run variant calling for the input samples.",
+                    "help_text": "If provided, the pipeline will skip the pangenome graph construction step and directly use this GFA file to run variant calling for the input samples.",
                     "fa_icon": "fas fa-project-diagram"
                 },
                 "minigraph_incremental": {
@@ -155,13 +155,13 @@
                 "remove_small": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Filter out small snarls/variants below the minimum SV size threshold.",
+                    "description": "Filter out small snarls/variants below the minimum SV size threshold. Default is true.",
                     "fa_icon": "fas fa-filter"
                 },
                 "min_sv_size": {
                     "type": "integer",
                     "default": 50,
-                    "description": "Minimum size (in base pairs) for a variant to be considered a structural variant. Variants smaller than this threshold will be filtered out if `remove_small` is set to true.",
+                    "description": "Minimum size (in base pairs) for a variant to be considered a structural variant. Variants smaller than this threshold will be filtered out if `remove_small` is set to true. Default is 50 bp.",
                     "fa_icon": "fas fa-compress-arrows-alt"
                 },
                 "spec_snarl": {
@@ -182,7 +182,7 @@
                     "type": "integer",
                     "default": 2500,
                     "description": "Number of sequences to include in each split FASTA file.",
-                    "help_text": "The number of sequences to include in each round-robin manner split FASTA file. This can help with parallel processing and memory management in downstream steps. The default value is 2000.",
+                    "help_text": "The number of sequences to include in each round-robin manner split FASTA file. This can help with parallel processing and memory management in downstream steps. The default value is 2500.",
                     "fa_icon": "fas fa-layer-group"
                 }
             }
@@ -204,12 +204,12 @@
                     "type": "integer",
                     "default": 1000000,
                     "description": "Maximum size (in base pairs) of variants to include in the dotplots.",
-                    "help_text": "Variants larger than this threshold will be excluded from the dotplots to improve readability. The default value is 1,000,000 bp (1 Mbp). Adjust this value based on the expected size range of structural variants in your data and the level of detail you want in the dotplots.",
+                    "help_text": "Variants larger than this threshold will be excluded from the dotplots to improve readability. The default value is 1000000 bp (1 Mbp).",
                     "fa_icon": "fas fa-expand-arrows-alt"
                 },
                 "spec_path": {
                     "type": ["string", "null"],
-                    "description": "Specific path ID to generate a dotplot for (e.g. 's1>>s3') for debugging/analysis.",
+                    "description": "Specific path ID to generate a dotplot for (e.g. '>s1>s3') for debugging/analysis.",
                     "help_text": "If provided, the workflow will only generate a dotplot for this specific path. Leave blank/null to generate dotplots for all paths.",
                     "fa_icon": "fas fa-bug"
                 },

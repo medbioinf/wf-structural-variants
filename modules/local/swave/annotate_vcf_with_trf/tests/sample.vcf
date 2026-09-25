@@ -1,0 +1,6 @@
+##fileformat=VCFv4.3
+##contig=<ID=chr1,length=1000000>
+##INFO=<ID=END,Number=1,Type=Integer,Description="End position">
+##INFO=<ID=SVTYPE,Number=1,Type=String,Description="SV type">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE1
+chr1	100	test_variant_1	>s1	>s2	.	PASS	END=200;SVTYPE=DEL	GT	0|1

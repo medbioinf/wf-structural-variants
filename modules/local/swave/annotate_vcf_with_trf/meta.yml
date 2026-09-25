@@ -1,0 +1,68 @@
+name: "swave_annotate_vcf_with_trf"
+description: Annotates a Swave VCF with a REPEAT_RATIO INFO field, computed from TRF output on the variant REF/ALT sequences.
+keywords:
+  - pangenome
+  - structural-variant
+  - repeat-annotation
+  - swave
+tools:
+  - swave:
+      description: |
+        Swave (Wang et al., Nat Genet 2026) is a tool used for population-wide structural
+        variant analysis using pangenome graphs. swave-annotate-vcf-with-trf combines TRF
+        output with the original variant sequences to annotate each variant with a repeat
+        ratio, taking the maximum across its REF and ALT sequence.
+      homepage: https://github.com/medbioinf/structural-variants-swave
+      licence:
+        - "GPL-3.0-or-later"
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'pangenomesv' ]
+    - vcf:
+        type: file
+        description: Swave VCF to annotate with repeat ratios.
+        pattern: "*.vcf"
+  - - dat_files:
+        type: file
+        description: One or more TRF .dat output files covering the variant sequences.
+        pattern: "*.dat"
+  - - fasta_files:
+        type: file
+        description: One or more variant sequence FASTA files, matching the TRF input, used to determine sequence lengths.
+        pattern: "*.{fa,fasta}"
+output:
+  vcf:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information
+      - "*.trf_annotated.vcf":
+          type: file
+          description: VCF annotated with a REPEAT_RATIO INFO field per variant.
+          pattern: "*.trf_annotated.vcf"
+  versions_swave:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - swave:
+          type: string
+          description: The name of the tool
+      - swave-annotate_vcf_with_trf --version 2>/dev/null | tail -n1:
+          type: eval
+          description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - swave:
+          type: string
+          description: The name of the tool
+      - swave-annotate_vcf_with_trf --version 2>/dev/null | tail -n1:
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@jonahKps"

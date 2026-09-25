@@ -1,17 +1,18 @@
 include { PANSN_FORMAT } from '../../../modules/local/pansn_format/main'
-include { PANSN_FORMAT as PANSN_FORMAT_REF } from '../../../modules/local/pansn_format/main'
 include { MINIGRAPH_PANGENOME } from '../../../modules/local/minigraph/pangenome/main'
 include { MINIGRAPH_CALL } from '../../../modules/local/minigraph/call/main'
+include { MINIGRAPH_CALL as MINIGRAPH_CALL_REF } from '../../../modules/local/minigraph/call/main'
 include { PGGB } from '../../../modules/local/pggb/main'
 include { CACTUS_PANGENOME } from '../../../modules/local/cactus/pangenome/main'
 include { GFA_SET_REFERENCE } from '../../../modules/local/gfa_set_reference/main'
 
 include { SAMTOOLS_FAIDX as SAMTOOLS_FAIDX_REF }   from '../../../modules/nf-core/samtools/faidx/main'
-include { SAMTOOLS_FAIDX } from '../../../modules/nf-core/samtools/faidx/main'
+include { SAMTOOLS_FAIDX as SAMTOOLS_FAIDX_PANGENOME } from '../../../modules/nf-core/samtools/faidx/main'
 include { VG_DECONSTRUCT } from '../../../modules/nf-core/vg/deconstruct/main'
 include { GFATOOLS_GFA2FA } from '../../../modules/nf-core/gfatools/gfa2fa/main'
-include { GUNZIP as GUNZIP_FA } from '../../../modules/nf-core/gunzip/main'
-include { GUNZIP as GUNZIP_GFA } from '../../../modules/nf-core/gunzip/main'
+include { GUNZIP as GUNZIP_PANGENOME_GFA } from '../../../modules/nf-core/gunzip/main'
+include { GUNZIP as GUNZIP_PANGENOME_FA } from '../../../modules/nf-core/gunzip/main'
+
 
 workflow PANGENOME_GRAPH {
 
@@ -22,15 +23,10 @@ workflow PANGENOME_GRAPH {
     main:
     ch_versions = channel.empty()
 
-    PANSN_FORMAT(ch_assemblies)
-    ch_versions = ch_versions.mix(PANSN_FORMAT.out.versions_gawk)
-    ch_formatted_assemblies = PANSN_FORMAT.out.fasta
-
     def external_gfa = params.gfa != null
+    def ch_reference_adjusted = ch_reference
 
-    ch_reference_for_pansn = ch_reference
-
-    // reads gfa file to determine the reference sample name to align for the provided reference FASTA's PanSN naming (in case of differing reference sample name)
+    // reads gfa file to determine the reference sample name to align the provided reference FASTA's PanSN naming with (in case of differing reference sample name)
     if (external_gfa) {
         def lines = new File(params.gfa).readLines()
         def ref_line = lines.find { line -> line.startsWith('S\t') && line.contains('SR:i:0') }
@@ -45,31 +41,43 @@ workflow PANGENOME_GRAPH {
 
         if (!ch_ref_sample) {
             if (params.graph_construction_tool == "minigraph") {
-                error "Could not determine the reference sample name from --gfa (${params.gfa}). Expected an GFA with a reference segment tagged SR:i:0."
+                error "Could not determine the reference sample name from --gfa (${params.gfa}). Expected a GFA with a reference segment tagged SR:i:0."
             } else {
                 log.warn "Could not detect a reference sample name in --gfa (${params.gfa}) (no GFA reference tag, as expected for pggb/cactus GFAs). Ensure your --fasta's derived sample name already matches the reference naming used inside the provided GFA."
             }
         } else {
-            ch_reference_for_pansn = ch_reference.map { meta, fa ->
+            ch_reference_adjusted = ch_reference.map { meta, fa ->
                 [ meta + [ sample: ch_ref_sample, haplotype: '0' ], fa ]
             }
         }
     }
 
-    PANSN_FORMAT_REF(ch_reference_for_pansn)
-    ch_versions = ch_versions.mix(PANSN_FORMAT_REF.out.versions_gawk)
-    ch_formatted_reference = PANSN_FORMAT_REF.out.fasta
+    ch_all_input_fastas = ch_reference_adjusted.mix(ch_assemblies)
+    PANSN_FORMAT(ch_all_input_fastas)
+    ch_versions = ch_versions.mix(PANSN_FORMAT.out.versions_gawk)
 
-    ch_reference_indexed = ch_formatted_reference.map { meta, fa -> [ meta, fa, [] ] }
-    SAMTOOLS_FAIDX_REF(ch_reference_indexed, false)
-    ch_versions = ch_versions.mix(SAMTOOLS_FAIDX_REF.out.versions_samtools)
+    PANSN_FORMAT.out.fasta
+        .branch { meta, _fa ->
+            ref: meta.is_ref == true
+            assemblies: meta.is_ref != true
+        }
+        .set { ch_pansn_split }
 
-    ch_ref_contig_names = SAMTOOLS_FAIDX_REF.out.fai
-        .map { _meta, fai -> fai }
-
+    ch_formatted_assemblies = ch_pansn_split.assemblies
+    ch_formatted_reference = ch_pansn_split.ref
     ch_ref_fasta_for_swave = ch_formatted_reference
 
-    if (!params.gfa || (params.gfa &&params.graph_construction_tool == "minigraph" && params.minigraph_incremental)) {
+    ch_ref_contig_names = channel.empty()
+    if (params.graph_construction_tool == "pggb" || params.graph_construction_tool == "cactus") {
+        ch_reference_indexed = ch_formatted_reference.map { meta, fa -> [ meta, fa, [] ] }
+        SAMTOOLS_FAIDX_REF(ch_reference_indexed, false)
+        ch_versions = ch_versions.mix(SAMTOOLS_FAIDX_REF.out.versions_samtools)
+
+        ch_ref_contig_names = SAMTOOLS_FAIDX_REF.out.fai
+            .map { _meta, fai -> fai }
+    }
+
+    if (!params.gfa || (params.gfa && params.graph_construction_tool == "minigraph" && params.minigraph_incremental)) {
 
         if (params.graph_construction_tool == "minigraph") {
 
@@ -104,17 +112,17 @@ workflow PANGENOME_GRAPH {
             
             ch_all_fastas
                 .map { _meta, fa -> fa }
-                .collectFile(name: 'pangenome_input.fasta', newLine: true)
+                .collectFile(name: 'pangenome_input.fa.gz')
                 .combine(ch_graph_meta)
                 .map { fa, meta -> [ meta, fa, [] ] }
                 .set { ch_merged_fasta }
             
-            SAMTOOLS_FAIDX(ch_merged_fasta, false)
-            ch_versions = ch_versions.mix(SAMTOOLS_FAIDX.out.versions_samtools)
+            SAMTOOLS_FAIDX_PANGENOME(ch_merged_fasta, false)
+            ch_versions = ch_versions.mix(SAMTOOLS_FAIDX_PANGENOME.out.versions_samtools)
 
             ch_merged_fasta
                 .map { meta, fa, _fai -> [ meta, fa ] }
-                .join(SAMTOOLS_FAIDX.out.fai)
+                .join(SAMTOOLS_FAIDX_PANGENOME.out.fai)
                 .set { ch_pggb_input }
 
             PGGB(ch_pggb_input)
@@ -171,23 +179,30 @@ workflow PANGENOME_GRAPH {
     ch_fa_raw.branch { _meta, fa ->
         zipped: fa.name.endsWith('.gz')
         unzipped: !fa.name.endsWith('.gz')
-    }.set { ch_fa_split }
+    }.set { ch_pangenome_fa_split }
 
-    GUNZIP_FA(ch_fa_split.zipped)
-    ch_versions = ch_versions.mix(GUNZIP_FA.out.versions_gunzip)
+    GUNZIP_PANGENOME_FA(ch_pangenome_fa_split.zipped)
+    ch_versions = ch_versions.mix(GUNZIP_PANGENOME_FA.out.versions_gunzip)
 
-    ch_fa = GUNZIP_FA.out.gunzip
-        .mix(ch_fa_split.unzipped)
+    ch_fa = GUNZIP_PANGENOME_FA.out.gunzip
+        .mix(ch_pangenome_fa_split.unzipped)
         .map { _meta, fa -> fa }
     ch_gfa_raw = ch_gfa_with_meta.map { _meta, gfa -> gfa }.collect()
     ch_bed = channel.empty()
+    ch_ref_bed = channel.empty()
     ch_vcf = channel.empty()
 
     if (!params.pangenome_only) {
         if (params.graph_construction_tool == "minigraph") {
-            ch_all_call_inputs = ch_formatted_reference.mix(ch_formatted_assemblies)
+            MINIGRAPH_CALL_REF(ch_gfa_raw, ch_formatted_reference)
+            ch_ref_bed = MINIGRAPH_CALL_REF.out.bed
+            ch_versions = ch_versions.mix(MINIGRAPH_CALL_REF.out.versions_minigraph)
 
-            MINIGRAPH_CALL(ch_gfa_raw, ch_all_call_inputs)
+            ch_sample_call_gated = ch_formatted_assemblies
+                .combine(MINIGRAPH_CALL_REF.out.bed.map { _meta, _bed -> true })
+                .map { meta, fa, _gate -> [ meta, fa ] }
+
+            MINIGRAPH_CALL(ch_gfa_raw, ch_sample_call_gated)
             ch_bed = MINIGRAPH_CALL.out.bed
             ch_versions = ch_versions.mix(MINIGRAPH_CALL.out.versions_minigraph)
         } else if (params.graph_construction_tool == "pggb" || params.graph_construction_tool == "cactus") {
@@ -196,13 +211,13 @@ workflow PANGENOME_GRAPH {
                     zipped: gfa.name.endsWith('.gz')
                     unzipped: !gfa.name.endsWith('.gz')
                 }
-                .set { ch_gfa_deconstruct_split }
+                .set { ch_pangenome_gfa_split }
 
-            GUNZIP_GFA(ch_gfa_deconstruct_split.zipped)
-            ch_versions = ch_versions.mix(GUNZIP_GFA.out.versions_gunzip)
+            GUNZIP_PANGENOME_GFA(ch_pangenome_gfa_split.zipped)
+            ch_versions = ch_versions.mix(GUNZIP_PANGENOME_GFA.out.versions_gunzip)
 
-            ch_decompressed_gfa = GUNZIP_GFA.out.gunzip
-                .mix(ch_gfa_deconstruct_split.unzipped)
+            ch_decompressed_gfa = GUNZIP_PANGENOME_GFA.out.gunzip
+                .mix(ch_pangenome_gfa_split.unzipped)
 
             GFA_SET_REFERENCE(ch_decompressed_gfa, ch_ref_contig_names.toList())
             ch_versions = ch_versions.mix(GFA_SET_REFERENCE.out.versions_gawk)
@@ -215,8 +230,9 @@ workflow PANGENOME_GRAPH {
 
     emit:
     pangenome_fa = ch_fa
-    ref_fasta = ch_ref_fasta_for_swave.map { _meta, fa -> fa }
+    ref_fasta_zipped = ch_ref_fasta_for_swave
     bed = ch_bed
+    ref_bed = ch_ref_bed
     vcf = ch_vcf
     versions = ch_versions
 }

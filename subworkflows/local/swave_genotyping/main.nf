@@ -24,13 +24,13 @@ workflow SWAVE_GENOTYPING {
     ch_versions = ch_versions.mix(SWAVE_CALL_VARIANTS.out.versions_swave)
 
     SWAVE_CALL_VARIANTS.out.tsv
-        .map { _meta, tsv -> tsv }
-        .collect()
-        .map { tsv_list -> 
-            def meta = [ id: 'pangenomesv' ]
-            return [ meta, tsv_list ]
-        }
-        .set { ch_tsv_collection }
+    .map { _meta, tsv -> tsv }
+    .collect(sort: { a, b -> a.name <=> b.name })
+    .map { tsv_list -> 
+        def meta = [ id: 'pangenomesv' ]
+        return [ meta, tsv_list ]
+    }
+    .set { ch_tsv_collection }
     
     SWAVE_WRITE_VCF(ch_tsv_collection, ch_ref_fasta, ch_equal_paths)
     ch_versions = ch_versions.mix(SWAVE_WRITE_VCF.out.versions_swave)

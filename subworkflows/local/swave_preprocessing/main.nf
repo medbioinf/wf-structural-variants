@@ -3,6 +3,7 @@ include { SWAVE_SPLIT_ALLELES } from '../../../modules/local/swave/split_alleles
 include { SWAVE_GENERATE_DOTPLOTS } from '../../../modules/local/swave/generate_dotplots/main'
 include { SWAVE_GENERATE_PROJECTIONS } from '../../../modules/local/swave/generate_projections/main'
 
+include { GUNZIP as GUNZIP_REF_FA } from '../../../modules/nf-core/gunzip/main'
 include { BCFTOOLS_QUERY as BCFTOOLS_QUERY_LIST_SAMPLES } from '../../../modules/nf-core/bcftools/query/main'
 include { BCFTOOLS_VIEW as BCFTOOLS_VIEW_SAMPLES } from '../../../modules/nf-core/bcftools/view/main'
 include { BCFTOOLS_VIEW as BCFTOOLS_VIEW_REF } from '../../../modules/nf-core/bcftools/view/main'
@@ -11,22 +12,25 @@ workflow SWAVE_PREPROCESSING {
 
     take:
     ch_bed          // channel: [ meta, bed ]
+    ch_ref_bed      // channel: [ meta, bed ]
     ch_vcf          // channel: [ meta, vcf ]
     ch_gfa_fasta    // channel: [ fasta ]
-    ch_ref_fasta    // channel: [ fasta ]
+    ch_ref_fasta_zipped    // channel: [ meta, fasta ]
 
     main:
     ch_versions = channel.empty()
+
+    GUNZIP_REF_FA(ch_ref_fasta_zipped)
+    ch_versions = ch_versions.mix(GUNZIP_REF_FA.out.versions_gunzip)
+    ch_ref_fasta = GUNZIP_REF_FA.out.gunzip.map { _meta, fa -> fa }
 
     if (params.graph_construction_tool == "minigraph") {
 
         ch_extract_input = ch_bed.map { meta, bed -> [ meta, meta.is_ref, bed, [] ] }
 
-        ch_ref_bed = ch_bed
-            .filter { meta, _bed -> meta.is_ref }
-            .map { _meta, bed -> bed }
+        ch_ref_bed_path = ch_ref_bed.map { _meta, bed -> bed }
 
-        SWAVE_EXTRACT_ALLELES(ch_extract_input, ch_ref_bed.toList(), ch_gfa_fasta.toList())
+        SWAVE_EXTRACT_ALLELES(ch_extract_input, ch_ref_bed_path.toList(), ch_gfa_fasta.toList())
         ch_versions = ch_versions.mix(SWAVE_EXTRACT_ALLELES.out.versions_swave)
         ch_extracted_alleles = SWAVE_EXTRACT_ALLELES.out.fa
         ch_extracted_equal_paths = SWAVE_EXTRACT_ALLELES.out.equal_paths
@@ -93,7 +97,9 @@ workflow SWAVE_PREPROCESSING {
 
     ch_equal_paths_combined = ch_extracted_equal_paths
         .filter { meta, _txt -> meta.is_ref != true }
-        .collectFile(name: 'equal_paths_combined.txt', sort: false) { meta, txt_file ->
+        .toSortedList { a, b -> a[0].id <=> b[0].id }
+        .flatMap { sorted_list -> sorted_list }
+        .collectFile(name: 'equal_paths_combined.txt') { meta, txt_file ->
             txt_file.readLines().collect { line -> "${meta.id}\t${line}\n" }.join('')
         }
 
@@ -115,6 +121,7 @@ workflow SWAVE_PREPROCESSING {
     ch_projections = SWAVE_GENERATE_PROJECTIONS.out.projections
 
     emit:
+    ref_fasta = ch_ref_fasta
     equal_paths = ch_equal_paths_combined
     dotplots = ch_dotplots
     projections = ch_projections
