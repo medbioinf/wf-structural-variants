@@ -14,7 +14,7 @@
 
 ## Introduction
 
-**medbioinf/pangenomesv** is a bioinformatics pipeline that ...
+**medbioinf/pangenomesv** is a bioinformatics pipeline for population-level structural variant (SV) detection using pangenome graphs. It takes long-read assemblies or raw long-read BAM files as input, builds a pangenome graph (Minigraph, PGGB, or Cactus), and applies [Swave](https://github.com/songbowang125/Swave), a sequence-to-image, deep-learning-based method, to classify simple and complex SVs directly from the graph.
 
 <!-- TODO nf-core:
    Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
@@ -24,7 +24,7 @@
 
 <!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core
      workflows use the "tube map" design for that. See https://nf-co.re/docs/community/brand/workflow-schematics#examples for examples.   -->
-<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
+<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
 
 ## Usage
 
@@ -32,17 +32,9 @@
 > If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/get_started/environment_setup/overview) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/get_started/run-your-first-pipeline) with `-profile test` before running the workflow on actual data.
 
 > [!NOTE]
-> This repository contains a Nextflow-adapted version of [Swave](https://github.com/songbowang125/Swave). It will be migrated to a dedicated repository with a published container image. Currently, the pipeline only runs with Docker, and the image must be built locally.
+> This pipeline is built around [Swave](https://github.com/songbowang125/Swave), implemented as a modular set of tools in [structural-variants-swave](LINK_ZUM_SWAVE_REPO), containerized and currently available on Docker Hub as [`jonahkps/panswave`](https://hub.docker.com/r/jonahkps/panswave). Docker, Apptainer/Singularity, and Conda profiles are all supported.
 
-### 1. Build the Docker Container Locally
-
-Before running the pipeline, you must build the required Swave environment image locally. The tag **must** match the following name exactly so Nextflow can recognize it:
-
-```bash
-docker build -t quay.io/swave:latest .
-```
-
-### 2. Run with Included Test Data
+### 1. Run with Included Test Data
 
 The repository comes with small, pre-configured test data (found under `assets/testdata/`). You can perform a minimal test run using the test profile (configured under `conf/test.config`):
 
@@ -50,53 +42,50 @@ The repository comes with small, pre-configured test data (found under `assets/t
 nextflow run main.nf -profile test,docker --outdir test_results
 ```
 
-### 3. Run with Your Own Data
+### 2. Run with Your Own Data
 
 To execute the pipeline with custom data, you need to provide a reference genome and an input samplesheet (`.csv`).
 
-#### 3.1. Prepare Input Files
+#### 2.1. Prepare Input Files
 
-By convention, it is recommended to organize your input files in a structured root directory:
+It is recommended to organize your input files in a structured root directory:
 
-- Save your assemblies (FASTA format) inside `data/assemblies/`.
+- Save your assemblies (FASTA format) inside `data/assemblies/`, or raw long-read BAM directories inside `data/bams/`, if you want the pipeline to assemble them automatically with hifiasm.
 - Place your reference genome FASTA anywhere accessible (e.g., directly under `data/` or in a `data/reference/` directory).
 
 (The `data/` directory is gitignored and must be created locally.)
 
-#### 3.2. Generate the Samplesheet
+#### 2.2. Generate the Samplesheet
 
-The pipeline requires a three-column samplesheet (`sample,haplotype,fasta`).
+The pipeline requires a four-column samplesheet (`sample,haplotype,fasta,bam_dir`).
 
 **Option 1: Automatic Generation**
 
-You can run the provided automated Python script to scan your assembly directory and create the samplesheet:
+You can run the provided automated Python script to scan your assembly and BAM directories and create the samplesheet:
 
 ```bash
-python3 scripts/create_samplesheet.py --dir data/assemblies --out data/samplesheet.csv
+python3 scripts/generate_samplesheet.py --assemblies_dir data/assemblies --bams_dir data/bams --out data/samplesheet.csv
 ```
 
-(`--dir` and `--out` default to these values. Add `--allow-unphased` if your assemblies are unphased, to treat them as haplotype 0.)
+(All paths default to the values shown above. Add `--allow_unphased` to treat files with unrecognized haplotypes as unphased (assigned to `0`) instead of skipping them. Use `--exclude_bams` or `--exclude_assemblies` to scan only one of the two directories.)
 
 **Option 2: Manual Creation**
 
 Alternatively, create a `samplesheet.csv` manually with the following format:
-
-```
-sample,haplotype,fasta
-assembly1,1,/path/to/assemblies/assembly1_hap1.fa
-assembly1,2,/path/to/assemblies/assembly1_hap2.fa
-assembly2,1,/path/to/assemblies/assembly2_hap1.fa
-assembly2,2,/path/to/assemblies/assembly2_hap2.fa
-...
+```bash
+sample,haplotype,fasta,bam_dir
+assembly1,1,/path/to/assemblies/assembly1_hap1.fa,
+assembly1,2,/path/to/assemblies/assembly1_hap2.fa,
+sample3,,,/path/to/bams/sample2_dir
 ```
 
-#### 3.3. Run the Workflow
+#### 2.3. Run the Workflow
 
 Run the pipeline by passing the paths to your generated samplesheet and reference genome:
 
 ```bash
 nextflow run main.nf \
-   -profile docker \
+   -profile <docker/singularity/apptainer/conda> \
    --input <path_to_samplesheet.csv> \
    --fasta <path_to_reference_fasta> \
    --outdir <output_directory>
@@ -104,22 +93,25 @@ nextflow run main.nf \
 
 (`--outdir` defaults to `results` if not specified.)
 
+### 3. Additional Notes
+
+**Graph construction tools.** The pipeline supports three tools for pangenome graph construction, selected via `--graph_construction_tool`: `minigraph` (default, fast and incremental building possible), `pggb`, and `cactus` (both more fine-grained, also capturing SNPs and small indels, but slower and always require a full rebuild when adding new samples).
+
+**Long-read assembly.** Since assembling raw long reads with hifiasm is resource-intensive, it might make sense to use `--assembly_only` to run this step on its own, then start the actual pipeline run pointing at the resulting assemblies.
+
+**Incremental Minigraph graphs.** Minigraph does not track which assemblies are already represented in a given graph. When using `--minigraph_incremental` with `--gfa`, only the new assemblies to be added should be listed in the samplesheet. Re-including assemblies already present in the graph would result in minigraph re-aligning every provided assembly regardless of whether it's already incorporated, i.e. providing no benefit over rebuilding the graph from scratch Once the extended graph has been built, the actual pipeline run can then be started with the full samplesheet, passing the resulting GFA via `--gfa`.
+
+**ANNOVAR annotation.** Gene/exon annotation via ANNOVAR is optional and requires your own, individually registered installation (`--annovar_dir`, pointing to a directory with `table_annovar.pl` and a populated `humandb/` folder, plus `--annovar_db` matching the downloaded database, e.g. `hg38` or `hs1`). ANNOVAR's license does not permit redistribution, so it cannot be bundled with this pipeline. See [ANNOVAR's registration page](https://annovar.openbioinformatics.org) to obtain your own copy. If `--annovar_dir` is not set, the annotation step is skipped entirely. Downloaded RefGene databases commonly reference chromosomes by RefSeq accession (e.g. `NC_060925.1`) rather than by name. Since this pipeline's VCFs use PanSN-formatted chromosome names (e.g. `CHM13#0#chr1`), the chromosome column of the downloaded database file may need to be remapped (e.g. `NC_060925.1` → `CHM13#0#chr1`) before annotation will produce meaningful results, otherwise ANNOVAR will report all variants as `intergenic`.
+
 For more detailed information on all available pipeline parameters, run:
 
 ```bash
 nextflow run main.nf --help
 ```
 
-> [!WARNING]
-> Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/running/run-pipelines#using-parameter-files).
-
 ## Credits
 
 medbioinf/pangenomesv was originally written by Jonah Kapski.
-
-We thank the following people for their extensive assistance in the development of this pipeline:
-
-<!-- TODO nf-core: If applicable, make list of people who have also contributed -->
 
 ## Contributions and Support
 
